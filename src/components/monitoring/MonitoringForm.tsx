@@ -7,7 +7,8 @@ import MonitoringFormInputs from "./MonitoringFormInputs";
 import CodeExampleViewer from "./CodeExampleViewer";
 import { spiderExamples } from "./code-examples";
 
-interface MonitoringItem {
+// Make the interface explicit and ensure it includes the institution field
+export interface MonitoringItem {
   name: string;
   url: string;
   api_url?: string;
