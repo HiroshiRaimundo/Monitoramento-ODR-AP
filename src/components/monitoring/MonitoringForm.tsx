@@ -13,6 +13,9 @@ interface MonitoringItem {
   api_url?: string;
   frequency: string;
   category: string;
+  keywords?: string;
+  responsible?: string;
+  institution?: string;
 }
 
 interface MonitoringFormProps {

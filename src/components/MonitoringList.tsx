@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link2, Link, Trash2, User, Clock, AlertTriangle } from "lucide-react";
+import { Link2, Link, Trash2, User, Clock, AlertTriangle, Building2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MonitoringItem {
@@ -13,6 +13,7 @@ interface MonitoringItem {
   frequency: string;
   category: string;
   responsible?: string;
+  institution?: string;
   keywords?: string;
 }
 
@@ -164,6 +165,12 @@ const MonitoringList: React.FC<MonitoringListProps> = ({
                         <div className="flex items-center text-sm font-medium gap-1 mt-2">
                           <User size={14} className="text-primary" />
                           <span>Responsável: {item.responsible}</span>
+                          {item.institution && (
+                            <span className="flex items-center ml-2">
+                              <Building2 size={14} className="text-primary mr-1" />
+                              {item.institution}
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>

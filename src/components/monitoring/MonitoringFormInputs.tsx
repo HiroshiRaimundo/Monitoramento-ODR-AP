@@ -13,6 +13,7 @@ interface MonitoringItem {
   category: string;
   keywords?: string;
   responsible?: string;
+  institution?: string;
 }
 
 interface MonitoringFormInputsProps {
@@ -137,6 +138,22 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
               </FormControl>
               <FormDescription>
                 Informe o nome do pesquisador responsável por este monitoramento
+              </FormDescription>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="institution"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Instituição</FormLabel>
+              <FormControl>
+                <Input placeholder="Nome da instituição do responsável" {...field} />
+              </FormControl>
+              <FormDescription>
+                Informe a instituição à qual o responsável está vinculado
               </FormDescription>
             </FormItem>
           )}

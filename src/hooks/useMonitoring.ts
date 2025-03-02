@@ -13,6 +13,7 @@ interface MonitoringItem {
   category: string;
   keywords?: string;
   responsible?: string;
+  institution?: string;
 }
 
 export const useMonitoring = () => {
@@ -40,7 +41,8 @@ export const useMonitoring = () => {
         category: item.category,
         keywords: item.keywords,
         // Use casting para acessar a propriedade responsible com segurança
-        responsible: (item as any).responsible || null
+        responsible: (item as any).responsible || null,
+        institution: (item as any).institution || null
       }));
       
       setMonitoringItems(formattedItems);
@@ -68,7 +70,8 @@ export const useMonitoring = () => {
           frequency: data.frequency,
           category: data.category,
           keywords: data.keywords || null,
-          responsible: data.responsible || null
+          responsible: data.responsible || null,
+          institution: data.institution || null
         })
         .select()
         .single();
@@ -85,7 +88,8 @@ export const useMonitoring = () => {
         category: newItem.category,
         keywords: newItem.keywords,
         // Use casting para acessar a propriedade responsible com segurança
-        responsible: (newItem as any).responsible || null
+        responsible: (newItem as any).responsible || null,
+        institution: (newItem as any).institution || null
       };
       
       // Atualizar estado

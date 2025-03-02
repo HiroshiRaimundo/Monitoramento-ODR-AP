@@ -36,14 +36,18 @@ export const getFrequencyData = (monitoringItems: MonitoringItem[]) => {
 };
 
 export const getResponsibleData = (monitoringItems: MonitoringItem[]) => {
-  const responsibles: { [key: string]: number } = {};
+  const responsibles: { [key: string]: { count: number, institution: string } } = {};
   
   monitoringItems.forEach(item => {
     if (item.responsible) {
-      if (responsibles[item.responsible]) {
-        responsibles[item.responsible]++;
+      const key = item.responsible;
+      if (responsibles[key]) {
+        responsibles[key].count++;
       } else {
-        responsibles[item.responsible] = 1;
+        responsibles[key] = { 
+          count: 1, 
+          institution: item.institution || 'Não informada' 
+        };
       }
     }
   });
@@ -53,7 +57,8 @@ export const getResponsibleData = (monitoringItems: MonitoringItem[]) => {
     .slice(0, 5)
     .map(responsible => ({
       responsible,
-      monitoramentos: responsibles[responsible]
+      monitoramentos: responsibles[responsible].count,
+      institution: responsibles[responsible].institution
     }));
 };
 
