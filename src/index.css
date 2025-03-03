@@ -4,83 +4,89 @@
 
 @layer base {
   :root {
-    --background: 150 15% 98%;
-    --foreground: 142 38% 10%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 142 38% 10%;
+    --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 142 38% 10%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 135 40% 94%;
-    --secondary-foreground: 142 40% 16%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 135 40% 94%;
-    --muted-foreground: 142 19% 45%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 126 40% 88%;
-    --accent-foreground: 142 40% 16%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 142 20% 87%;
-    --input: 142 20% 87%;
-    --ring: 142 76% 36%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 150 30% 96%;
-    --sidebar-foreground: 142 38% 20%;
-    --sidebar-primary: 142 76% 36%;
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 142 30% 90%;
-    --sidebar-accent-foreground: 142 40% 16%;
-    --sidebar-border: 142 20% 87%;
-    --sidebar-ring: 142 76% 36%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 142 38% 8%;
-    --foreground: 0 0% 93%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
 
-    --card: 142 38% 10%;
-    --card-foreground: 0 0% 93%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 142 38% 10%;
-    --popover-foreground: 0 0% 93%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 142 30% 16%;
-    --secondary-foreground: 0 0% 93%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 142 30% 16%;
-    --muted-foreground: 142 10% 65%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 142 30% 16%;
-    --accent-foreground: 0 0% 93%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 93%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 142 30% 25%;
-    --input: 142 30% 25%;
-    --ring: 142 76% 36%;
-
-    --sidebar-background: 142 38% 12%;
-    --sidebar-foreground: 0 0% 93%;
-    --sidebar-primary: 142 76% 36%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 142 30% 18%;
-    --sidebar-accent-foreground: 0 0% 93%;
-    --sidebar-border: 142 30% 25%;
-    --sidebar-ring: 142 76% 36%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -91,27 +97,5 @@
 
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* Gradientes verdes amazônicos para cartões e destaques */
-  .amazon-gradient-light {
-    @apply bg-gradient-to-br from-[#e6f5e6] via-[#c5e8c5] to-[#a3d9a3];
-  }
-
-  .amazon-gradient-deep {
-    @apply bg-gradient-to-br from-[#2d8659] via-[#1e5c3a] to-[#143927];
-  }
-
-  .eco-card {
-    @apply shadow-md border border-border bg-card text-card-foreground rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300;
-  }
-
-  .eco-card-accent {
-    @apply border-l-4 border-l-primary;
-  }
-
-  .rainforest-pattern {
-    background-color: #f0f8f0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.374zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828zM11.03 0L7.372 3.657l1.415 1.414L13.857 0H11.03zm32.284 0L39.9 3.414 42.327 0h-2.827l-5.656 5.657 1.414 1.414L40 2.328l2.83 2.83 1.414-1.414L41.414 0h-2.827l-.1.1L44.9 0h-2.827l-5.657 5.657 1.414 1.414L42.328 2.57 40 4.9v-2.83L37.414 0h-2.827l-5.657 5.657 1.414 1.414L35.9 1.6 33.327 0h-2.827L25 5.657 26.414 7.07l2.743-2.742 2.83 2.83 1.414-1.414L30 2.327 27.414 0h-2.827l-5.657 5.657 1.414 1.414L26 1.514 20.343 7.17l1.414 1.415L30 0h-2.827L20.344 7.17l1.414 1.415 2.743-2.743 2.83 2.83 1.414-1.415-2.828-2.828-5.657 5.657 1.414 1.414L29.9 1.414 27.328 0h-2.827l-5.657 5.657 1.414 1.414L25.9 1.414 23.327 0h-2.827L15 5.657 16.414 7.07l2.743-2.742 2.83 2.83 1.414-1.414L20 2.327 17.414 0h-2.827l-5.657 5.657 1.414 1.414L16 1.514 10.343 7.17l1.414 1.415L20 0h-2.827L10.344 7.17l1.414 1.415 2.743-2.743 2.83 2.83 1.414-1.415-2.828-2.828-5.657 5.657 1.414 1.414L19.9 1.414 17.328 0h-2.827l-5.657 5.657 1.414 1.414L15.9 1.414 13.327 0h-2.827L5 5.657 6.414 7.07l2.743-2.742 2.83 2.83 1.414-1.414L10 2.327 7.414 0H4.587L0 4.585l1.414 1.414L6 1.415l-4.586 4.585L2.83 7.413 7.414 2.83l2.83 2.83 1.414-1.415L8.9 1.587l-4.3 4.3 1.414 1.414L10.6 2.884 7.414 0H4.587L0 4.585l1.414 1.414L6 1.415 3.414 0H.587l4.3 4.3 1.414-1.415L1.415 0H.587l5.657 5.657 1.414-1.415L2.07 0H.588L5.9 5.314l1.414-1.415L2.815 0H.587L6.3 5.657l1.414-1.415L4.957 0H4.7l4.243 4.242L10.35.59 9.243 0h-2.83L0 6.414l1.414 1.414L8.9 0H5.372l-4.3 4.3 1.414 1.414L10.6 0H7.414l-4.3 4.3 1.414 1.414L10.6 0H7.414l-4.3 4.3 1.414 1.414L8.9 1.414 5.657 4.657l1.414 1.414L13.9 0h-2.827l-5.657 5.657 1.414 1.414L13.9 0h-2.827L5.657 5.657 7.07 7.07 14.9 0h-2.827L5.657 5.657 7.07 7.07 10.757 3.5l3.53 3.4 1.415-1.414-3.53-3.4L15.9 0h-2.827L5.657 5.657 7.07 7.07 12.657 1.6 10.343 0H7.516l-5.657 5.657 1.414 1.414L9.9 0H7.072L1.415 5.657 2.83 7.07 9.9 0H7.072L1.415 5.657 2.83 7.07l4.242-4.242L10.9 0H8.073l-5.657 5.657 1.414 1.414L9.9 0H7.072L1.415 5.657 2.83 7.07l4.242-4.242L10.9 0H8.073l-4.243 4.243L9.9 0H8.342l.457.456L10.8 0H8.9l-1.485 1.5L10.9 0H8.9l-.9.9L10.9 0H8.9l-.576.576L10.9 0H8.9L7.414 1.485 10.9 0H8.9L6.414 2.485 10.9 0H8.9L4.900 4 10.9 0H8.9l-6 6 1.414 1.414L10.9 0H8.9L2.9 6 4.314 7.414 10.9 0H8.9l-2.485 2.485 1.414 1.414.657-.656L10.9 0H8.9L5.657 3.243l1.414 1.414L10.9 0H8.9L5.657 3.243l1.414 1.414L9.9 1.828 8.071 0H6.9l3 3 1.414-1.414L8.9 0H7.07l-.57.572L10.9 0H8.9l-1.485 1.500L10.9 0H8.9l-1.485 1.500L10.9 0H8.9L5.657 3.243l1.414 1.414L10.9 0H8.9L5.657 3.243l1.414 1.414L10.9 0H8.9L5.657 3.243l1.414 1.414L10.9 0H8.9L4.900 4l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0H8.9L2.9 6l1.414 1.414L10.9 0' fill='%2396c896' fill-opacity='0.15' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
 }

@@ -52,9 +52,8 @@ export const getResponsibleData = (monitoringItems: MonitoringItem[]) => {
     }
   });
   
-  // Ordenar por número de monitoramentos (decrescente) e limitar a 5
+  // Limitar a 5 responsáveis para não sobrecarregar o gráfico
   return Object.keys(responsibles)
-    .sort((a, b) => responsibles[b].count - responsibles[a].count)
     .slice(0, 5)
     .map(responsible => ({
       responsible,
@@ -64,60 +63,17 @@ export const getResponsibleData = (monitoringItems: MonitoringItem[]) => {
 };
 
 export const getRadarData = (monitoringItems: MonitoringItem[]) => {
-  const sourceTypes = ['governo', 'indicadores', 'legislacao', 'api', 'mídia'];
+  const sourceTypes = ['governo', 'indicadores', 'legislacao', 'api'];
   
   return sourceTypes.map(type => {
-    const count = monitoringItems.filter(item => item.category.toLowerCase().includes(type)).length;
+    const count = monitoringItems.filter(item => item.category === type).length;
     return {
-      subject: type.charAt(0).toUpperCase() + type.slice(1),
+      subject: type,
       A: count,
       fullMark: Math.max(10, monitoringItems.length)
     };
   });
 };
 
-// Função para gerar paletas de cores amazônicas
-export const generateAmazonGradient = (index: number) => {
-  const gradients = [
-    'linear-gradient(135deg, #2E8B57 0%, #3CB371 100%)',  // Verde floresta para verde médio
-    'linear-gradient(135deg, #006400 0%, #228B22 100%)',  // Verde escuro para verde floresta
-    'linear-gradient(135deg, #556B2F 0%, #6B8E23 100%)',  // Verde oliva escuro para verde oliva
-    'linear-gradient(135deg, #8FBC8F 0%, #98FB98 100%)',  // Verde mar escuro para verde menta claro
-    'linear-gradient(135deg, #32CD32 0%, #7CFC00 100%)'   // Verde lima para verde gramado
-  ];
-  
-  return gradients[index % gradients.length];
-};
-
-// Função para criar KPIs com dados do monitoramento
-export const generateKPIs = (monitoringItems: MonitoringItem[]) => {
-  return [
-    {
-      title: 'Total de Monitoramentos',
-      value: monitoringItems.length,
-      change: '+5%',
-      positive: true
-    },
-    {
-      title: 'Fontes Governamentais',
-      value: monitoringItems.filter(item => 
-        item.category.toLowerCase().includes('governo')).length,
-      change: '+2%',
-      positive: true
-    },
-    {
-      title: 'Frequência Diária',
-      value: monitoringItems.filter(item => 
-        item.frequency.toLowerCase().includes('diário') || 
-        item.frequency.toLowerCase().includes('diario')).length,
-      change: '+8%',
-      positive: true
-    },
-    {
-      title: 'APIs Conectadas',
-      value: monitoringItems.filter(item => item.api_url).length,
-      change: '-3%',
-      positive: false
-    }
-  ];
-};
+// Cores para os gráficos
+export const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];

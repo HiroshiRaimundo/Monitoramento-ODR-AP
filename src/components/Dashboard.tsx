@@ -1,9 +1,14 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
+import AnalysisTools from "./AnalysisTools";
 import DashboardControls from "./dashboard/DashboardControls";
-import DashboardTabs from "./dashboard/DashboardTabs";
-import ChartsLayout from "./dashboard/ChartsLayout";
+import StudiesChart from "./dashboard/StudiesChart";
+import CategoryChart from "./dashboard/CategoryChart";
+import FrequencyChart from "./dashboard/FrequencyChart";
+import ResearchersChart from "./dashboard/ResearchersChart";
+import SourceTypeChart from "./dashboard/SourceTypeChart";
+import SystemUpdatesChart from "./dashboard/SystemUpdatesChart";
 import { 
   getCategoryData,
   getFrequencyData,
@@ -33,27 +38,14 @@ const Dashboard: React.FC<DashboardProps> = ({
   isAuthenticated,
   monitoringItems
 }) => {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  
-  // Preparar dados para gráficos baseados nos monitoringItems
+  // Preparar dados para gráficos adicionais baseados nos monitoringItems
   const categoryData = useMemo(() => getCategoryData(monitoringItems), [monitoringItems]);
   const frequencyData = useMemo(() => getFrequencyData(monitoringItems), [monitoringItems]);
   const responsibleData = useMemo(() => getResponsibleData(monitoringItems), [monitoringItems]);
   const radarData = useMemo(() => getRadarData(monitoringItems), [monitoringItems]);
 
-  // Dashboard content with charts
-  const dashboardContent = (
-    <ChartsLayout 
-      data={data}
-      categoryData={categoryData}
-      frequencyData={frequencyData}
-      responsibleData={responsibleData}
-      radarData={radarData}
-    />
-  );
-
   return (
-    <div className="space-y-6">
+    <div className="grid gap-6">
       {/* Filtros e Controles */}
       <DashboardControls 
         timeRange={timeRange}
@@ -63,17 +55,32 @@ const Dashboard: React.FC<DashboardProps> = ({
         totalItems={monitoringItems.length}
       />
 
-      {/* Novas funcionalidades integradas - Somente para usuários autenticados */}
-      {isAuthenticated ? (
-        <DashboardTabs 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          dashboardContent={dashboardContent}
-        />
-      ) : (
-        /* Se não estiver autenticado, mostrar apenas o dashboard */
-        dashboardContent
-      )}
+      {/* Gráficos Principais - Layout em Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Evolução de Estudos - Gráfico de Linha */}
+        <StudiesChart data={data} />
+
+        {/* Distribuição por Categoria - Gráfico de Pizza */}
+        <CategoryChart data={categoryData} />
+
+        {/* Frequência de Atualização - Gráfico de Barras */}
+        <FrequencyChart data={frequencyData} />
+      </div>
+
+      {/* Gráficos Secundários - 2 em uma linha */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Distribuição por Responsável - Gráfico de Barras */}
+        <ResearchersChart data={responsibleData} />
+
+        {/* Cobertura por Tipo - Gráfico Radar */}
+        <SourceTypeChart data={radarData} />
+      </div>
+
+      {/* Atualizações do Sistema - Gráfico de Área */}
+      <SystemUpdatesChart data={data} />
+
+      {/* Ferramentas de Análise - apenas para administradores */}
+      {isAuthenticated && <AnalysisTools items={monitoringItems} />}
     </div>
   );
 };
