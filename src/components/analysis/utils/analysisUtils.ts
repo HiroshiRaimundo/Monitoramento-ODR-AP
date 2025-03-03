@@ -23,11 +23,11 @@ export const downloadScript = (item: MonitoringItem, type: string, templates: Re
     case 'jupyter':
       filename = `${item.name.replace(/ /g, "_")}_notebook.ipynb`;
       content = templates.jupyter(item.url, item.name);
-      fileType = 'application/json';
+      fileType = 'text/plain';
       break;
     case 'powerbi':
       filename = `${item.name.replace(/ /g, "_")}_powerbi.pq`;
-      content = templates.powerbi(item.name);
+      content = templates.powerbi(item.url, item.name);
       fileType = 'text/plain';
       break;
     default:

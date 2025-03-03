@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Download, Filter, Leaf } from "lucide-react";
+import { Calendar, Download, Filter } from "lucide-react";
 
 interface DashboardControlsProps {
   timeRange: string;
@@ -23,8 +23,7 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
     <Card className="eco-card-accent amazon-gradient-light">
       <CardHeader className="pb-0">
         <CardTitle className="flex items-center gap-2 text-primary-foreground">
-          <Leaf className="h-5 w-5 text-primary" />
-          Monitoramento da Amazônia
+          Sistema de Monitoramento Regional
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col sm:flex-row gap-4 pt-4">

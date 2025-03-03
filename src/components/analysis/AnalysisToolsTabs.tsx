@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AutomatedAnalysis from "./AutomatedAnalysis";
@@ -30,15 +30,15 @@ const AnalysisToolsTabs: React.FC<AnalysisToolsTabsProps> = ({ items }) => {
   return (
     <Card className="mt-6 bg-white/95">
       <CardHeader className="border-b border-green-100">
-        <CardTitle className="text-green-800">Análise de Dados Automatizada</CardTitle>
+        <CardTitle className="text-green-800">Análise de Dados e Relatórios</CardTitle>
         <CardDescription>
-          Ferramentas para processamento e visualização de dados
+          Gere visualizações e relatórios a partir dos seus monitoramentos
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4 bg-green-50">
-            <TabsTrigger value="auto">Análise Automática</TabsTrigger>
+            <TabsTrigger value="auto">Visualizações Automáticas</TabsTrigger>
             <TabsTrigger value="pandas">Scripts Python</TabsTrigger>
             <TabsTrigger value="jupyter">Jupyter Notebook</TabsTrigger>
             <TabsTrigger value="powerbi">Power BI</TabsTrigger>

@@ -88,23 +88,25 @@ const TabContent: React.FC<TabContentProps> = ({
               <TabsList className="grid grid-cols-3 w-full">
                 <TabsTrigger value="monitoring">Monitoramento</TabsTrigger>
                 <TabsTrigger value="research">Pesquisa</TabsTrigger>
-                <TabsTrigger value="analysis">Análise Automática</TabsTrigger>
+                <TabsTrigger value="analysis">Análise e Relatórios</TabsTrigger>
               </TabsList>
 
               {/* Aba de Monitoramento */}
               <TabsContent value="monitoring">
-                <MonitoringForm 
-                  form={monitoringForm} 
-                  onSubmit={handleAddMonitoring} 
-                />
-                <MonitoringList 
-                  items={monitoringItems} 
-                  onDelete={handleDeleteMonitoring} 
-                  isLoading={isLoading}
-                  uniqueResponsibles={uniqueResponsibles}
-                  responsibleFilter={responsibleFilter}
-                  onFilterChange={setResponsibleFilter}
-                />
+                <div className="space-y-6">
+                  <MonitoringForm 
+                    form={monitoringForm} 
+                    onSubmit={handleAddMonitoring} 
+                  />
+                  <MonitoringList 
+                    items={monitoringItems} 
+                    onDelete={handleDeleteMonitoring} 
+                    isLoading={isLoading}
+                    uniqueResponsibles={uniqueResponsibles}
+                    responsibleFilter={responsibleFilter}
+                    onFilterChange={setResponsibleFilter}
+                  />
+                </div>
               </TabsContent>
 
               {/* Aba de Pesquisa */}
@@ -122,7 +124,7 @@ const TabContent: React.FC<TabContentProps> = ({
                 </div>
               </TabsContent>
 
-              {/* Nova aba de Análise Automática */}
+              {/* Aba de Análise e Relatórios simplificada */}
               <TabsContent value="analysis">
                 <AnalysisToolsTabs items={monitoringItems} />
               </TabsContent>
