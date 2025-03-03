@@ -9,6 +9,7 @@ import ResearchList from "@/components/ResearchList";
 import MapView from "@/components/MapView";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ResearchStudy } from "@/types/research";
+import AnalysisToolsTabs from "@/components/analysis/AnalysisToolsTabs";
 
 interface TabContentProps {
   isAuthenticated: boolean;
@@ -57,10 +58,8 @@ const TabContent: React.FC<TabContentProps> = ({
 }) => {
   return (
     <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full">
+      <TabsList className="grid grid-cols-2 w-full">
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-        {isAuthenticated && <TabsTrigger value="monitoring">Monitoramento</TabsTrigger>}
-        {isAuthenticated && <TabsTrigger value="research">Pesquisa</TabsTrigger>}
         <TabsTrigger value="map">Mapa Interativo</TabsTrigger>
       </TabsList>
 
@@ -76,45 +75,61 @@ const TabContent: React.FC<TabContentProps> = ({
         />
       </TabsContent>
 
-      {/* Aba de Monitoramento */}
-      {isAuthenticated && (
-        <TabsContent value="monitoring">
-          <MonitoringForm 
-            form={monitoringForm} 
-            onSubmit={handleAddMonitoring} 
-          />
-          <MonitoringList 
-            items={monitoringItems} 
-            onDelete={handleDeleteMonitoring} 
-            isLoading={isLoading}
-            uniqueResponsibles={uniqueResponsibles}
-            responsibleFilter={responsibleFilter}
-            onFilterChange={setResponsibleFilter}
-          />
-        </TabsContent>
-      )}
-
-      {/* Aba de Pesquisa */}
-      {isAuthenticated && (
-        <TabsContent value="research">
-          <div className="grid gap-6 md:grid-cols-2">
-            <ResearchForm 
-              form={studyForm} 
-              onSubmit={handleStudySubmit} 
-            />
-            <ResearchList 
-              studies={studies} 
-              onDelete={handleDeleteStudy}
-              isLoading={isLoading}
-            />
-          </div>
-        </TabsContent>
-      )}
-
       {/* Aba do Mapa */}
       <TabsContent value="map">
         <MapView studies={studies} />
       </TabsContent>
+
+      {/* Abas adicionais somente visíveis para administradores */}
+      {isAuthenticated && (
+        <>
+          <div className="mt-8 border-t pt-4">
+            <Tabs defaultValue="monitoring" className="w-full">
+              <TabsList className="grid grid-cols-3 w-full">
+                <TabsTrigger value="monitoring">Monitoramento</TabsTrigger>
+                <TabsTrigger value="research">Pesquisa</TabsTrigger>
+                <TabsTrigger value="analysis">Análise Automática</TabsTrigger>
+              </TabsList>
+
+              {/* Aba de Monitoramento */}
+              <TabsContent value="monitoring">
+                <MonitoringForm 
+                  form={monitoringForm} 
+                  onSubmit={handleAddMonitoring} 
+                />
+                <MonitoringList 
+                  items={monitoringItems} 
+                  onDelete={handleDeleteMonitoring} 
+                  isLoading={isLoading}
+                  uniqueResponsibles={uniqueResponsibles}
+                  responsibleFilter={responsibleFilter}
+                  onFilterChange={setResponsibleFilter}
+                />
+              </TabsContent>
+
+              {/* Aba de Pesquisa */}
+              <TabsContent value="research">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <ResearchForm 
+                    form={studyForm} 
+                    onSubmit={handleStudySubmit} 
+                  />
+                  <ResearchList 
+                    studies={studies} 
+                    onDelete={handleDeleteStudy}
+                    isLoading={isLoading}
+                  />
+                </div>
+              </TabsContent>
+
+              {/* Nova aba de Análise Automática */}
+              <TabsContent value="analysis">
+                <AnalysisToolsTabs items={monitoringItems} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </>
+      )}
     </Tabs>
   );
 };

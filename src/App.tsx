@@ -17,7 +17,7 @@ function App() {
     <BrowserRouter>
       <ThemeProvider defaultTheme="light" storageKey="amazon-monitor-theme">
         <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen bg-gradient-to-b from-background to-secondary/50">
+          <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100/50">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/ajuda" element={<Help />} />
