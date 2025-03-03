@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer, LabelList
 } from 'recharts';
+import { AMAZON_COLORS } from "./CategoryChart";
 
 interface ResearchersChartProps {
   data: Array<{
@@ -17,10 +18,10 @@ interface ResearchersChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-2 border rounded shadow-md">
-        <p className="font-medium">{payload[0].payload.responsible}</p>
-        <p className="text-sm">Instituição: {payload[0].payload.institution}</p>
-        <p className="text-sm">Monitoramentos: {payload[0].payload.monitoramentos}</p>
+      <div className="bg-white p-3 border border-primary/20 rounded shadow-md">
+        <p className="font-medium text-primary">{payload[0].payload.responsible}</p>
+        <p className="text-sm">Instituição: <span className="font-medium">{payload[0].payload.institution}</span></p>
+        <p className="text-sm">Monitoramentos: <span className="font-medium">{payload[0].payload.monitoramentos}</span></p>
       </div>
     );
   }
@@ -30,9 +31,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Top 5 Pesquisadores</CardTitle>
+    <Card className="eco-card">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-primary-foreground bg-primary py-2 px-4 rounded-md inline-block text-lg">
+          Top 5 Pesquisadores
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
@@ -42,12 +45,14 @@ const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
               layout="vertical"
               margin={{ top: 20, right: 30, left: 120, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E1E1E1" horizontal={true} vertical={false} />
+              <XAxis type="number" tick={{ fill: "#4b5563" }} axisLine={{ stroke: "#9CA3AF" }} />
               <YAxis 
                 dataKey="responsible" 
                 type="category" 
                 width={120}
+                tick={{ fill: "#4b5563" }}
+                axisLine={{ stroke: "#9CA3AF" }}
                 tickFormatter={(value) => {
                   // Formatação para exibir o responsável com a instituição abreviada
                   const item = data.find(d => d.responsible === value);
@@ -57,9 +62,13 @@ const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
                 }}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="monitoramentos" fill="#FFBB28">
-                <LabelList dataKey="monitoramentos" position="right" />
+              <Legend wrapperStyle={{ paddingTop: "10px" }} />
+              <Bar 
+                dataKey="monitoramentos" 
+                fill={AMAZON_COLORS[3]}
+                radius={[0, 4, 4, 0]}
+              >
+                <LabelList dataKey="monitoramentos" position="right" fill="#4b5563" />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
