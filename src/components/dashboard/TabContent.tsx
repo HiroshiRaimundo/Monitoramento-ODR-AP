@@ -60,7 +60,7 @@ const TabContent: React.FC<TabContentProps> = ({
     <Tabs defaultValue="publicDashboard" className="w-full">
       <TabsList className="grid grid-cols-4 w-full bg-forest-50 p-1">
         <TabsTrigger value="publicDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-          Dashboard Público
+          Monitoramento
         </TabsTrigger>
         {isAuthenticated && (
           <TabsTrigger value="internalDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
@@ -77,7 +77,7 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsTrigger>
       </TabsList>
 
-      {/* Aba do Dashboard Público */}
+      {/* Aba do Dashboard Público (agora chamada de "Monitoramento") */}
       <TabsContent value="publicDashboard">
         <PublicDashboard 
           data={initialMockData}

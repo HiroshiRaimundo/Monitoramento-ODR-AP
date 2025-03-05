@@ -27,12 +27,12 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
   isAuthenticated,
   studies
 }) => {
-  // Simples categoria para estudos (apenas demonstrativo)
+  // Definir categorias manualmente (já que ResearchStudy não tem propriedade category)
   const studyCategories = [
-    { name: "Biodiversidade", value: studies.filter(s => s.category === "biodiversity").length || 3 },
-    { name: "Clima", value: studies.filter(s => s.category === "climate").length || 5 },
-    { name: "Socioambiental", value: studies.filter(s => s.category === "social").length || 7 },
-    { name: "Econômico", value: studies.filter(s => s.category === "economic").length || 4 }
+    { name: "Biodiversidade", value: 3 },
+    { name: "Clima", value: 5 },
+    { name: "Socioambiental", value: 7 },
+    { name: "Econômico", value: 4 }
   ];
 
   return (
@@ -42,17 +42,17 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
           <div className="flex items-center gap-2">
             <FileBarChart size={24} className="text-forest-600" />
-            <CardTitle className="text-forest-700 font-poppins text-xl">Dashboard Público</CardTitle>
+            <CardTitle className="text-forest-700 font-poppins text-xl">Monitoramento</CardTitle>
           </div>
           <CardDescription className="text-forest-600">
-            Visualização de dados públicos sobre estudos na região amazônica
+            Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex-1">
               <p className="text-forest-700 mb-2">
-                Bem-vindo ao dashboard público do Sistema de Monitoramento da Amazônia. Aqui você encontra informações sobre os estudos e pesquisas realizados na região.
+                Visualização de dados públicos e pesquisas da nossa região amazônica
               </p>
               <div className="stats flex flex-wrap gap-4 font-poppins">
                 <div className="stat bg-forest-50 p-4 rounded-lg shadow-sm">

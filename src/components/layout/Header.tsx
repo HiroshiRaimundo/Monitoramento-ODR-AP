@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Link to="/help">
+                <Link to="/ajuda">
                   <Button variant="outline" size="sm" className="flex items-center gap-2 border-forest-200 hover:bg-forest-50 hover:text-forest-700">
                     <HelpCircle size={16} />
                     <span className="hidden md:inline">Ajuda</span>
