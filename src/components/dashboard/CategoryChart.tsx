@@ -10,6 +10,7 @@ interface CategoryChartProps {
     name: string;
     value: number;
   }>;
+  title?: string;
 }
 
 // Enhanced color palette with forest greens and complementary colors
@@ -19,11 +20,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 border border-forest-200 rounded-md shadow-lg">
-        <p className="font-medium text-forest-700">{payload[0].name}</p>
-        <p className="text-forest-600">
+        <p className="font-medium text-forest-700 font-poppins">{payload[0].name}</p>
+        <p className="text-forest-600 font-poppins">
           <span className="font-semibold">Quantidade:</span> {payload[0].value}
         </p>
-        <p className="text-forest-600">
+        <p className="text-forest-600 font-poppins">
           <span className="font-semibold">Porcentagem:</span> {(payload[0].percent * 100).toFixed(1)}%
         </p>
       </div>
@@ -33,11 +34,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const CategoryChart: React.FC<CategoryChartProps> = ({ data }) => {
+const CategoryChart: React.FC<CategoryChartProps> = ({ data, title = "Monitoramentos por Categoria" }) => {
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300">
       <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
-        <CardTitle className="text-forest-700">Monitoramentos por Categoria</CardTitle>
+        <CardTitle className="text-forest-700 font-poppins">{title}</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-[300px]">
@@ -69,7 +70,8 @@ const CategoryChart: React.FC<CategoryChartProps> = ({ data }) => {
                 verticalAlign="bottom"
                 align="center"
                 wrapperStyle={{
-                  paddingTop: '20px'
+                  paddingTop: '20px',
+                  fontFamily: 'Poppins, sans-serif'
                 }}
               />
             </PieChart>

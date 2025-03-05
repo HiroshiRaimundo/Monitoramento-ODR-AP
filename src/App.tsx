@@ -25,7 +25,10 @@ function App() {
     <BrowserRouter>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <QueryClientProvider client={queryClient}>
-          <div className="min-h-screen bg-gradient-to-br from-white to-forest-50/30">
+          <div className="min-h-screen bg-gradient-to-br from-white to-forest-50/30 font-poppins">
+            {/* Importar fonte Poppins */}
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" />
+            
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/ajuda" element={<Help />} />

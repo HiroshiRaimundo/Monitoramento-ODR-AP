@@ -19,7 +19,7 @@ const StudiesChart: React.FC<StudiesChartProps> = ({ data }) => {
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300">
       <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
-        <CardTitle className="text-forest-700">Evolução de Estudos</CardTitle>
+        <CardTitle className="text-forest-700 font-poppins">Evolução de Estudos</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-[300px]">
@@ -34,11 +34,11 @@ const StudiesChart: React.FC<StudiesChartProps> = ({ data }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="name" 
-                tick={{ fill: '#333' }} 
+                tick={{ fill: '#333', fontFamily: 'Poppins, sans-serif' }} 
                 tickLine={{ stroke: '#333' }}
               />
               <YAxis 
-                tick={{ fill: '#333' }} 
+                tick={{ fill: '#333', fontFamily: 'Poppins, sans-serif' }} 
                 tickLine={{ stroke: '#333' }}
               />
               <Tooltip 
@@ -46,17 +46,20 @@ const StudiesChart: React.FC<StudiesChartProps> = ({ data }) => {
                   backgroundColor: 'white', 
                   borderColor: '#045424',
                   borderRadius: '8px',
-                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                  fontFamily: 'Poppins, sans-serif'
                 }}
               />
               <Legend 
                 wrapperStyle={{ 
-                  paddingTop: '10px'
+                  paddingTop: '10px',
+                  fontFamily: 'Poppins, sans-serif'
                 }}
               />
               <Area 
                 type="monotone" 
                 dataKey="estudos" 
+                name="Estudos"
                 stroke="#045424" 
                 fillOpacity={1}
                 fill="url(#colorEstudos)" 

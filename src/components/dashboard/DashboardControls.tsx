@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Calendar, Database } from "lucide-react";
+import { Download, Calendar, Database, Filter } from "lucide-react";
 
 interface DashboardControlsProps {
   timeRange: string;
@@ -10,6 +10,7 @@ interface DashboardControlsProps {
   handleExport: () => void;
   isAuthenticated: boolean;
   totalItems: number;
+  isPublic?: boolean;
 }
 
 const DashboardControls: React.FC<DashboardControlsProps> = ({ 
@@ -17,12 +18,16 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
   setTimeRange, 
   handleExport, 
   isAuthenticated,
-  totalItems 
+  totalItems,
+  isPublic = false
 }) => {
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md">
-      <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
-        <CardTitle className="text-forest-700">Controles do Dashboard</CardTitle>
+      <CardHeader className="bg-gradient-to-r from-forest-50 to-white py-3">
+        <div className="flex items-center gap-2">
+          <Filter size={18} className="text-forest-600" />
+          <CardTitle className="text-forest-700 font-poppins text-base">Filtros e Controles</CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="flex flex-col sm:flex-row gap-4 p-4">
         <div className="flex items-center gap-2">
@@ -30,7 +35,7 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
           <label htmlFor="timeRange" className="text-sm font-medium text-forest-700 whitespace-nowrap">Período:</label>
           <select 
             id="timeRange"
-            className="rounded-md border border-forest-200 p-2 bg-white text-forest-800 focus:ring-forest-500 focus:border-forest-500"
+            className="rounded-md border border-forest-200 p-2 bg-white text-forest-800 focus:ring-forest-500 focus:border-forest-500 font-poppins"
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
           >
@@ -44,15 +49,15 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
         <div className="flex items-center justify-between flex-1">
           <div className="flex items-center gap-2">
             <Database size={18} className="text-forest-600" />
-            <span className="text-sm text-forest-700">
-              Total de monitoramentos: <strong className="text-forest-800">{totalItems}</strong>
+            <span className="text-sm text-forest-700 font-poppins">
+              Total de {isPublic ? "estudos" : "monitoramentos"}: <strong className="text-forest-800">{totalItems}</strong>
             </span>
           </div>
           
-          {isAuthenticated && (
+          {isAuthenticated && !isPublic && (
             <Button 
               onClick={handleExport} 
-              className="bg-forest-600 hover:bg-forest-700 text-white flex items-center gap-2"
+              className="bg-forest-600 hover:bg-forest-700 text-white flex items-center gap-2 font-poppins"
             >
               <Download size={18} />
               Exportar Dados

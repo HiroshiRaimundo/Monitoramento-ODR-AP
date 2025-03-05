@@ -1,7 +1,8 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Dashboard from "@/components/Dashboard";
+import PublicDashboard from "@/components/dashboard/PublicDashboard";
+import InternalDashboard from "@/components/dashboard/InternalDashboard";
 import MonitoringForm from "@/components/monitoring/MonitoringForm";
 import MonitoringList from "@/components/MonitoringList";
 import ResearchForm from "@/components/ResearchForm";
@@ -56,57 +57,78 @@ const TabContent: React.FC<TabContentProps> = ({
   setResponsibleFilter = () => {}
 }) => {
   return (
-    <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full">
-        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-        {isAuthenticated && <TabsTrigger value="monitoring">Monitoramento</TabsTrigger>}
-        {isAuthenticated && <TabsTrigger value="research">Pesquisa</TabsTrigger>}
-        <TabsTrigger value="map">Mapa Interativo</TabsTrigger>
+    <Tabs defaultValue="publicDashboard" className="w-full">
+      <TabsList className="grid grid-cols-4 w-full bg-forest-50 p-1">
+        <TabsTrigger value="publicDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          Dashboard Público
+        </TabsTrigger>
+        {isAuthenticated && (
+          <TabsTrigger value="internalDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Dashboard Interno
+          </TabsTrigger>
+        )}
+        {isAuthenticated && (
+          <TabsTrigger value="management" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Gerenciamento
+          </TabsTrigger>
+        )}
+        <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          Mapa Interativo
+        </TabsTrigger>
       </TabsList>
 
-      {/* Aba do Dashboard */}
-      <TabsContent value="dashboard">
-        <Dashboard 
+      {/* Aba do Dashboard Público */}
+      <TabsContent value="publicDashboard">
+        <PublicDashboard 
           data={initialMockData}
           timeRange={timeRange}
           setTimeRange={setTimeRange}
-          handleExport={handleExport}
           isAuthenticated={isAuthenticated}
-          monitoringItems={monitoringItems}
+          studies={studies}
         />
       </TabsContent>
 
-      {/* Aba de Monitoramento */}
+      {/* Aba do Dashboard Interno (apenas para usuários autenticados) */}
       {isAuthenticated && (
-        <TabsContent value="monitoring">
-          <MonitoringForm 
-            form={monitoringForm} 
-            onSubmit={handleAddMonitoring} 
-          />
-          <MonitoringList 
-            items={monitoringItems} 
-            onDelete={handleDeleteMonitoring} 
-            isLoading={isLoading}
-            uniqueResponsibles={uniqueResponsibles}
-            responsibleFilter={responsibleFilter}
-            onFilterChange={setResponsibleFilter}
+        <TabsContent value="internalDashboard">
+          <InternalDashboard 
+            data={initialMockData}
+            timeRange={timeRange}
+            setTimeRange={setTimeRange}
+            handleExport={handleExport}
+            isAuthenticated={isAuthenticated}
+            monitoringItems={monitoringItems}
           />
         </TabsContent>
       )}
 
-      {/* Aba de Pesquisa */}
+      {/* Aba de Gerenciamento (combina Monitoramento e Pesquisa) */}
       {isAuthenticated && (
-        <TabsContent value="research">
-          <div className="grid gap-6 md:grid-cols-2">
-            <ResearchForm 
-              form={studyForm} 
-              onSubmit={handleStudySubmit} 
+        <TabsContent value="management">
+          <div className="grid gap-6">
+            <MonitoringForm 
+              form={monitoringForm} 
+              onSubmit={handleAddMonitoring} 
             />
-            <ResearchList 
-              studies={studies} 
-              onDelete={handleDeleteStudy}
+            <MonitoringList 
+              items={monitoringItems} 
+              onDelete={handleDeleteMonitoring} 
               isLoading={isLoading}
+              uniqueResponsibles={uniqueResponsibles}
+              responsibleFilter={responsibleFilter}
+              onFilterChange={setResponsibleFilter}
             />
+            <div className="grid gap-6 md:grid-cols-2 mt-6">
+              <ResearchForm 
+                form={studyForm} 
+                onSubmit={handleStudySubmit} 
+              />
+              <ResearchList 
+                studies={studies} 
+                onDelete={handleDeleteStudy}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
         </TabsContent>
       )}
