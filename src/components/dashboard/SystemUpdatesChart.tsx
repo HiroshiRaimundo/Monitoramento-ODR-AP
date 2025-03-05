@@ -9,7 +9,7 @@ import {
 interface SystemUpdatesChartProps {
   data: Array<{
     name: string;
-    atualizacoes: number;
+    updates: number;
   }>;
 }
 
@@ -29,6 +29,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const SystemUpdatesChart: React.FC<SystemUpdatesChartProps> = ({ data }) => {
+  // Transform data to match the expected format
+  const formattedData = data.map(item => ({
+    name: item.name,
+    atualizacoes: item.updates
+  }));
+
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300">
       <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
@@ -38,7 +44,7 @@ const SystemUpdatesChart: React.FC<SystemUpdatesChartProps> = ({ data }) => {
         <div className="h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
-              data={data} 
+              data={formattedData} 
               margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
             >
               <defs>
