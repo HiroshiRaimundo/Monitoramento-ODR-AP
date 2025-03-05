@@ -10,20 +10,30 @@ import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import Documentation from "./pages/Documentation";
 
-const queryClient = new QueryClient();
+// Create QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
     <BrowserRouter>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <QueryClientProvider client={queryClient}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/ajuda" element={<Help />} />
-            <Route path="/documentacao" element={<Documentation />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
+          <div className="min-h-screen bg-gradient-to-br from-white to-forest-50/30">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/ajuda" element={<Help />} />
+              <Route path="/documentacao" element={<Documentation />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+          </div>
         </QueryClientProvider>
       </ThemeProvider>
     </BrowserRouter>

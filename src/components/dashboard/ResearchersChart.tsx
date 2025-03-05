@@ -17,10 +17,14 @@ interface ResearchersChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-2 border rounded shadow-md">
-        <p className="font-medium">{payload[0].payload.responsible}</p>
-        <p className="text-sm">Instituição: {payload[0].payload.institution}</p>
-        <p className="text-sm">Monitoramentos: {payload[0].payload.monitoramentos}</p>
+      <div className="bg-white p-3 border border-forest-200 rounded-md shadow-lg">
+        <p className="font-medium text-forest-700">{payload[0].payload.responsible}</p>
+        <p className="text-forest-600">
+          <span className="font-semibold">Instituição:</span> {payload[0].payload.institution}
+        </p>
+        <p className="text-forest-600">
+          <span className="font-semibold">Monitoramentos:</span> {payload[0].payload.monitoramentos}
+        </p>
       </div>
     );
   }
@@ -30,24 +34,32 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Top 5 Pesquisadores</CardTitle>
+    <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300">
+      <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
+        <CardTitle className="text-forest-700">Top 5 Pesquisadores</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4">
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={data}
               layout="vertical"
-              margin={{ top: 20, right: 30, left: 120, bottom: 5 }}
+              margin={{ top: 20, right: 50, left: 120, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
+              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+              <XAxis 
+                type="number" 
+                tick={{ fill: '#333' }}
+                tickLine={{ stroke: '#333' }}
+                axisLine={{ stroke: '#333' }}
+              />
               <YAxis 
                 dataKey="responsible" 
                 type="category" 
                 width={120}
+                tick={{ fill: '#333' }}
+                tickLine={{ stroke: '#333' }}
+                axisLine={{ stroke: '#333' }}
                 tickFormatter={(value) => {
                   // Formatação para exibir o responsável com a instituição abreviada
                   const item = data.find(d => d.responsible === value);
@@ -57,9 +69,19 @@ const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
                 }}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="monitoramentos" fill="#FFBB28">
-                <LabelList dataKey="monitoramentos" position="right" />
+              <Legend wrapperStyle={{ paddingTop: '10px' }} />
+              <Bar 
+                dataKey="monitoramentos" 
+                fill="#045424"
+                radius={[0, 4, 4, 0]}
+                barSize={30}
+              >
+                <LabelList 
+                  dataKey="monitoramentos" 
+                  position="right" 
+                  fill="#333"
+                  style={{ fontWeight: 'bold' }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
