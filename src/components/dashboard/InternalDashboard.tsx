@@ -42,40 +42,40 @@ const recentUpdates = [
 
 // Dados fictícios para os tipos de fonte
 const sourceTypeData = [
-  { name: "Portal Gov", valor: 42 },
-  { name: "Diário Oficial", valor: 28 },
-  { name: "API", valor: 15 },
-  { name: "Estatísticas", valor: 8 },
-  { name: "Outros", valor: 7 },
+  { subject: "Portal Gov", A: 42, fullMark: 100 },
+  { subject: "Diário Oficial", A: 28, fullMark: 100 },
+  { subject: "API", A: 15, fullMark: 100 },
+  { subject: "Estatísticas", A: 8, fullMark: 100 },
+  { subject: "Outros", A: 7, fullMark: 100 },
 ];
 
 // Dados fictícios para frequência de atualização
 const updateFrequencyData = [
-  { name: "Diária", valor: 35 },
-  { name: "Semanal", valor: 25 },
-  { name: "Mensal", valor: 20 },
-  { name: "Trimestral", valor: 15 },
-  { name: "Anual", valor: 5 },
+  { frequency: "Diária", quantidade: 35 },
+  { frequency: "Semanal", quantidade: 25 },
+  { frequency: "Mensal", quantidade: 20 },
+  { frequency: "Trimestral", quantidade: 15 },
+  { frequency: "Anual", quantidade: 5 },
 ];
 
 // Dados fictícios para últimas atualizações
 const systemUpdatesData = [
-  { name: "Segunda", atualizacoes: 24 },
-  { name: "Terça", atualizacoes: 18 },
-  { name: "Quarta", atualizacoes: 16 },
-  { name: "Quinta", atualizacoes: 23 },
-  { name: "Sexta", atualizacoes: 29 },
-  { name: "Sábado", atualizacoes: 12 },
-  { name: "Domingo", atualizacoes: 7 },
+  { name: "Segunda", updates: 24 },
+  { name: "Terça", updates: 18 },
+  { name: "Quarta", updates: 16 },
+  { name: "Quinta", updates: 23 },
+  { name: "Sexta", updates: 29 },
+  { name: "Sábado", updates: 12 },
+  { name: "Domingo", updates: 7 },
 ];
 
 // Dados fictícios para o gráfico de pesquisadores
 const researchersData = [
-  { name: "Carlos Silva", studies: 12 },
-  { name: "Ana Oliveira", studies: 9 },
-  { name: "Roberto Santos", studies: 7 },
-  { name: "Julia Lima", studies: 6 },
-  { name: "Pedro Martins", studies: 5 },
+  { responsible: "Carlos Silva", monitoramentos: 12, institution: "UFPA" },
+  { responsible: "Ana Oliveira", monitoramentos: 9, institution: "UFAM" },
+  { responsible: "Roberto Santos", monitoramentos: 7, institution: "INPA" },
+  { responsible: "Julia Lima", monitoramentos: 6, institution: "IEPA" },
+  { responsible: "Pedro Martins", monitoramentos: 5, institution: "UNIFAP" },
 ];
 
 const InternalDashboard: React.FC<InternalDashboardProps> = ({ 
@@ -91,7 +91,7 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   // Filtrar para obter os 5 mais recentes monitoramentos
   const recentMonitorings = monitoringItems 
     .slice()
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort((a, b) => new Date(b.created_at ?? "").getTime() - new Date(a.created_at ?? "").getTime())
     .slice(0, 5);
 
   // Preparar dados para as estatísticas
@@ -221,7 +221,7 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
             {/* Grade de estatísticas */}
             <MonitoringStatsGrid 
               totalMonitorings={monitoringItems.length}
-              activeSpiders={monitoringItems.filter(item => item.active).length}
+              activeSpiders={monitoringItems.filter(item => item.category === "api").length} // Como não temos campo active, vamos usar category=api como substituto
               pendingUpdates={12}
               lastUpdateDate="10/05/2024"
             />
@@ -236,11 +236,6 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
                 <CardContent className="pb-4">
                   <SourceTypeChart 
                     data={sourceTypeData}
-                    index="name"
-                    categories={["valor"]}
-                    colors={["#045424", "#116235", "#237546", "#348757", "#459868"]}
-                    valueFormatter={(value) => `${value} sites`}
-                    showAnimation={true}
                   />
                 </CardContent>
               </Card>
@@ -253,11 +248,6 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
                 <CardContent className="pb-4">
                   <FrequencyChart 
                     data={updateFrequencyData}
-                    index="name"
-                    categories={["valor"]}
-                    colors={["#045424", "#116235", "#237546", "#348757", "#459868"]}
-                    valueFormatter={(value) => `${value} sites`}
-                    showAnimation={true}
                   />
                 </CardContent>
               </Card>
@@ -270,11 +260,6 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
                 <CardContent className="pb-4">
                   <SystemUpdatesChart 
                     data={systemUpdatesData}
-                    index="name"
-                    categories={["atualizacoes"]}
-                    colors={["#045424"]}
-                    valueFormatter={(value) => `${value} coletas`}
-                    showAnimation={true}
                   />
                 </CardContent>
               </Card>
@@ -287,11 +272,6 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
                 <CardContent className="pb-4">
                   <ResearchersChart 
                     data={researchersData}
-                    categories={["studies"]}
-                    index="name"
-                    colors={["#045424"]}
-                    valueFormatter={(value) => `${value} monitoramentos`}
-                    showAnimation={true}
                   />
                 </CardContent>
               </Card>
@@ -374,7 +354,7 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
                               {item.category}
                             </Badge>
                             <span className="text-xs text-forest-600">
-                              {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                              {new Date(item.created_at ?? "").toLocaleDateString('pt-BR')}
                             </span>
                           </div>
                         </div>

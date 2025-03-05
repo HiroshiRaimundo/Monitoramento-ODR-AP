@@ -14,13 +14,14 @@ interface MonitoringItem {
   keywords?: string;
   responsible?: string;
   institution?: string;
+  created_at: string;
 }
 
 export const useMonitoring = () => {
   const [monitoringItems, setMonitoringItems] = useState<MonitoringItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [responsibleFilter, setResponsibleFilter] = useState<string>("");
-  const form = useForm<Omit<MonitoringItem, "id">>();
+  const form = useForm<Omit<MonitoringItem, "id" | "created_at">>();
 
   const fetchMonitoringItems = async () => {
     try {
@@ -40,9 +41,9 @@ export const useMonitoring = () => {
         frequency: item.frequency,
         category: item.category,
         keywords: item.keywords,
-        // Use casting para acessar a propriedade responsible com segurança
         responsible: (item as any).responsible || null,
-        institution: (item as any).institution || null
+        institution: (item as any).institution || null,
+        created_at: item.created_at
       }));
       
       setMonitoringItems(formattedItems);
@@ -58,7 +59,7 @@ export const useMonitoring = () => {
     }
   };
 
-  const handleAddMonitoring = async (data: Omit<MonitoringItem, "id">) => {
+  const handleAddMonitoring = async (data: Omit<MonitoringItem, "id" | "created_at">) => {
     try {
       // Inserir no Supabase
       const { data: newItem, error } = await supabase
@@ -87,9 +88,9 @@ export const useMonitoring = () => {
         frequency: newItem.frequency,
         category: newItem.category,
         keywords: newItem.keywords,
-        // Use casting para acessar a propriedade responsible com segurança
         responsible: (newItem as any).responsible || null,
-        institution: (newItem as any).institution || null
+        institution: (newItem as any).institution || null,
+        created_at: newItem.created_at
       };
       
       // Atualizar estado
