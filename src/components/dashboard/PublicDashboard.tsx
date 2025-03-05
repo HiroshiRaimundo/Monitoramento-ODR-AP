@@ -108,14 +108,14 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <h3 className="font-medium text-forest-700">Sobre os Estudos</h3>
-              <p className="text-sm text-forest-600">
-                Os estudos apresentados representam pesquisas acadêmicas, projetos governamentais e iniciativas de ONGs focadas na região amazônica.
+              <p className="text-sm text-forest-600 text-justify">
+                Os estudos apresentados representam pesquisas acadêmicas, projetos do PPGDAS e iniciativas de ONGs focadas na região amazônica.
                 Cada estudo é categorizado e georreferenciado para facilitar a visualização no mapa interativo.
               </p>
             </div>
             <div className="space-y-2">
               <h3 className="font-medium text-forest-700">Metodologia</h3>
-              <p className="text-sm text-forest-600">
+              <p className="text-sm text-forest-600 text-justify">
                 Os dados são coletados através de parcerias com instituições de pesquisa, órgãos governamentais e monitoramento de fontes oficiais.
                 A atualização é realizada periodicamente conforme novas informações são disponibilizadas.
               </p>

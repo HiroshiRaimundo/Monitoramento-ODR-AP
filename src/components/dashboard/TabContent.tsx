@@ -10,6 +10,7 @@ import ResearchList from "@/components/ResearchList";
 import MapView from "@/components/MapView";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ResearchStudy } from "@/types/research";
+import PressOfficeTab from "@/components/press/PressOfficeTab";
 
 interface TabContentProps {
   isAuthenticated: boolean;
@@ -58,7 +59,7 @@ const TabContent: React.FC<TabContentProps> = ({
 }) => {
   return (
     <Tabs defaultValue="publicDashboard" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full bg-forest-50 p-1">
+      <TabsList className="grid grid-cols-5 w-full bg-forest-50 p-1">
         <TabsTrigger value="publicDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
           Monitoramento
         </TabsTrigger>
@@ -70,6 +71,11 @@ const TabContent: React.FC<TabContentProps> = ({
         {isAuthenticated && (
           <TabsTrigger value="management" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
             Gerenciamento
+          </TabsTrigger>
+        )}
+        {isAuthenticated && (
+          <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Assessoria de Imprensa
           </TabsTrigger>
         )}
         <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
@@ -130,6 +136,13 @@ const TabContent: React.FC<TabContentProps> = ({
               />
             </div>
           </div>
+        </TabsContent>
+      )}
+
+      {/* Nova Aba de Assessoria de Imprensa */}
+      {isAuthenticated && (
+        <TabsContent value="pressOffice">
+          <PressOfficeTab />
         </TabsContent>
       )}
 

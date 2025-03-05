@@ -1,10 +1,9 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Activity } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, Clock, AlertCircle } from "lucide-react";
 
-interface RecentUpdate {
+export interface RecentUpdate {
   id: string;
   site: string;
   date: string;
@@ -16,57 +15,75 @@ interface RecentUpdatesProps {
 }
 
 const RecentUpdates: React.FC<RecentUpdatesProps> = ({ updates }) => {
-  // Status formatter
-  const getStatusBadge = (status: string) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
-        return <Badge className="bg-green-500">Sucesso</Badge>;
+        return <ClipboardCheck className="text-green-500" size={16} />;
       case "error":
-        return <Badge className="bg-red-500">Erro</Badge>;
+        return <AlertCircle className="text-red-500" size={16} />;
       case "warning":
-        return <Badge className="bg-amber-500">Atenção</Badge>;
+        return <AlertTriangle className="text-amber-500" size={16} />;
+      case "pending":
+        return <Clock className="text-blue-500" size={16} />;
       default:
-        return <Badge className="bg-gray-500">Pendente</Badge>;
+        return <ClipboardCheck className="text-green-500" size={16} />;
+    }
+  };
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case "success":
+        return "text-green-500 bg-green-50";
+      case "error":
+        return "text-red-500 bg-red-50";
+      case "warning":
+        return "text-amber-500 bg-amber-50";
+      case "pending":
+        return "text-blue-500 bg-blue-50";
+      default:
+        return "text-green-500 bg-green-50";
     }
   };
 
   return (
     <Card className="border-forest-100 shadow-sm mt-6">
       <CardHeader className="pb-2">
-        <CardTitle className="text-forest-700 text-base font-medium flex items-center gap-2">
-          <Activity size={16} className="text-forest-600" />
-          Atualizações Recentes
-        </CardTitle>
+        <CardTitle className="text-forest-700 text-base font-medium">Atualizações Recentes</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-forest-100">
-            <thead>
-              <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-forest-600 uppercase tracking-wider">Site</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-forest-600 uppercase tracking-wider">Data</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-forest-600 uppercase tracking-wider">Status</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-forest-100">
-              {updates.map((update) => (
-                <tr key={update.id} className="hover:bg-forest-50/50">
-                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-forest-700">{update.site}</td>
-                  <td className="px-3 py-2 whitespace-nowrap text-sm text-forest-600">
-                    {new Date(update.date).toLocaleDateString('pt-BR', { 
-                      day: '2-digit', 
-                      month: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-sm">
-                    {getStatusBadge(update.status)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-4">
+          {updates.map((update) => (
+            <div key={update.id} className="flex items-start justify-between p-3 bg-forest-50/50 rounded-md">
+              <div className="text-left">
+                <h4 className="text-sm font-medium text-forest-700 flex items-center gap-2">
+                  {getStatusIcon(update.status)}
+                  {update.site}
+                </h4>
+                <span className="text-xs text-forest-600 mt-1 block">
+                  {new Date(update.date).toLocaleString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+              <span
+                className={`px-2 py-1 text-xs rounded-full ${getStatusClass(
+                  update.status
+                )}`}
+              >
+                {update.status === "success"
+                  ? "Sucesso"
+                  : update.status === "error"
+                  ? "Erro"
+                  : update.status === "warning"
+                  ? "Alerta"
+                  : "Pendente"}
+              </span>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

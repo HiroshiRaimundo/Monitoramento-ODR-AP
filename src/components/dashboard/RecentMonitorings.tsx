@@ -20,7 +20,7 @@ const RecentMonitorings: React.FC<RecentMonitoringsProps> = ({ monitorings }) =>
         <div className="space-y-4">
           {monitorings.map((item) => (
             <div key={item.id} className="flex items-center justify-between p-3 bg-forest-50/50 rounded-md">
-              <div>
+              <div className="text-left">
                 <h4 className="text-sm font-medium text-forest-700">{item.name}</h4>
                 <div className="flex items-center mt-1">
                   <Badge variant="outline" className="text-xs bg-white text-forest-600 mr-2">
