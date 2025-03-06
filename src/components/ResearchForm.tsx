@@ -30,8 +30,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="title"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Título do Estudo</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Título do Estudo</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Análise dos impactos ambientais no Amapá" {...field} />
                   </FormControl>
@@ -43,8 +43,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="author"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Autor Principal</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Autor Principal</FormLabel>
                   <FormControl>
                     <Input placeholder="Nome do autor principal" {...field} />
                   </FormControl>
@@ -56,8 +56,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="coAuthors"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Coautores</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Coautores</FormLabel>
                   <FormControl>
                     <Input placeholder="Nome dos coautores (separados por vírgula)" {...field} />
                   </FormControl>
@@ -72,8 +72,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="summary"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Resumo</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Resumo</FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder="Breve resumo do estudo (até 600 caracteres)" 
@@ -94,8 +94,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="repositoryUrl"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Link do Repositório</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Link do Repositório</FormLabel>
                   <FormControl>
                     <Input placeholder="https://repositorio.exemplo.com/estudo" {...field} />
                   </FormControl>
@@ -110,8 +110,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="type"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo de Estudo</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Tipo de Estudo</FormLabel>
                   <FormControl>
                     <select 
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
@@ -133,8 +133,8 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               control={form.control}
               name="location"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Localização do Estudo</FormLabel>
+                <FormItem className="text-left">
+                  <FormLabel className="text-left">Localização do Estudo</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input placeholder="Ex: Macapá, Santana, Laranjal do Jari..." {...field} />
