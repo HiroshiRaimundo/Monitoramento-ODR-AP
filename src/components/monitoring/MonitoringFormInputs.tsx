@@ -29,8 +29,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome do Monitoramento</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Nome do Monitoramento</FormLabel>
               <FormControl>
                 <Input placeholder="Ex: Índice de Desmatamento - Amazônia Legal" {...field} />
               </FormControl>
@@ -42,8 +42,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="url"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>URL da Fonte</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">URL da Fonte</FormLabel>
               <FormControl>
                 <Input placeholder="https://dados.gov.br/exemplo" {...field} />
               </FormControl>
@@ -55,8 +55,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="api_url"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>URL da API (opcional)</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">URL da API (opcional)</FormLabel>
               <FormControl>
                 <Input placeholder="https://api.exemplo.com/dados" {...field} />
               </FormControl>
@@ -71,8 +71,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="category"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoria</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Categoria</FormLabel>
               <FormControl>
                 <select
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -93,8 +93,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="frequency"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Frequência de Atualização</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Frequência de Atualização</FormLabel>
               <FormControl>
                 <select
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -115,8 +115,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="keywords"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Palavras-chave (opcional)</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Palavras-chave (opcional)</FormLabel>
               <FormControl>
                 <Input placeholder="Desmatamento, meio ambiente, amazônia" {...field} />
               </FormControl>
@@ -131,8 +131,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="responsible"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Responsável</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Responsável</FormLabel>
               <FormControl>
                 <Input placeholder="Nome do pesquisador ou responsável" {...field} />
               </FormControl>
@@ -147,8 +147,8 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           control={form.control}
           name="institution"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Instituição</FormLabel>
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Instituição</FormLabel>
               <FormControl>
                 <Input placeholder="Nome da instituição do responsável" {...field} />
               </FormControl>
