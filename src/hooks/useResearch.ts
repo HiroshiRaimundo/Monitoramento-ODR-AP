@@ -21,6 +21,11 @@ export const useResearch = () => {
       setStudies(fetchedStudies);
     } catch (error) {
       console.error('Erro ao buscar estudos:', error);
+      toast({
+        title: "Erro ao carregar estudos",
+        description: "Não foi possível buscar os estudos. Tente novamente mais tarde.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -68,6 +73,13 @@ export const useResearch = () => {
           description: "A análise foi removida com sucesso."
         });
       }
+    } catch (error) {
+      console.error('Erro ao remover estudo:', error);
+      toast({
+        title: "Erro ao remover estudo",
+        description: "Não foi possível remover a análise. Tente novamente.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +94,3 @@ export const useResearch = () => {
     handleDeleteStudy
   };
 };
-
-// We're not exporting the ResearchStudy type from here anymore
-// to avoid type conflicts. Import directly from the types file.

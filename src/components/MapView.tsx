@@ -3,15 +3,28 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Map from "@/components/Map";
 import SearchPanel from "@/components/map/SearchPanel";
-import { ResearchStudy } from "@/types/research";
+import ResearchForm from "@/components/ResearchForm";
+import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
 import { Globe } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 interface MapViewProps {
   studies: ResearchStudy[];
+  isAuthenticated?: boolean;
+  onStudySubmit?: (data: ResearchStudyFormData) => void;
 }
 
-const MapView: React.FC<MapViewProps> = ({ studies }) => {
+const MapView: React.FC<MapViewProps> = ({ 
+  studies, 
+  isAuthenticated = false,
+  onStudySubmit 
+}) => {
   const [searchResults, setSearchResults] = useState<ResearchStudy[]>([]);
+  const studyForm = useForm<ResearchStudyFormData>({
+    defaultValues: {
+      type: "artigo" // Valor padrão para o campo type
+    }
+  });
 
   return (
     <Card className="border-forest-100 shadow-md overflow-hidden">
@@ -37,6 +50,16 @@ const MapView: React.FC<MapViewProps> = ({ studies }) => {
             />
           </div>
         </div>
+
+        {/* Formulário de registro de estudos - apenas para usuários autenticados */}
+        {isAuthenticated && onStudySubmit && (
+          <div className="mt-8 border-t border-forest-100 pt-6">
+            <ResearchForm 
+              form={studyForm} 
+              onSubmit={onStudySubmit} 
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
@@ -148,7 +147,11 @@ const TabContent: React.FC<TabContentProps> = ({
 
       {/* Aba do Mapa */}
       <TabsContent value="map">
-        <MapView studies={studies} />
+        <MapView 
+          studies={studies} 
+          isAuthenticated={isAuthenticated}
+          onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
+        />
       </TabsContent>
     </Tabs>
   );
