@@ -1,11 +1,12 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Map from "@/components/Map";
 import SearchPanel from "@/components/map/SearchPanel";
 import ResearchForm from "@/components/ResearchForm";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
-import { Globe } from "lucide-react";
+import { Globe, MapPin, BookOpen } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 interface MapViewProps {
@@ -39,27 +40,46 @@ const MapView: React.FC<MapViewProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="w-full lg:w-4/5 rounded-lg overflow-hidden shadow-md border border-forest-100">
-            <Map points={studies} />
-          </div>
-          <div className="w-full lg:w-1/5 bg-forest-50/50 rounded-lg p-4 border border-forest-100">
-            <SearchPanel 
-              studies={studies} 
-              onSearchResults={setSearchResults} 
-            />
-          </div>
-        </div>
-
-        {/* Formulário de registro de estudos - apenas para usuários autenticados */}
-        {isAuthenticated && onStudySubmit && (
-          <div className="mt-8 border-t border-forest-100 pt-6">
-            <ResearchForm 
-              form={studyForm} 
-              onSubmit={onStudySubmit} 
-            />
-          </div>
-        )}
+        <Tabs defaultValue="map" className="w-full">
+          <TabsList className="w-full mb-4 bg-forest-50">
+            <TabsTrigger value="map" className="flex items-center gap-1 data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+              <MapPin size={16} />
+              <span>Mapa</span>
+            </TabsTrigger>
+            
+            {isAuthenticated && onStudySubmit && (
+              <TabsTrigger value="register" className="flex items-center gap-1 data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+                <BookOpen size={16} />
+                <span>Registrar Estudo</span>
+              </TabsTrigger>
+            )}
+          </TabsList>
+          
+          <TabsContent value="map" className="mt-0">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="w-full lg:w-4/5 rounded-lg overflow-hidden shadow-md border border-forest-100">
+                <Map points={studies} />
+              </div>
+              <div className="w-full lg:w-1/5 bg-forest-50/50 rounded-lg p-4 border border-forest-100">
+                <SearchPanel 
+                  studies={studies} 
+                  onSearchResults={setSearchResults} 
+                />
+              </div>
+            </div>
+          </TabsContent>
+          
+          {isAuthenticated && onStudySubmit && (
+            <TabsContent value="register" className="mt-0">
+              <div className="bg-white rounded-lg p-4 border border-forest-100">
+                <ResearchForm 
+                  form={studyForm} 
+                  onSubmit={onStudySubmit} 
+                />
+              </div>
+            </TabsContent>
+          )}
+        </Tabs>
       </CardContent>
     </Card>
   );
