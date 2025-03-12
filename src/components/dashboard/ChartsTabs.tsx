@@ -10,6 +10,7 @@ import CategoryChart from "./CategoryChart";
 import RecentMonitorings from "./RecentMonitorings";
 import AnalysisTools from "./AnalysisTools";
 import RecentUpdates from "./RecentUpdates";
+import { mapToStatusEnum } from "@/lib/chartUtils";
 
 // Sample data
 const sourceTypeData = [
@@ -48,11 +49,11 @@ const researchersData = [
 
 // Dados fictícios para monitoramentos recentes
 const recentUpdates = [
-  { id: "1", site: "Portal da Transparência", date: "2024-05-10T10:30:00", status: "success" },
-  { id: "2", site: "Diário Oficial do Amapá", date: "2024-05-09T14:45:00", status: "success" },
-  { id: "3", site: "IBGE - Estatísticas", date: "2024-05-08T09:15:00", status: "error" },
-  { id: "4", site: "Datasus", date: "2024-05-08T16:20:00", status: "success" },
-  { id: "5", site: "MMA - Política Ambiental", date: "2024-05-07T11:05:00", status: "warning" },
+  { id: "1", site: "Portal da Transparência", date: "2024-05-10T10:30:00", status: "success" as const },
+  { id: "2", site: "Diário Oficial do Amapá", date: "2024-05-09T14:45:00", status: "success" as const },
+  { id: "3", site: "IBGE - Estatísticas", date: "2024-05-08T09:15:00", status: "error" as const },
+  { id: "4", site: "Datasus", date: "2024-05-08T16:20:00", status: "success" as const },
+  { id: "5", site: "MMA - Política Ambiental", date: "2024-05-07T11:05:00", status: "warning" as const },
 ];
 
 interface ChartsTabsProps {

@@ -1,9 +1,11 @@
+
 import React from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
 import MonitoringStatsGrid from "./MonitoringStatsGrid";
 import ChartsTabs from "./ChartsTabs";
 import { MonitoringItem } from "@/hooks/useMonitoring";
+import { mapToSystemUpdates } from "@/lib/chartUtils";
 
 // Definição da interface de props
 interface InternalDashboardProps {
@@ -36,6 +38,9 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
     { value: Array.from(new Set(monitoringItems.map(item => item.category))).length, label: "Categorias" },
     { value: 128, label: "Coletas na Semana" }
   ];
+
+  // Transformar o formato dos dados para corresponder ao esperado pelo SystemUpdatesChart
+  const formattedUpdatesData = mapToSystemUpdates(data);
 
   return (
     <div className="grid gap-6 font-poppins">
