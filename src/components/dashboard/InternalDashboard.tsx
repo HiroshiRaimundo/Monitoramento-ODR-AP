@@ -1,4 +1,3 @@
-
 import React from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
@@ -8,17 +7,18 @@ import { MonitoringItem } from "@/hooks/useMonitoring";
 
 // Definição da interface de props
 interface InternalDashboardProps {
-  data: Array<{
+  data: {
     name: string;
     estudos: number;
     monitoramentos: number;
     atualizacoes: number;
-  }>;
+  }[];
   timeRange: string;
   setTimeRange: (value: string) => void;
   handleExport: () => void;
   isAuthenticated: boolean;
-  monitoringItems: MonitoringItem[];
+  monitoringItems: any[];
+  systemUpdatesData: { name: string; updates: number; }[];
 }
 
 const InternalDashboard: React.FC<InternalDashboardProps> = ({ 
@@ -27,7 +27,8 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   setTimeRange, 
   handleExport, 
   isAuthenticated,
-  monitoringItems
+  monitoringItems,
+  systemUpdatesData
 }) => {
   // Prepare stats items for dashboard header
   const headerStats = [

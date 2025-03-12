@@ -10,7 +10,7 @@ import MapView from "@/components/MapView";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ResearchStudy } from "@/types/research";
 import PressOfficeTab from "@/components/press/PressOfficeTab";
-import MonitoringMetrics from "@/components/monitoring/MonitoringMetrics";
+import { mapToSystemUpdates } from "@/lib/chartUtils";
 
 interface TabContentProps {
   isAuthenticated: boolean;
@@ -56,6 +56,8 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
+  const systemUpdatesData = mapToSystemUpdates(initialMockData);
+
   return (
     <Tabs defaultValue="publicDashboard" className="w-full">
       <TabsList className="grid grid-cols-5 w-full bg-forest-50 p-1">
@@ -101,6 +103,7 @@ const TabContent: React.FC<TabContentProps> = ({
             handleExport={handleExport}
             isAuthenticated={isAuthenticated}
             monitoringItems={monitoringItems}
+            systemUpdatesData={systemUpdatesData} 
           />
         </TabsContent>
       )}
@@ -112,7 +115,6 @@ const TabContent: React.FC<TabContentProps> = ({
               form={monitoringForm} 
               onSubmit={handleAddMonitoring} 
             />
-            <MonitoringMetrics />
             <MonitoringList 
               items={monitoringItems} 
               onDelete={handleDeleteMonitoring} 
