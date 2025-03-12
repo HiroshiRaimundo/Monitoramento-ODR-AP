@@ -10,6 +10,7 @@ import MapView from "@/components/MapView";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ResearchStudy } from "@/types/research";
 import PressOfficeTab from "@/components/press/PressOfficeTab";
+import MonitoringMetrics from "@/components/monitoring/MonitoringMetrics";
 
 interface TabContentProps {
   isAuthenticated: boolean;
@@ -30,7 +31,6 @@ interface TabContentProps {
   setResponsibleFilter?: (responsible: string) => void;
 }
 
-// Dados iniciais vazios para o dashboard
 const initialMockData = Array.from({ length: 12 }, (_, i) => ({
   name: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][i],
   estudos: 0,
@@ -82,7 +82,6 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsTrigger>
       </TabsList>
 
-      {/* Aba do Dashboard Público (agora chamada de "Monitoramento") */}
       <TabsContent value="publicDashboard">
         <PublicDashboard 
           data={initialMockData}
@@ -93,7 +92,6 @@ const TabContent: React.FC<TabContentProps> = ({
         />
       </TabsContent>
 
-      {/* Aba do Dashboard Interno (apenas para usuários autenticados) */}
       {isAuthenticated && (
         <TabsContent value="internalDashboard">
           <InternalDashboard 
@@ -107,7 +105,6 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsContent>
       )}
 
-      {/* Aba de Gerenciamento (apenas com monitoramento) */}
       {isAuthenticated && (
         <TabsContent value="management">
           <div className="grid gap-6">
@@ -115,6 +112,7 @@ const TabContent: React.FC<TabContentProps> = ({
               form={monitoringForm} 
               onSubmit={handleAddMonitoring} 
             />
+            <MonitoringMetrics />
             <MonitoringList 
               items={monitoringItems} 
               onDelete={handleDeleteMonitoring} 
@@ -127,14 +125,12 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsContent>
       )}
 
-      {/* Nova Aba de Assessoria de Imprensa */}
       {isAuthenticated && (
         <TabsContent value="pressOffice">
           <PressOfficeTab />
         </TabsContent>
       )}
 
-      {/* Aba do Mapa */}
       <TabsContent value="map">
         <MapView 
           studies={studies} 
