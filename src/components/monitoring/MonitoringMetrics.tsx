@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Clock, Code, Database, FileText, Image, Link, Script, Layout, Shield, Certificate, Redirect } from "lucide-react";
+import { Clock, Code, Database, FileText, Image, Link, Code2, Layout, Shield, Key, GitBranch } from "lucide-react";
 
 interface MetricItem {
   icon: React.ReactNode;
@@ -55,7 +54,7 @@ const metrics: MetricItem[] = [
     usage: "Detecta mudanças não autorizadas ou problemas de carregamento."
   },
   {
-    icon: <Script className="h-5 w-5" />,
+    icon: <Code2 className="h-5 w-5" />,
     title: "JavaScript",
     function: "Detecta mudanças em scripts.",
     usage: "Garante que o comportamento do site não seja afetado por alterações inesperadas."
@@ -73,13 +72,13 @@ const metrics: MetricItem[] = [
     usage: "Verifica se as configurações de segurança e cache estão corretas."
   },
   {
-    icon: <Certificate className="h-5 w-5" />,
+    icon: <Key className="h-5 w-5" />,
     title: "Certificado SSL",
     function: "Verifica a validade do certificado SSL.",
     usage: "Assegura que a conexão seja segura e confiável."
   },
   {
-    icon: <Redirect className="h-5 w-5" />,
+    icon: <GitBranch className="h-5 w-5" />,
     title: "Redirecionamentos",
     function: "Monitora a cadeia de redirecionamentos.",
     usage: "Evita loops de redirecionamento ou redirecionamentos incorretos."

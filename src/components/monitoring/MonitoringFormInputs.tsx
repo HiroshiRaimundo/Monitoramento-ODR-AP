@@ -1,9 +1,10 @@
-
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import MonitoringMetrics from "./MonitoringMetrics";
 
 interface MonitoringItem {
   name: string;
@@ -159,7 +160,11 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
           )}
         />
 
-        <Button type="submit">Adicionar Monitoramento</Button>
+        <div className="mt-8">
+          <MonitoringMetrics />
+        </div>
+
+        <Button type="submit" className="mt-6">Adicionar Monitoramento</Button>
       </form>
     </Form>
   );
