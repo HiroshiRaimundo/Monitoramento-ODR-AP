@@ -107,7 +107,7 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsContent>
       )}
 
-      {/* Aba de Gerenciamento (combina Monitoramento e Pesquisa) */}
+      {/* Aba de Gerenciamento (apenas com monitoramento) */}
       {isAuthenticated && (
         <TabsContent value="management">
           <div className="grid gap-6">
@@ -123,17 +123,6 @@ const TabContent: React.FC<TabContentProps> = ({
               responsibleFilter={responsibleFilter}
               onFilterChange={setResponsibleFilter}
             />
-            <div className="grid gap-6 md:grid-cols-2 mt-6">
-              <ResearchForm 
-                form={studyForm} 
-                onSubmit={handleStudySubmit} 
-              />
-              <ResearchList 
-                studies={studies} 
-                onDelete={handleDeleteStudy}
-                isLoading={isLoading}
-              />
-            </div>
           </div>
         </TabsContent>
       )}
