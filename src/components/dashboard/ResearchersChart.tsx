@@ -36,10 +36,10 @@ const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300">
       <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
-        <CardTitle className="text-forest-700">Top 5 Pesquisadores</CardTitle>
+        <CardTitle className="text-forest-700">Top 15 Pesquisadores</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-[300px]">
+        <div className="h-[600px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={data}
@@ -74,7 +74,7 @@ const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
                 dataKey="monitoramentos" 
                 fill="#045424"
                 radius={[0, 4, 4, 0]}
-                barSize={30}
+                barSize={25}
               >
                 <LabelList 
                   dataKey="monitoramentos" 

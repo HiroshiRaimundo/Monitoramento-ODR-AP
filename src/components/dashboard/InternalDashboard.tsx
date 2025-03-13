@@ -10,12 +10,24 @@ import {
   getCategoryData, 
   getFrequencyData, 
   getResponsibleData, 
-  getRadarData 
+  getRadarData,
+  getAnalysisTypeStats
 } from "./DashboardUtils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Download, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+// Interface para RecentUpdate
+export interface RecentUpdate {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: string;
+  site: string;
+  status: string;
+}
 
 // Definição da interface de props
 interface InternalDashboardProps {
@@ -31,6 +43,8 @@ interface InternalDashboardProps {
   isAuthenticated: boolean;
   monitoringItems: MonitoringItem[];
   systemUpdatesData: { name: string; updates: number; }[];
+  recentAlerts?: RecentUpdate[];
+  recentReports?: RecentUpdate[];
 }
 
 const InternalDashboard: React.FC<InternalDashboardProps> = ({ 
@@ -40,7 +54,9 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   handleExport, 
   isAuthenticated,
   monitoringItems,
-  systemUpdatesData
+  systemUpdatesData,
+  recentAlerts = [],
+  recentReports = []
 }) => {
   // Estado para filtro de monitoramento individual
   const [selectedMonitoring, setSelectedMonitoring] = useState<string>("todos");
@@ -65,12 +81,7 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   ];
 
   // Calcular estatísticas sobre os tipos de análise ativos para cada monitoramento
-  const analysisStats = {
-    contentAnalysis: filteredMonitoringItems.filter(item => item.category === "indicadores").length,
-    sentimentAnalysis: filteredMonitoringItems.filter(item => item.category === "legislacao").length,
-    crossAnalysis: filteredMonitoringItems.filter(item => item.keywords?.includes("comparativo")).length,
-    nlpAnalysis: filteredMonitoringItems.filter(item => item.keywords?.includes("nlp") || item.keywords?.includes("linguagem natural")).length
-  };
+  const analysisStats = useMemo(() => getAnalysisTypeStats(), []);
 
   // Função para exportar dados do monitoramento selecionado
   const exportSelectedMonitoring = () => {
@@ -161,6 +172,8 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
         radarData={radarData}
         systemUpdatesData={systemUpdatesData}
         analysisStats={analysisStats}
+        recentAlerts={recentAlerts}
+        recentReports={recentReports}
       />
     </div>
   );
