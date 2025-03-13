@@ -7,6 +7,11 @@
  * redirecionando o tráfego para o aplicativo React.
  */
 
+// Incluir configuração específica para Hostinger
+if (file_exists(__DIR__ . '/hostinger-config.php')) {
+    include_once __DIR__ . '/hostinger-config.php';
+}
+
 // Ativar exibição de erros para debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -16,6 +21,21 @@ error_reporting(E_ALL);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/php-error.log');
 error_log("Iniciando carregamento da aplicação React");
+
+// Verificar se estamos acessando um arquivo JavaScript
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$extension = pathinfo($requestUri, PATHINFO_EXTENSION);
+
+// Se for um arquivo JavaScript, garantir o tipo MIME correto
+if ($extension === 'js' || $extension === 'mjs') {
+    $filePath = __DIR__ . parse_url($requestUri, PHP_URL_PATH);
+    
+    if (file_exists($filePath) && is_file($filePath)) {
+        header('Content-Type: application/javascript');
+        readfile($filePath);
+        exit;
+    }
+}
 
 // Verificar se estamos acessando o arquivo diretamente
 if (php_sapi_name() !== 'cli') {
@@ -58,6 +78,12 @@ if (php_sapi_name() !== 'cli') {
                 // Verificar se os arquivos JS/CSS estão sendo carregados corretamente
                 if (strpos($content, '<script') === false) {
                     error_log("AVISO: Não encontradas tags <script> no HTML");
+                }
+                
+                // Modificar o HTML para a Hostinger se necessário
+                if (function_exists('isHostinger') && isHostinger() && function_exists('modifyHtmlForHostinger')) {
+                    $content = modifyHtmlForHostinger($content);
+                    error_log("HTML modificado para Hostinger");
                 }
                 
                 echo $content;
