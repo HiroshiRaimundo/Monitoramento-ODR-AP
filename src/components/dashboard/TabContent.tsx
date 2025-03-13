@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
@@ -59,32 +60,32 @@ const TabContent: React.FC<TabContentProps> = ({
   const systemUpdatesData = mapToSystemUpdates(initialMockData);
 
   return (
-    <Tabs defaultValue="publicDashboard" className="w-full">
+    <Tabs defaultValue="publico" className="w-full">
       <TabsList className="grid grid-cols-5 w-full bg-forest-50 p-1">
-        <TabsTrigger value="publicDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-          Monitoramento
+        <TabsTrigger value="publico" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          Público
         </TabsTrigger>
         {isAuthenticated && (
-          <TabsTrigger value="internalDashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-            Dashboard Interno
-          </TabsTrigger>
-        )}
-        {isAuthenticated && (
-          <TabsTrigger value="management" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          <TabsTrigger value="gerenciamento" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
             Gerenciamento
           </TabsTrigger>
         )}
         {isAuthenticated && (
-          <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-            Assessoria de Imprensa
+          <TabsTrigger value="analise" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Análise
           </TabsTrigger>
         )}
         <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
           Mapa Interativo
         </TabsTrigger>
+        {isAuthenticated && (
+          <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Assessoria de Imprensa
+          </TabsTrigger>
+        )}
       </TabsList>
 
-      <TabsContent value="publicDashboard">
+      <TabsContent value="publico">
         <PublicDashboard 
           data={initialMockData}
           timeRange={timeRange}
@@ -95,21 +96,7 @@ const TabContent: React.FC<TabContentProps> = ({
       </TabsContent>
 
       {isAuthenticated && (
-        <TabsContent value="internalDashboard">
-          <InternalDashboard 
-            data={initialMockData}
-            timeRange={timeRange}
-            setTimeRange={setTimeRange}
-            handleExport={handleExport}
-            isAuthenticated={isAuthenticated}
-            monitoringItems={monitoringItems}
-            systemUpdatesData={systemUpdatesData} 
-          />
-        </TabsContent>
-      )}
-
-      {isAuthenticated && (
-        <TabsContent value="management">
+        <TabsContent value="gerenciamento">
           <div className="grid gap-6">
             <MonitoringForm 
               form={monitoringForm} 
@@ -128,8 +115,16 @@ const TabContent: React.FC<TabContentProps> = ({
       )}
 
       {isAuthenticated && (
-        <TabsContent value="pressOffice">
-          <PressOfficeTab />
+        <TabsContent value="analise">
+          <InternalDashboard 
+            data={initialMockData}
+            timeRange={timeRange}
+            setTimeRange={setTimeRange}
+            handleExport={handleExport}
+            isAuthenticated={isAuthenticated}
+            monitoringItems={monitoringItems}
+            systemUpdatesData={systemUpdatesData} 
+          />
         </TabsContent>
       )}
 
@@ -140,6 +135,12 @@ const TabContent: React.FC<TabContentProps> = ({
           onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
         />
       </TabsContent>
+
+      {isAuthenticated && (
+        <TabsContent value="pressOffice">
+          <PressOfficeTab />
+        </TabsContent>
+      )}
     </Tabs>
   );
 };

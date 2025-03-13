@@ -76,10 +76,10 @@ const ChartsTabs: React.FC<ChartsTabsProps> = ({ monitoringItems }) => {
 
   return (
     <div className="bg-white rounded-lg border border-forest-100 shadow-sm overflow-hidden">
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue="visao-geral" className="w-full">
         <TabsList className="flex w-full border-b border-forest-100 bg-white p-0 h-auto">
           <TabsTrigger 
-            value="overview" 
+            value="visao-geral" 
             className="flex-1 px-6 py-3 font-medium text-sm data-[state=active]:bg-forest-50 data-[state=active]:text-forest-700 data-[state=active]:border-b-2 data-[state=active]:border-forest-600 text-forest-600 hover:bg-forest-50/50 rounded-none"
           >
             Visão Geral
@@ -91,15 +91,15 @@ const ChartsTabs: React.FC<ChartsTabsProps> = ({ monitoringItems }) => {
             Monitoramentos
           </TabsTrigger>
           <TabsTrigger 
-            value="analise" 
+            value="ferramentas" 
             className="flex-1 px-6 py-3 font-medium text-sm data-[state=active]:bg-forest-50 data-[state=active]:text-forest-700 data-[state=active]:border-b-2 data-[state=active]:border-forest-600 text-forest-600 hover:bg-forest-50/50 rounded-none"
           >
-            Análise
+            Ferramentas
           </TabsTrigger>
         </TabsList>
 
         {/* Conteúdo da Tab de Visão Geral */}
-        <TabsContent value="overview" className="p-6">
+        <TabsContent value="visao-geral" className="p-6">
           {/* Grid de Estatísticas é passado do componente principal */}
           
           {/* Gráficos em grid */}
@@ -144,8 +144,8 @@ const ChartsTabs: React.FC<ChartsTabsProps> = ({ monitoringItems }) => {
           </div>
         </TabsContent>
 
-        {/* Conteúdo da Tab de Análise */}
-        <TabsContent value="analise" className="p-6">
+        {/* Conteúdo da Tab de Ferramentas */}
+        <TabsContent value="ferramentas" className="p-6">
           <AnalysisTools />
         </TabsContent>
       </Tabs>

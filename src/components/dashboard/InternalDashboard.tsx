@@ -46,7 +46,7 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
     <div className="grid gap-6 font-poppins">
       {/* Cabeçalho */}
       <DashboardHeader 
-        title="Dashboard Interno"
+        title="Análise de Dados"
         description="Acompanhamento detalhado dos monitoramentos e análises internas"
         statsItems={headerStats}
       />
