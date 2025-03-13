@@ -28,7 +28,7 @@
 # Definir cabeçalhos para arquivos específicos
 <FilesMatch "\.(js|mjs|tsx|jsx)$">
   <IfModule mod_headers.c>
-    Header set Content-Type "application/javascript"
+    Header set Content-Type "application/javascript; charset=UTF-8"
     Header set X-Content-Type-Options "nosniff"
   </IfModule>
 </FilesMatch>

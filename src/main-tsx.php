@@ -10,8 +10,8 @@ $filePath = __DIR__ . '/main.tsx';
 
 // Verificar se o arquivo existe
 if (file_exists($filePath) && is_file($filePath)) {
-    // Definir o cabeçalho Content-Type para JavaScript
-    header('Content-Type: application/javascript');
+    // Definir o cabeçalho Content-Type para JavaScript module
+    header('Content-Type: application/javascript; charset=UTF-8');
     header('X-Content-Type-Options: nosniff');
     
     // Desativar cache
