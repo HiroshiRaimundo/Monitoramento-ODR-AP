@@ -9,21 +9,132 @@
     <meta property="og:image" content="/og-image.png" />
     
     <!-- Carregando React e ReactDOM a partir de CDNs -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+    
+    <!-- Estilos -->
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      h1 {
+        color: #2c3e50;
+      }
+      .monitoring-list {
+        margin-top: 20px;
+      }
+      .monitoring-item {
+        padding: 15px;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        border-radius: 4px;
+      }
+      .loading {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #666;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     
-    <!-- Script simples para renderizar um componente React -->
+    <!-- Script para conectar ao Supabase e exibir dados -->
     <script>
-      // Criando um componente React simples
-      const App = () => {
-        return React.createElement('div', null, 
-          React.createElement('h1', null, 'Monitoramento ODR-AP'),
-          React.createElement('p', null, 'Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável')
+      // Configuração do Supabase
+      const SUPABASE_URL = "https://jiywqroiovphdultgaet.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppeXdxcm9pb3ZwaGR1bHRnYWV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2NzgwNTgsImV4cCI6MjA1NjI1NDA1OH0._auAk9bzk85D7BDy4OTEelHBHh68Z3xQ3Kn-BNoaE3I";
+      
+      // Inicializar Supabase
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      
+      // Componente de Carregamento
+      const LoadingComponent = () => {
+        return React.createElement('div', { className: 'loading' }, 'Carregando dados...');
+      };
+      
+      // Componente de Item de Monitoramento
+      const MonitoringItem = ({ item }) => {
+        return React.createElement('div', { className: 'monitoring-item' },
+          React.createElement('h3', null, item.name),
+          React.createElement('p', null, `URL: ${item.url}`),
+          React.createElement('p', null, `Frequência: ${item.frequency}`),
+          React.createElement('p', null, `Responsável: ${item.responsible}`)
         );
       };
+      
+      // Componente principal
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            monitoringItems: [],
+            isLoading: true,
+            error: null
+          };
+        }
+        
+        componentDidMount() {
+          this.fetchMonitoringItems();
+        }
+        
+        async fetchMonitoringItems() {
+          try {
+            const { data, error } = await supabase
+              .from('monitoring_items')
+              .select('*')
+              .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            this.setState({
+              monitoringItems: data,
+              isLoading: false
+            });
+          } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+            this.setState({
+              error: 'Erro ao carregar dados. Por favor, tente novamente mais tarde.',
+              isLoading: false
+            });
+          }
+        }
+        
+        render() {
+          const { monitoringItems, isLoading, error } = this.state;
+          
+          if (isLoading) {
+            return React.createElement(LoadingComponent);
+          }
+          
+          if (error) {
+            return React.createElement('div', { className: 'error' }, error);
+          }
+          
+          return React.createElement('div', { className: 'container' },
+            React.createElement('h1', null, 'Monitoramento ODR-AP'),
+            React.createElement('p', null, 'Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável'),
+            React.createElement('div', { className: 'monitoring-list' },
+              monitoringItems.length === 0
+                ? React.createElement('p', null, 'Nenhum item de monitoramento encontrado.')
+                : monitoringItems.map(item => React.createElement(MonitoringItem, { key: item.id, item: item }))
+            )
+          );
+        }
+      }
       
       // Renderizando o componente no elemento root
       const root = ReactDOM.createRoot(document.getElementById('root'));
