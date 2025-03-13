@@ -1,13 +1,13 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "./components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import Index from "./pages/Index";
-import Help from "./pages/Help";
-import NotFound from "./pages/NotFound";
-import Documentation from "./pages/Documentation";
+import Index from './pages/Index';
+import Help from './pages/Help';
+import NotFound from './pages/NotFound';
+import Documentation from './pages/Documentation';
 
 // Create QueryClient
 const queryClient = new QueryClient({

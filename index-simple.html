@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitoramento</title>
+    <meta name="description" content="Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável" />
+    <meta name="author" content="PPGDAPP" />
+    <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Carregando React e ReactDOM a partir de CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- Script simples para renderizar um componente React -->
+    <script>
+      // Criando um componente React simples
+      const App = () => {
+        return React.createElement('div', null, 
+          React.createElement('h1', null, 'Monitoramento ODR-AP'),
+          React.createElement('p', null, 'Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável')
+        );
+      };
+      
+      // Renderizando o componente no elemento root
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(React.createElement(App));
+    </script>
+  </body>
+</html>
