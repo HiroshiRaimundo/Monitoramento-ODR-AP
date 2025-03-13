@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
 import InternalDashboard from "@/components/dashboard/InternalDashboard";
@@ -57,8 +57,8 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
-  // Aqui garantimos que os dados estão no formato correto para o SystemUpdatesChart
-  const systemUpdatesData = mapToSystemUpdates(initialMockData);
+  // Preparar os dados no formato correto para o SystemUpdatesChart
+  const systemUpdatesData = useMemo(() => mapToSystemUpdates(initialMockData), []);
 
   return (
     <Tabs defaultValue="publico" className="w-full">

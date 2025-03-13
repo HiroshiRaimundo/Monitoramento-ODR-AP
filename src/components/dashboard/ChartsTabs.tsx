@@ -1,155 +1,410 @@
 
 import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity, BarChart3, PieChart, TrendingUp, Users, ServerCrash, Zap, Layers } from "lucide-react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
-import SourceTypeChart from "./SourceTypeChart";
-import FrequencyChart from "./FrequencyChart";
-import SystemUpdatesChart from "./SystemUpdatesChart";
-import ResearchersChart from "./ResearchersChart";
+import { ChartContainer } from "@/components/ui/chart";
 import CategoryChart from "./CategoryChart";
+import FrequencyChart from "./FrequencyChart";
+import ResearchersChart from "./ResearchersChart";
+import SourceTypeChart from "./SourceTypeChart";
+import SystemUpdatesChart from "./SystemUpdatesChart";
 import RecentMonitorings from "./RecentMonitorings";
-import AnalysisTools from "./AnalysisTools";
 import RecentUpdates from "./RecentUpdates";
-import { mapToStatusEnum } from "@/lib/chartUtils";
+import AnalysisTools from "./AnalysisTools";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-// Sample data
-const sourceTypeData = [
-  { subject: "Portal Gov", A: 42, fullMark: 100 },
-  { subject: "Diário Oficial", A: 28, fullMark: 100 },
-  { subject: "API", A: 15, fullMark: 100 },
-  { subject: "Estatísticas", A: 8, fullMark: 100 },
-  { subject: "Outros", A: 7, fullMark: 100 },
-];
-
-const updateFrequencyData = [
-  { frequency: "Diária", quantidade: 35 },
-  { frequency: "Semanal", quantidade: 25 },
-  { frequency: "Mensal", quantidade: 20 },
-  { frequency: "Trimestral", quantidade: 15 },
-  { frequency: "Anual", quantidade: 5 },
-];
-
-const systemUpdatesData = [
-  { name: "Segunda", updates: 24 },
-  { name: "Terça", updates: 18 },
-  { name: "Quarta", updates: 16 },
-  { name: "Quinta", updates: 23 },
-  { name: "Sexta", updates: 29 },
-  { name: "Sábado", updates: 12 },
-  { name: "Domingo", updates: 7 },
-];
-
-const researchersData = [
-  { responsible: "Carlos Silva", monitoramentos: 12, institution: "UFPA" },
-  { responsible: "Ana Oliveira", monitoramentos: 9, institution: "UFAM" },
-  { responsible: "Roberto Santos", monitoramentos: 7, institution: "INPA" },
-  { responsible: "Julia Lima", monitoramentos: 6, institution: "IEPA" },
-  { responsible: "Pedro Martins", monitoramentos: 5, institution: "UNIFAP" },
-];
-
-// Dados fictícios para monitoramentos recentes
-const recentUpdates = [
-  { id: "1", site: "Portal da Transparência", date: "2024-05-10T10:30:00", status: "success" as const },
-  { id: "2", site: "Diário Oficial do Amapá", date: "2024-05-09T14:45:00", status: "success" as const },
-  { id: "3", site: "IBGE - Estatísticas", date: "2024-05-08T09:15:00", status: "error" as const },
-  { id: "4", site: "Datasus", date: "2024-05-08T16:20:00", status: "success" as const },
-  { id: "5", site: "MMA - Política Ambiental", date: "2024-05-07T11:05:00", status: "warning" as const },
-];
+// Definir a interface para as estatísticas de análise
+interface AnalysisStats {
+  contentAnalysis: number;
+  sentimentAnalysis: number;
+  crossAnalysis: number;
+  nlpAnalysis: number;
+}
 
 interface ChartsTabsProps {
   monitoringItems: MonitoringItem[];
+  categoryData?: { name: string; value: number }[];
+  frequencyData?: { frequency: string; quantidade: number }[];
+  responsibleData?: { responsible: string; monitoramentos: number; institution: string }[];
+  radarData?: { subject: string; A: number; fullMark: number }[];
+  systemUpdatesData: { name: string; updates: number }[];
+  analysisStats?: AnalysisStats;
 }
 
-const ChartsTabs: React.FC<ChartsTabsProps> = ({ monitoringItems }) => {
-  // Filtrar para obter os 5 mais recentes monitoramentos
-  const recentMonitorings = monitoringItems 
-    .slice()
-    .sort((a, b) => new Date(b.created_at ?? "").getTime() - new Date(a.created_at ?? "").getTime())
-    .slice(0, 5);
-
-  // Preparar dados para as estatísticas
-  const categories = Array.from(new Set(monitoringItems.map(item => item.category)));
-  const categoryStats = categories.map(cat => ({
-    name: cat,
-    value: monitoringItems.filter(item => item.category === cat).length
-  }));
-
+const ChartsTabs = ({ 
+  monitoringItems, 
+  categoryData, 
+  frequencyData, 
+  responsibleData, 
+  radarData,
+  systemUpdatesData,
+  analysisStats = {
+    contentAnalysis: 0,
+    sentimentAnalysis: 0,
+    crossAnalysis: 0,
+    nlpAnalysis: 0
+  }
+}: ChartsTabsProps) => {
   return (
-    <div className="bg-white rounded-lg border border-forest-100 shadow-sm overflow-hidden">
-      <Tabs defaultValue="visao-geral" className="w-full">
-        <TabsList className="flex w-full border-b border-forest-100 bg-white p-0 h-auto">
-          <TabsTrigger 
-            value="visao-geral" 
-            className="flex-1 px-6 py-3 font-medium text-sm data-[state=active]:bg-forest-50 data-[state=active]:text-forest-700 data-[state=active]:border-b-2 data-[state=active]:border-forest-600 text-forest-600 hover:bg-forest-50/50 rounded-none"
-          >
-            Visão Geral
-          </TabsTrigger>
-          <TabsTrigger 
-            value="monitoramentos" 
-            className="flex-1 px-6 py-3 font-medium text-sm data-[state=active]:bg-forest-50 data-[state=active]:text-forest-700 data-[state=active]:border-b-2 data-[state=active]:border-forest-600 text-forest-600 hover:bg-forest-50/50 rounded-none"
-          >
-            Monitoramentos
-          </TabsTrigger>
-          <TabsTrigger 
-            value="ferramentas" 
-            className="flex-1 px-6 py-3 font-medium text-sm data-[state=active]:bg-forest-50 data-[state=active]:text-forest-700 data-[state=active]:border-b-2 data-[state=active]:border-forest-600 text-forest-600 hover:bg-forest-50/50 rounded-none"
-          >
-            Ferramentas
-          </TabsTrigger>
-        </TabsList>
+    <Tabs defaultValue="visão-geral" className="w-full">
+      <TabsList className="w-full grid grid-cols-4 mb-6">
+        <TabsTrigger value="visão-geral" className="flex items-center gap-2">
+          <Activity className="h-4 w-4" />
+          <span>Visão Geral</span>
+        </TabsTrigger>
+        <TabsTrigger value="categorias" className="flex items-center gap-2">
+          <PieChart className="h-4 w-4" />
+          <span>Categorias</span>
+        </TabsTrigger>
+        <TabsTrigger value="atualizações" className="flex items-center gap-2">
+          <TrendingUp className="h-4 w-4" />
+          <span>Atualizações</span>
+        </TabsTrigger>
+        <TabsTrigger value="análises" className="flex items-center gap-2">
+          <BarChart3 className="h-4 w-4" />
+          <span>Análises</span>
+        </TabsTrigger>
+      </TabsList>
 
-        {/* Conteúdo da Tab de Visão Geral */}
-        <TabsContent value="visao-geral" className="p-6">
-          {/* Grid de Estatísticas é passado do componente principal */}
-          
-          {/* Gráficos em grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {/* Gráfico de tipos de fonte */}
-            <div className="h-full">
-              <SourceTypeChart data={sourceTypeData} />
-            </div>
+      <TabsContent value="visão-geral">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="col-span-2">
+            <CardHeader>
+              <CardTitle>Atualizações do Sistema</CardTitle>
+              <CardDescription>Monitoramento de atualizações ao longo do tempo</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-80">
+                <SystemUpdatesChart data={systemUpdatesData} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-            {/* Gráfico de frequência de atualização */}
-            <div className="h-full">
-              <FrequencyChart data={updateFrequencyData} />
-            </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Categorias</CardTitle>
+              <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-60">
+                <CategoryChart data={categoryData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-            {/* Gráfico de atualizações do sistema */}
-            <div className="h-full">
-              <SystemUpdatesChart data={systemUpdatesData} />
-            </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Frequência</CardTitle>
+              <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-60">
+                <FrequencyChart data={frequencyData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-            {/* Gráfico de Pesquisadores */}
-            <div className="h-full">
-              <ResearchersChart data={researchersData} />
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Monitoramentos Recentes</CardTitle>
+              <CardDescription>Últimos monitoramentos adicionados</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RecentMonitorings monitoringItems={monitoringItems} />
+            </CardContent>
+          </Card>
 
-          {/* Lista de atualizações recentes */}
-          <RecentUpdates updates={recentUpdates} />
-        </TabsContent>
+          <Card>
+            <CardHeader>
+              <CardTitle>Atualizações Recentes</CardTitle>
+              <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RecentUpdates />
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
 
-        {/* Conteúdo da Tab de Monitoramentos */}
-        <TabsContent value="monitoramentos" className="p-6">
-          {/* Área de monitoramentos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-full">
-              <CategoryChart 
-                data={categoryStats} 
-                title="Monitoramentos por Categoria" 
-              />
-            </div>
+      <TabsContent value="categorias">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Categorias</CardTitle>
+              <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-80">
+                <CategoryChart data={categoryData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-            <RecentMonitorings monitorings={recentMonitorings} />
-          </div>
-        </TabsContent>
+          <Card>
+            <CardHeader>
+              <CardTitle>Tipos de Fontes</CardTitle>
+              <CardDescription>Distribuição por tipos de fontes monitoradas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-80">
+                <SourceTypeChart data={radarData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-        {/* Conteúdo da Tab de Ferramentas */}
-        <TabsContent value="ferramentas" className="p-6">
-          <AnalysisTools />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Por Responsável</CardTitle>
+              <CardDescription>Monitoramentos agrupados por responsável</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-80">
+                <ResearchersChart data={responsibleData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ServerCrash className="h-5 w-5 text-forest-600" />
+                <span>Estado dos Monitoramentos</span>
+              </CardTitle>
+              <CardDescription>Status atual de todos os monitoramentos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{monitoringItems.filter(item => item.category === "api").length}</div>
+                    <div className="text-sm text-green-700">Monitoramentos Ativos</div>
+                  </div>
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-yellow-600">2</div>
+                    <div className="text-sm text-yellow-700">Requerem Atenção</div>
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">{monitoringItems.filter(item => item.frequency === "diario").length}</div>
+                    <div className="text-sm text-blue-700">Atualizações Diárias</div>
+                  </div>
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-red-600">0</div>
+                    <div className="text-sm text-red-700">Falhas Críticas</div>
+                  </div>
+                </div>
+
+                <Alert>
+                  <AlertTitle className="flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Resumo de Estado
+                  </AlertTitle>
+                  <AlertDescription>
+                    {monitoringItems.length > 0 
+                      ? "Todos os sistemas de monitoramento estão funcionando normalmente." 
+                      : "Nenhum monitoramento configurado até o momento."}
+                  </AlertDescription>
+                </Alert>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="atualizações">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="col-span-2">
+            <CardHeader>
+              <CardTitle>Atualizações Detectadas</CardTitle>
+              <CardDescription>Histórico de mudanças detectadas pelos monitoramentos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-80">
+                <SystemUpdatesChart data={systemUpdatesData} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Últimas Atualizações</CardTitle>
+              <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RecentUpdates />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-amber-500" />
+                <span>Alertas de Monitoramento</span>
+              </CardTitle>
+              <CardDescription>Notificações sobre alterações importantes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Alert className="bg-yellow-50 border-yellow-200">
+                  <AlertTitle className="text-yellow-800">Mudança de Conteúdo Detectada</AlertTitle>
+                  <AlertDescription className="text-yellow-700">
+                    Alteração significativa detectada em "Portal de Transparência" (10/05/2024)
+                  </AlertDescription>
+                </Alert>
+                
+                <Alert className="bg-blue-50 border-blue-200">
+                  <AlertTitle className="text-blue-800">Nova Coleta Programada</AlertTitle>
+                  <AlertDescription className="text-blue-700">
+                    Próxima coleta do monitoramento "IBGE - Indicadores" programada para 12/05/2024
+                  </AlertDescription>
+                </Alert>
+                
+                <div className="text-sm text-muted-foreground mt-4">
+                  Mostrando alertas dos últimos 7 dias.
+                  {monitoringItems.length === 0 && " Nenhum monitoramento configurado."}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="análises">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5 text-forest-600" />
+                <span>Análises Ativas por Monitoramento</span>
+              </CardTitle>
+              <CardDescription>Resumo dos tipos de análise configurados</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-forest-600">{analysisStats.contentAnalysis}</div>
+                  <div className="text-sm text-forest-700">Análise de Conteúdo</div>
+                </div>
+                <div className="bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-forest-600">{analysisStats.sentimentAnalysis}</div>
+                  <div className="text-sm text-forest-700">Análise de Sentimento</div>
+                </div>
+                <div className="bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-forest-600">{analysisStats.crossAnalysis}</div>
+                  <div className="text-sm text-forest-700">Análise Cruzada</div>
+                </div>
+                <div className="bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-forest-600">{analysisStats.nlpAnalysis}</div>
+                  <div className="text-sm text-forest-700">Processamento de Linguagem Natural</div>
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-3">Análises Configuradas por Monitoramento</h3>
+                <div className="space-y-3">
+                  {monitoringItems.length > 0 ? (
+                    monitoringItems.slice(0, 5).map((item, index) => (
+                      <div key={index} className="p-3 border border-forest-100 rounded-lg">
+                        <div className="font-medium text-forest-800">{item.name}</div>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          <span className="text-xs px-2 py-0.5 bg-forest-100 text-forest-700 rounded-full">
+                            {item.category}
+                          </span>
+                          <span className="text-xs px-2 py-0.5 bg-forest-100 text-forest-700 rounded-full">
+                            {item.frequency}
+                          </span>
+                          {item.keywords?.split(',').slice(0, 2).map((keyword, idx) => (
+                            <span key={idx} className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full">
+                              {keyword.trim()}
+                            </span>
+                          ))}
+                          {(item.keywords?.split(',').length || 0) > 2 && (
+                            <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">
+                              +{(item.keywords?.split(',').length || 0) - 2} mais
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      Nenhum monitoramento configurado ainda.
+                    </div>
+                  )}
+                  
+                  {monitoringItems.length > 5 && (
+                    <div className="text-center text-sm text-muted-foreground mt-2">
+                      Mostrando 5 de {monitoringItems.length} monitoramentos
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Ferramentas de Análise</CardTitle>
+              <CardDescription>Ferramentas disponíveis para análise de dados</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AnalysisTools />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Relatórios de Análise</CardTitle>
+              <CardDescription>Relatórios gerados a partir dos monitoramentos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="p-4 border border-forest-100 rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Relatório Mensal - Maio/2024</h3>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Disponível</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Resumo completo dos dados coletados em todos os monitoramentos durante o mês.
+                  </p>
+                  <div className="flex justify-end">
+                    <button className="text-xs px-3 py-1 bg-forest-600 text-white rounded">
+                      Download
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-4 border border-forest-100 rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Análise Comparativa - Q1 2024</h3>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Disponível</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Comparação dos dados do primeiro trimestre de 2024 com períodos anteriores.
+                  </p>
+                  <div className="flex justify-end">
+                    <button className="text-xs px-3 py-1 bg-forest-600 text-white rounded">
+                      Download
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-4 border border-dashed border-forest-200 rounded-lg space-y-2 bg-forest-50/50">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium text-muted-foreground">Relatório Semestral</h3>
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">Em preparação</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    O relatório semestral será gerado automaticamente em 30/06/2024.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 };
 
