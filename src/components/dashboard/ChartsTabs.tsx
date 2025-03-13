@@ -23,6 +23,13 @@ interface AnalysisStats {
   nlpAnalysis: number;
 }
 
+// Simulação de atualizações recentes para RecentUpdates
+const mockUpdates = [
+  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content" },
+  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data" },
+  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert" }
+];
+
 interface ChartsTabsProps {
   monitoringItems: MonitoringItem[];
   categoryData?: { name: string; value: number }[];
@@ -112,7 +119,7 @@ const ChartsTabs = ({
               <CardDescription>Últimos monitoramentos adicionados</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentMonitorings monitoringItems={monitoringItems} />
+              <RecentMonitorings monitorings={monitoringItems} />
             </CardContent>
           </Card>
 
@@ -122,7 +129,7 @@ const ChartsTabs = ({
               <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates />
+              <RecentUpdates updates={mockUpdates} />
             </CardContent>
           </Card>
         </div>
@@ -232,7 +239,7 @@ const ChartsTabs = ({
               <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates />
+              <RecentUpdates updates={mockUpdates} />
             </CardContent>
           </Card>
 
@@ -349,7 +356,7 @@ const ChartsTabs = ({
               <CardDescription>Ferramentas disponíveis para análise de dados</CardDescription>
             </CardHeader>
             <CardContent>
-              <AnalysisTools />
+              <AnalysisTools items={monitoringItems} />
             </CardContent>
           </Card>
 

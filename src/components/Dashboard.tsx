@@ -15,6 +15,7 @@ import {
   getResponsibleData,
   getRadarData
 } from "./dashboard/DashboardUtils";
+import { mapToSystemUpdates } from "@/lib/chartUtils";
 
 interface DashboardProps {
   data: Array<{
@@ -43,6 +44,9 @@ const Dashboard: React.FC<DashboardProps> = ({
   const frequencyData = useMemo(() => getFrequencyData(monitoringItems), [monitoringItems]);
   const responsibleData = useMemo(() => getResponsibleData(monitoringItems), [monitoringItems]);
   const radarData = useMemo(() => getRadarData(monitoringItems), [monitoringItems]);
+
+  // Converter dados para o formato correto de SystemUpdatesChart
+  const systemUpdatesData = useMemo(() => mapToSystemUpdates(data), [data]);
 
   return (
     <div className="grid gap-6">
@@ -77,7 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* Atualizações do Sistema - Gráfico de Área */}
-      <SystemUpdatesChart data={data} />
+      <SystemUpdatesChart data={systemUpdatesData} />
 
       {/* Ferramentas de Análise - apenas para administradores */}
       {isAuthenticated && <AnalysisTools items={monitoringItems} />}

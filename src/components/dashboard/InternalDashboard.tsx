@@ -1,5 +1,5 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
 import MonitoringStatsGrid from "./MonitoringStatsGrid";
@@ -12,6 +12,10 @@ import {
   getResponsibleData, 
   getRadarData 
 } from "./DashboardUtils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Download, Filter } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Definição da interface de props
 interface InternalDashboardProps {
@@ -38,11 +42,20 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   monitoringItems,
   systemUpdatesData
 }) => {
-  // Preparar estatísticas derivadas dos dados de monitoramento
-  const categoryData = useMemo(() => getCategoryData(monitoringItems), [monitoringItems]);
-  const frequencyData = useMemo(() => getFrequencyData(monitoringItems), [monitoringItems]);
-  const responsibleData = useMemo(() => getResponsibleData(monitoringItems), [monitoringItems]);
-  const radarData = useMemo(() => getRadarData(monitoringItems), [monitoringItems]);
+  // Estado para filtro de monitoramento individual
+  const [selectedMonitoring, setSelectedMonitoring] = useState<string>("todos");
+
+  // Filtrar itens de monitoramento com base na seleção
+  const filteredMonitoringItems = useMemo(() => {
+    if (selectedMonitoring === "todos") return monitoringItems;
+    return monitoringItems.filter(item => item.id === selectedMonitoring);
+  }, [monitoringItems, selectedMonitoring]);
+
+  // Preparar estatísticas derivadas dos dados de monitoramento filtrados
+  const categoryData = useMemo(() => getCategoryData(filteredMonitoringItems), [filteredMonitoringItems]);
+  const frequencyData = useMemo(() => getFrequencyData(filteredMonitoringItems), [filteredMonitoringItems]);
+  const responsibleData = useMemo(() => getResponsibleData(filteredMonitoringItems), [filteredMonitoringItems]);
+  const radarData = useMemo(() => getRadarData(filteredMonitoringItems), [filteredMonitoringItems]);
   
   // Prepare stats items for dashboard header
   const headerStats = [
@@ -51,19 +64,27 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
     { value: 128, label: "Coletas na Semana" }
   ];
 
-  // Obter dados de atualizações processados corretamente para o SystemUpdatesChart
-  const processedUpdatesData = useMemo(() => {
-    // Utilizamos os dados já processados fornecidos pelas props
-    return systemUpdatesData;
-  }, [systemUpdatesData]);
-
   // Calcular estatísticas sobre os tipos de análise ativos para cada monitoramento
-  // Normalmente isso viria da persistência real das configurações
   const analysisStats = {
-    contentAnalysis: monitoringItems.filter(item => item.category === "indicadores").length,
-    sentimentAnalysis: monitoringItems.filter(item => item.category === "legislacao").length,
-    crossAnalysis: monitoringItems.filter(item => item.keywords?.includes("comparativo")).length,
-    nlpAnalysis: monitoringItems.filter(item => item.keywords?.includes("nlp") || item.keywords?.includes("linguagem natural")).length
+    contentAnalysis: filteredMonitoringItems.filter(item => item.category === "indicadores").length,
+    sentimentAnalysis: filteredMonitoringItems.filter(item => item.category === "legislacao").length,
+    crossAnalysis: filteredMonitoringItems.filter(item => item.keywords?.includes("comparativo")).length,
+    nlpAnalysis: filteredMonitoringItems.filter(item => item.keywords?.includes("nlp") || item.keywords?.includes("linguagem natural")).length
+  };
+
+  // Função para exportar dados do monitoramento selecionado
+  const exportSelectedMonitoring = () => {
+    const dataToExport = selectedMonitoring === "todos" ? monitoringItems : filteredMonitoringItems;
+    const dataStr = JSON.stringify(dataToExport, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const fileName = selectedMonitoring === "todos" 
+      ? 'todos-monitoramentos.json' 
+      : `monitoramento-${filteredMonitoringItems[0]?.name.replace(/\s+/g, '-').toLowerCase() || 'selecionado'}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', fileName);
+    linkElement.click();
   };
 
   return (
@@ -74,6 +95,45 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
         description="Acompanhamento detalhado dos monitoramentos e análises internas"
         statsItems={headerStats}
       />
+
+      {/* Filtro de monitoramento individual */}
+      <Card className="border-forest-100 shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-forest-700 text-base font-medium flex items-center gap-2">
+            <Filter size={18} className="text-forest-600" />
+            Filtrar por Monitoramento
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="w-full md:w-1/2">
+              <Select 
+                value={selectedMonitoring} 
+                onValueChange={setSelectedMonitoring}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione um monitoramento" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os monitoramentos</SelectItem>
+                  {monitoringItems.map(item => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button 
+              onClick={exportSelectedMonitoring}
+              className="bg-forest-600 hover:bg-forest-700 flex items-center gap-2"
+            >
+              <Download size={16} />
+              Exportar Dados
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filtros */}
       <DashboardControls 
@@ -86,20 +146,20 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
 
       {/* Grade de estatísticas */}
       <MonitoringStatsGrid 
-        totalMonitorings={monitoringItems.length}
-        activeSpiders={monitoringItems.filter(item => item.category === "api").length}
-        pendingUpdates={12}
+        totalMonitorings={filteredMonitoringItems.length}
+        activeSpiders={filteredMonitoringItems.filter(item => item.category === "api").length}
+        pendingUpdates={selectedMonitoring === "todos" ? 12 : 2}
         lastUpdateDate="10/05/2024"
       />
 
       {/* Conteúdo em abas - Passamos todos os dados processados para o componente de abas */}
       <ChartsTabs 
-        monitoringItems={monitoringItems}
+        monitoringItems={filteredMonitoringItems}
         categoryData={categoryData}
         frequencyData={frequencyData}
         responsibleData={responsibleData}
         radarData={radarData}
-        systemUpdatesData={processedUpdatesData}
+        systemUpdatesData={systemUpdatesData}
         analysisStats={analysisStats}
       />
     </div>

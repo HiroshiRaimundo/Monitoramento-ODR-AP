@@ -32,11 +32,18 @@ interface TabContentProps {
   setResponsibleFilter?: (responsible: string) => void;
 }
 
+// Simulação de atualizações recentes para RecentUpdates
+const mockUpdates = [
+  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content" },
+  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data" },
+  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert" }
+];
+
 const initialMockData = Array.from({ length: 12 }, (_, i) => ({
   name: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][i],
-  estudos: 0,
-  monitoramentos: 0,
-  atualizacoes: 0
+  estudos: Math.floor(Math.random() * 10) + 5,
+  monitoramentos: Math.floor(Math.random() * 8) + 3,
+  atualizacoes: Math.floor(Math.random() * 20) + 10
 }));
 
 const TabContent: React.FC<TabContentProps> = ({
@@ -58,7 +65,9 @@ const TabContent: React.FC<TabContentProps> = ({
   setResponsibleFilter = () => {}
 }) => {
   // Preparar os dados no formato correto para o SystemUpdatesChart
-  const systemUpdatesData = useMemo(() => mapToSystemUpdates(initialMockData), []);
+  const systemUpdatesData = useMemo(() => {
+    return mapToSystemUpdates(initialMockData);
+  }, []);
 
   return (
     <Tabs defaultValue="publico" className="w-full">
