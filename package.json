@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build && node copy-htaccess.js",
     "build:dev": "vite build --mode development && node copy-htaccess.js",
+    "build:static": "node build-static.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "copy-htaccess": "node copy-htaccess.js"
@@ -42,6 +43,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@supabase/supabase-js": "^2.49.1",
     "@tanstack/react-query": "^5.56.2",
+    "@vitejs/plugin-react": "^4.3.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

@@ -8,10 +8,18 @@
     <meta name="author" content="PPGDAPP" />
     <meta property="og:image" content="/og-image.png" />
     
-    <!-- Precarregar fontes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Import Map para resolver módulos -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "react-router-dom": "https://esm.sh/react-router-dom@6.18.0",
+        "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@4.36.1"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
