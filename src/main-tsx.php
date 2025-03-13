@@ -19,12 +19,23 @@ if (file_exists($filePath) && is_file($filePath)) {
     header('Pragma: no-cache');
     header('Expires: 0');
     
-    // Enviar o conteúdo do arquivo
-    readfile($filePath);
+    // Ler o conteúdo do arquivo
+    $content = file_get_contents($filePath);
+    
+    // Verificar se o conteúdo foi lido corretamente
+    if ($content !== false) {
+        // Enviar o conteúdo do arquivo
+        echo $content;
+    } else {
+        // Se não foi possível ler o conteúdo, retornar erro 500
+        http_response_code(500);
+        echo '// Erro ao ler o arquivo main.tsx';
+    }
+    
     exit;
 } else {
     // Se o arquivo não existir, retornar erro 404
     http_response_code(404);
-    echo 'Arquivo não encontrado';
+    echo '// Arquivo main.tsx não encontrado';
 }
 ?>

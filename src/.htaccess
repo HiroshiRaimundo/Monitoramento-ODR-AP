@@ -2,13 +2,11 @@
 <IfModule mod_mime.c>
   AddType application/javascript .js
   AddType application/javascript .mjs
-  AddType application/javascript .tsx
-  AddType application/javascript .jsx
   AddType application/json .json
 </IfModule>
 
 # Definir cabeçalhos para arquivos específicos
-<FilesMatch "\.(js|mjs|tsx|jsx)$">
+<FilesMatch "\.(js|mjs)$">
   <IfModule mod_headers.c>
     Header set Content-Type "application/javascript; charset=UTF-8"
     Header set X-Content-Type-Options "nosniff"
