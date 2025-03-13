@@ -5,8 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface MonitoringItem {
   name: string;
@@ -433,14 +431,19 @@ const MonitoringForm: React.FC<MonitoringFormProps> = ({ form, onSubmit }) => {
                 <p className="text-xs font-mono text-muted-foreground mb-3">{spiderExamples[activeSpider].path}</p>
                 
                 <div className="bg-muted rounded-md overflow-hidden">
-                  <SyntaxHighlighter 
+                  {/* <SyntaxHighlighter 
                     language={activeSpider === "api" ? "javascript" : "python"} 
                     style={vscDarkPlus}
                     customStyle={{ margin: 0, borderRadius: '0.375rem' }}
                     showLineNumbers={true}
                   >
                     {spiderExamples[activeSpider].code.trim()}
-                  </SyntaxHighlighter>
+                  </SyntaxHighlighter> */}
+                  <pre>
+                    <code>
+                      {spiderExamples[activeSpider].code.trim()}
+                    </code>
+                  </pre>
                 </div>
               </div>
             </div>

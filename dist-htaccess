@@ -70,5 +70,5 @@
   RewriteCond %{REQUEST_FILENAME} !-d
   
   # Para todas as outras requisições, reescreva para index.html
-  RewriteRule . /index.html [L]
+  RewriteRule ^ index.html [L]
 </IfModule>

@@ -1,8 +1,8 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+// Removendo as importações problemáticas
+// import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+// import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CodeExample } from "./code-examples";
 
 interface CodeExampleViewerProps {
@@ -37,15 +37,12 @@ const CodeExampleViewer: React.FC<CodeExampleViewerProps> = ({
         <p className="text-sm text-muted-foreground mb-2">{currentExample.description}</p>
         <p className="text-xs font-mono text-muted-foreground mb-3">{currentExample.path}</p>
         
-        <div className="bg-muted rounded-md overflow-hidden">
-          <SyntaxHighlighter 
-            language={activeExample === "api" ? "javascript" : "python"} 
-            style={vscDarkPlus}
-            customStyle={{ margin: 0, borderRadius: '0.375rem' }}
-            showLineNumbers={true}
-          >
-            {currentExample.code.trim()}
-          </SyntaxHighlighter>
+        <div className="bg-muted rounded-md overflow-hidden p-4">
+          <pre className="text-sm overflow-auto" style={{ maxHeight: '400px' }}>
+            <code>
+              {currentExample.code.trim()}
+            </code>
+          </pre>
         </div>
       </div>
     </div>
