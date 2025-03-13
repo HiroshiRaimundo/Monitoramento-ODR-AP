@@ -3,15 +3,12 @@
   RewriteEngine On
   RewriteBase /
   
+  # Redirecionar solicitações para arquivos .tsx para o manipulador PHP correspondente
+  RewriteRule ^src/main\.tsx$ /src/main-tsx.php [L]
+  
   # Não aplicar regras a arquivos existentes ou diretórios
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  
-  # Se a requisição for para index.php, não fazer nada
-  RewriteRule ^index\.php$ - [L]
-  
-  # Para PHP-based hosts, reescreva para index.php
-  RewriteRule ^(api|admin)($|/) index.php [L]
   
   # Para todas as outras requisições, reescreva para index.html (SPA React)
   RewriteRule . /index.html [L]
@@ -21,59 +18,37 @@
 <IfModule mod_mime.c>
   AddType application/javascript .js
   AddType application/javascript .mjs
-  AddType text/javascript .js
-  AddType text/javascript .mjs
+  AddType application/javascript .tsx
+  AddType application/javascript .jsx
   AddType application/json .json
   AddType text/css .css
   AddType image/svg+xml .svg
-  AddType font/ttf .ttf
-  AddType font/otf .otf
-  AddType font/woff .woff
-  AddType font/woff2 .woff2
 </IfModule>
+
+# Definir cabeçalhos para arquivos específicos
+<FilesMatch "\.(js|mjs|tsx|jsx)$">
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/javascript"
+    Header set X-Content-Type-Options "nosniff"
+  </IfModule>
+</FilesMatch>
+
+<FilesMatch "\.(css)$">
+  <IfModule mod_headers.c>
+    Header set Content-Type "text/css"
+  </IfModule>
+</FilesMatch>
 
 # Habilitar CORS
 <IfModule mod_headers.c>
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
   Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  
-  # Configurar o tipo MIME correto para JavaScript modules
-  <FilesMatch "\.js$">
-    Header set Content-Type "application/javascript"
-  </FilesMatch>
-  <FilesMatch "\.mjs$">
-    Header set Content-Type "application/javascript"
-  </FilesMatch>
 </IfModule>
 
-# Configurações de cache para arquivos estáticos
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType image/jpg "access plus 1 year"
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/gif "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType text/css "access plus 1 month"
-  ExpiresByType application/javascript "access plus 1 month"
-  ExpiresByType text/javascript "access plus 1 month"
-  ExpiresByType application/pdf "access plus 1 month"
-  ExpiresByType application/x-font-woff "access plus 1 year"
-</IfModule>
-
-# Verificar se mod_php está ativado e configurar para exibir todos os erros
-<IfModule mod_php7.c>
-  php_flag display_errors on
-  php_value error_reporting E_ALL
-  php_flag display_startup_errors on
-  php_flag log_errors on
-  php_value error_log php-error.log
-</IfModule>
-<IfModule mod_php.c>
-  php_flag display_errors on
-  php_value error_reporting E_ALL
-  php_flag display_startup_errors on
-  php_flag log_errors on
-  php_value error_log php-error.log
+# Desativar o cache para desenvolvimento
+<IfModule mod_headers.c>
+  Header set Cache-Control "no-cache, no-store, must-revalidate"
+  Header set Pragma "no-cache"
+  Header set Expires 0
 </IfModule>
