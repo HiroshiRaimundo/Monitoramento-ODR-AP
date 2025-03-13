@@ -57,6 +57,7 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
+  // Aqui garantimos que os dados estão no formato correto para o SystemUpdatesChart
   const systemUpdatesData = mapToSystemUpdates(initialMockData);
 
   return (

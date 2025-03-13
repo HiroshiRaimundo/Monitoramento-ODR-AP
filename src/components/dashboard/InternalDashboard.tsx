@@ -19,7 +19,7 @@ interface InternalDashboardProps {
   setTimeRange: (value: string) => void;
   handleExport: () => void;
   isAuthenticated: boolean;
-  monitoringItems: any[];
+  monitoringItems: MonitoringItem[];
   systemUpdatesData: { name: string; updates: number; }[];
 }
 
@@ -38,9 +38,6 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
     { value: Array.from(new Set(monitoringItems.map(item => item.category))).length, label: "Categorias" },
     { value: 128, label: "Coletas na Semana" }
   ];
-
-  // Transformar o formato dos dados para corresponder ao esperado pelo SystemUpdatesChart
-  const formattedUpdatesData = mapToSystemUpdates(data);
 
   return (
     <div className="grid gap-6 font-poppins">

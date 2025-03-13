@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Clock, Code, Database, FileText, Image, Link, Code2, Layout, Shield, Key, GitBranch, CheckCircle, XCircle, Search, ChevronDown } from "lucide-react";
+import { Clock, Code, Database, FileText, Image, Link, Code2, Layout, Shield, Key, GitBranch, CheckCircle, XCircle, Search, ChevronDown, BarChart, Heart, GitMerge, Bot, Filter, Award, Zap, Layers, Share2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -208,6 +207,114 @@ const MonitoringMetrics = () => {
         "Geração de datasets para análise"
       ],
       pythonModule: "# comando de execução\n# scrapy crawl spider_name -o output.json",
+      enabled: true
+    },
+    {
+      icon: <BarChart className="h-5 w-5" />,
+      title: "Análise de Conteúdo",
+      description: "Extração e análise sistemática do conteúdo textual de páginas web.",
+      useCases: [
+        "Identificação de temas e tópicos principais",
+        "Análise de frequência de palavras-chave",
+        "Categorização automática de conteúdo"
+      ],
+      pythonModule: "import nltk\nfrom nltk.tokenize import word_tokenize\nfrom collections import Counter\n\ndef analyze_content(text):\n    tokens = word_tokenize(text.lower())\n    words = [word for word in tokens if word.isalpha()]\n    word_freq = Counter(words)\n    return word_freq.most_common(10)",
+      enabled: true
+    },
+    {
+      icon: <Heart className="h-5 w-5" />,
+      title: "Análise de Sentimento",
+      description: "Determina a polaridade emocional (positiva, negativa, neutra) de textos extraídos.",
+      useCases: [
+        "Monitoramento de opinião pública",
+        "Análise de feedback de usuários",
+        "Avaliação de percepção de marca"
+      ],
+      pythonModule: "from textblob import TextBlob\n\ndef analyze_sentiment(text):\n    analysis = TextBlob(text)\n    polarity = analysis.sentiment.polarity\n    if polarity > 0.1:\n        return 'Positivo'\n    elif polarity < -0.1:\n        return 'Negativo'\n    else:\n        return 'Neutro'",
+      enabled: true
+    },
+    {
+      icon: <GitMerge className="h-5 w-5" />,
+      title: "Análise Cruzada",
+      description: "Combina e correlaciona dados de múltiplas fontes para obter insights mais abrangentes.",
+      useCases: [
+        "Comparação de dados de diferentes sites",
+        "Validação cruzada de informações",
+        "Identificação de tendências em múltiplas fontes"
+      ],
+      pythonModule: "import pandas as pd\n\ndef cross_analyze(data1, data2):\n    df1 = pd.DataFrame(data1)\n    df2 = pd.DataFrame(data2)\n    \n    # Juntando os dados por uma chave comum\n    merged_data = pd.merge(df1, df2, on='key_field')\n    \n    # Calculando correlações\n    correlation = merged_data.corr()\n    return correlation",
+      enabled: true
+    },
+    {
+      icon: <Bot className="h-5 w-5" />,
+      title: "Processamento de Linguagem Natural",
+      description: "Aplica técnicas de NLP para extrair significado e estrutura de textos.",
+      useCases: [
+        "Extração de entidades nomeadas (pessoas, locais, organizações)",
+        "Sumarização automática de textos",
+        "Análise de tópicos e classificação de documentos"
+      ],
+      pythonModule: "import spacy\n\ndef extract_entities(text):\n    nlp = spacy.load('pt_core_news_sm')\n    doc = nlp(text)\n    \n    entities = {}\n    for ent in doc.ents:\n        if ent.label_ not in entities:\n            entities[ent.label_] = []\n        entities[ent.label_].append(ent.text)\n    \n    return entities",
+      enabled: true
+    },
+    {
+      icon: <Filter className="h-5 w-5" />,
+      title: "Análise de Tendências",
+      description: "Identifica padrões e tendências em séries temporais de dados.",
+      useCases: [
+        "Monitoramento de tendências de mercado",
+        "Previsão de comportamentos futuros",
+        "Detecção de anomalias em séries temporais"
+      ],
+      pythonModule: "import pandas as pd\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef analyze_trend(data, date_column):\n    df = pd.DataFrame(data)\n    df[date_column] = pd.to_datetime(df[date_column])\n    df.set_index(date_column, inplace=True)\n    \n    # Decomposição da série temporal\n    result = seasonal_decompose(df['value'], model='multiplicative')\n    return {\n        'trend': result.trend,\n        'seasonal': result.seasonal,\n        'residual': result.resid\n    }",
+      enabled: true
+    },
+    {
+      icon: <Award className="h-5 w-5" />,
+      title: "Classificação de Conteúdo",
+      description: "Categoriza automaticamente textos em classes predefinidas usando aprendizado de máquina.",
+      useCases: [
+        "Filtragem de conteúdo por relevância",
+        "Categorização de documentos",
+        "Detecção de spam ou conteúdo inadequado"
+      ],
+      pythonModule: "from sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.naive_bayes import MultinomialNB\n\ndef train_classifier(texts, labels):\n    vectorizer = TfidfVectorizer()\n    X = vectorizer.fit_transform(texts)\n    classifier = MultinomialNB()\n    classifier.fit(X, labels)\n    \n    def predict(new_texts):\n        X_new = vectorizer.transform(new_texts)\n        return classifier.predict(X_new)\n    \n    return predict",
+      enabled: true
+    },
+    {
+      icon: <Zap className="h-5 w-5" />,
+      title: "Detecção de Eventos",
+      description: "Identifica eventos significativos em fluxos de dados contínuos.",
+      useCases: [
+        "Monitoramento de alterações importantes em sites",
+        "Alertas sobre eventos específicos",
+        "Detecção de lançamentos ou anúncios"
+      ],
+      pythonModule: "import numpy as np\nfrom scipy import signal\n\ndef detect_events(time_series, threshold=3):\n    # Detectando picos que ultrapassam o desvio padrão por um fator threshold\n    mean = np.mean(time_series)\n    std = np.std(time_series)\n    \n    # Encontrando picos\n    peaks, _ = signal.find_peaks(time_series, height=mean + (std * threshold))\n    \n    return peaks",
+      enabled: true
+    },
+    {
+      icon: <Layers className="h-5 w-5" />,
+      title: "Análise Multi-camada",
+      description: "Combina diferentes técnicas analíticas em camadas para uma compreensão mais profunda.",
+      useCases: [
+        "Análise complexa de sites dinâmicos",
+        "Integração de múltiplos tipos de dados",
+        "Geração de insights avançados em dados heterogêneos"
+      ],
+      pythonModule: "class MultiLayerAnalysis:\n    def __init__(self):\n        self.analyzers = []\n    \n    def add_analyzer(self, analyzer, weight=1.0):\n        self.analyzers.append({\"func\": analyzer, \"weight\": weight})\n    \n    def analyze(self, data):\n        results = {}\n        for analyzer in self.analyzers:\n            result = analyzer[\"func\"](data)\n            weight = analyzer[\"weight\"]\n            results[analyzer[\"func\"].__name__] = {\"result\": result, \"weight\": weight}\n        return results",
+      enabled: true
+    },
+    {
+      icon: <Share2 className="h-5 w-5" />,
+      title: "Análise de Redes",
+      description: "Estuda as conexões entre entidades e estruturas de redes em dados.",
+      useCases: [
+        "Mapeamento de links entre sites",
+        "Análise de influenciadores em redes sociais",
+        "Identificação de comunidades e clusters"
+      ],
+      pythonModule: "import networkx as nx\nimport matplotlib.pyplot as plt\n\ndef analyze_network(nodes, edges):\n    G = nx.Graph()\n    \n    # Adicionando nós e arestas\n    for node in nodes:\n        G.add_node(node['id'], **node.get('attributes', {}))\n    \n    for edge in edges:\n        G.add_edge(edge['source'], edge['target'], **edge.get('attributes', {}))\n    \n    # Calculando métricas\n    centrality = nx.degree_centrality(G)\n    betweenness = nx.betweenness_centrality(G)\n    communities = list(nx.community.greedy_modularity_communities(G))\n    \n    return {\n        'centrality': centrality,\n        'betweenness': betweenness,\n        'communities': communities,\n        'graph': G\n    }",
       enabled: true
     }
   ]);
