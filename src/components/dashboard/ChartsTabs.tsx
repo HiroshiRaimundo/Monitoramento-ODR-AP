@@ -22,11 +22,22 @@ interface AnalysisStats {
   nlpAnalysis: number;
 }
 
+// Interface para RecentUpdate com os campos necessários
+export interface RecentUpdate {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: string;
+  site: string;
+  status: string;
+}
+
 // Simulação de atualizações recentes para RecentUpdates
 const mockUpdates = [
-  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content" },
-  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data" },
-  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert" }
+  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content", site: "gov.br", status: "atualizado" },
+  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data", site: "ibge.gov.br", status: "atualizado" },
+  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert", site: "imprensaoficial.gov.br", status: "novo" }
 ];
 
 interface ChartsTabsProps {
@@ -37,6 +48,8 @@ interface ChartsTabsProps {
   radarData?: { subject: string; A: number; fullMark: number }[];
   systemUpdatesData: { name: string; updates: number }[];
   analysisStats?: AnalysisStats;
+  recentAlerts?: RecentUpdate[];
+  recentReports?: RecentUpdate[];
 }
 
 const ChartsTabs = ({ 
@@ -51,7 +64,9 @@ const ChartsTabs = ({
     sentimentAnalysis: 0,
     crossAnalysis: 0,
     nlpAnalysis: 0
-  }
+  },
+  recentAlerts = [],
+  recentReports = []
 }: ChartsTabsProps) => {
   return (
     <Tabs defaultValue="visão-geral" className="w-full">
@@ -76,7 +91,6 @@ const ChartsTabs = ({
 
       <TabsContent value="visão-geral">
         <div className="grid grid-cols-1 gap-6">
-          {/* Gráfico principal em largura total */}
           <Card className="col-span-1">
             <CardHeader>
               <CardTitle>Atualizações do Sistema</CardTitle>
@@ -89,7 +103,6 @@ const ChartsTabs = ({
             </CardContent>
           </Card>
 
-          {/* Primeira linha de gráficos - 2 colunas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -116,7 +129,6 @@ const ChartsTabs = ({
             </Card>
           </div>
 
-          {/* Segunda linha de gráficos - 2 colunas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -362,7 +374,7 @@ const ChartsTabs = ({
               <CardDescription>Ferramentas disponíveis para análise de dados</CardDescription>
             </CardHeader>
             <CardContent>
-              <AnalysisTools items={monitoringItems} />
+              <AnalysisTools monitoringItems={monitoringItems} />
             </CardContent>
           </Card>
 

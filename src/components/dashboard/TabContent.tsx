@@ -153,7 +153,7 @@ const TabContent: React.FC<TabContentProps> = ({
           </TabsTrigger>
         )}
         <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-          Mapa Interativo
+          Registro de Estudos
         </TabsTrigger>
         {isAuthenticated && (
           <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">

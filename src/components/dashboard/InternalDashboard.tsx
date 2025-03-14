@@ -1,8 +1,9 @@
+
 import React, { useMemo, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
 import MonitoringStatsGrid from "./MonitoringStatsGrid";
-import ChartsTabs from "./ChartsTabs";
+import ChartsTabs, { RecentUpdate } from "./ChartsTabs";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { mapToSystemUpdates } from "@/lib/chartUtils";
 import { 
@@ -16,17 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Download, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-// Interface para RecentUpdate
-export interface RecentUpdate {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  type: string;
-  site: string;
-  status: string;
-}
 
 // Definição da interface de props
 interface InternalDashboardProps {
