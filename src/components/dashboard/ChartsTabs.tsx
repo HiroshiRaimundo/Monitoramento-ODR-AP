@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,8 +75,9 @@ const ChartsTabs = ({
       </TabsList>
 
       <TabsContent value="visão-geral">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="col-span-2">
+        <div className="grid grid-cols-1 gap-6">
+          {/* Gráfico principal em largura total */}
+          <Card className="col-span-1">
             <CardHeader>
               <CardTitle>Atualizações do Sistema</CardTitle>
               <CardDescription>Monitoramento de atualizações ao longo do tempo</CardDescription>
@@ -89,49 +89,55 @@ const ChartsTabs = ({
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribuição por Categorias</CardTitle>
-              <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={{}} className="h-60">
-                <CategoryChart data={categoryData || []} />
-              </ChartContainer>
-            </CardContent>
-          </Card>
+          {/* Primeira linha de gráficos - 2 colunas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Distribuição por Categorias</CardTitle>
+                <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={{}} className="h-60">
+                  <CategoryChart data={categoryData || []} />
+                </ChartContainer>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribuição por Frequência</CardTitle>
-              <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={{}} className="h-60">
-                <FrequencyChart data={frequencyData || []} />
-              </ChartContainer>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Distribuição por Frequência</CardTitle>
+                <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={{}} className="h-60">
+                  <FrequencyChart data={frequencyData || []} />
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Monitoramentos Recentes</CardTitle>
-              <CardDescription>Últimos monitoramentos adicionados</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RecentMonitorings monitorings={monitoringItems} />
-            </CardContent>
-          </Card>
+          {/* Segunda linha de gráficos - 2 colunas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Monitoramentos Recentes</CardTitle>
+                <CardDescription>Últimos monitoramentos adicionados</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RecentMonitorings monitorings={monitoringItems} />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Atualizações Recentes</CardTitle>
-              <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RecentUpdates updates={mockUpdates} />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Atualizações Recentes</CardTitle>
+                <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RecentUpdates updates={mockUpdates} />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </TabsContent>
 

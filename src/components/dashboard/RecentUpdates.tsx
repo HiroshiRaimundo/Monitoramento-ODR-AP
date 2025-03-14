@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClipboardCheck, AlertTriangle, Clock, AlertCircle } from "lucide-react";
@@ -46,7 +45,7 @@ const RecentUpdates: React.FC<RecentUpdatesProps> = ({ updates }) => {
   };
 
   return (
-    <Card className="border-forest-100 shadow-sm mt-6">
+    <Card className="border-forest-100 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-forest-700 text-base font-medium">Atualizações Recentes</CardTitle>
       </CardHeader>

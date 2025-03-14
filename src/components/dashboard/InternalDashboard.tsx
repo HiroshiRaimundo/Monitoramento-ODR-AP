@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
@@ -85,10 +84,10 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
 
   // Função para exportar dados do monitoramento selecionado
   const exportSelectedMonitoring = () => {
-    const dataToExport = selectedMonitoring === "todos" ? monitoringItems : filteredMonitoringItems;
+    const dataToExport = selectedMonitoring === 'todos' ? monitoringItems : filteredMonitoringItems;
     const dataStr = JSON.stringify(dataToExport, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const fileName = selectedMonitoring === "todos" 
+    const fileName = selectedMonitoring === 'todos' 
       ? 'todos-monitoramentos.json' 
       : `monitoramento-${filteredMonitoringItems[0]?.name.replace(/\s+/g, '-').toLowerCase() || 'selecionado'}.json`;
     

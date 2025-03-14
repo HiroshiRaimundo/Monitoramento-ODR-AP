@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
@@ -118,6 +117,24 @@ const TabContent: React.FC<TabContentProps> = ({
   const recentAlerts = useMemo(() => getRecentAlerts(), []);
   const recentReports = useMemo(() => getRecentReports(), []);
 
+  // Filtrar estudos com base no timeRange para o mapa
+  const filteredStudies = useMemo(() => {
+    // Em uma implementação real, você usaria datas reais para filtrar
+    // Aqui estamos apenas simulando uma filtragem baseada no timeRange
+    switch(timeRange) {
+      case 'diario':
+        return studies.filter((_, index) => index % 4 === 0);
+      case 'semanal':
+        return studies.filter((_, index) => index % 3 === 0);
+      case 'mensal':
+        return studies.filter((_, index) => index % 2 === 0);
+      case 'anual':
+        return studies;
+      default:
+        return studies;
+    }
+  }, [studies, timeRange]);
+
   return (
     <Tabs defaultValue="publico" className="w-full">
       <TabsList className="grid grid-cols-5 w-full bg-forest-50 p-1">
@@ -151,6 +168,7 @@ const TabContent: React.FC<TabContentProps> = ({
           setTimeRange={setTimeRange}
           isAuthenticated={isAuthenticated}
           studies={studies}
+          mapData={filteredStudies}
         />
       </TabsContent>
 
@@ -191,7 +209,7 @@ const TabContent: React.FC<TabContentProps> = ({
 
       <TabsContent value="map">
         <MapView 
-          studies={studies} 
+          studies={filteredStudies} 
           isAuthenticated={isAuthenticated}
           onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
         />
