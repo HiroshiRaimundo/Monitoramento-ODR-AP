@@ -167,6 +167,7 @@ const TabContent: React.FC<TabContentProps> = ({
           timeRange={timeRange}
           setTimeRange={setTimeRange}
           isAuthenticated={isAuthenticated}
+          studies={studies}
           mapData={filteredStudies}
         />
       </TabsContent>
@@ -210,7 +211,7 @@ const TabContent: React.FC<TabContentProps> = ({
         <MapView 
           studies={filteredStudies} 
           isAuthenticated={isAuthenticated}
-          onStudySubmit={handleStudySubmit}
+          onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
         />
       </TabsContent>
 
