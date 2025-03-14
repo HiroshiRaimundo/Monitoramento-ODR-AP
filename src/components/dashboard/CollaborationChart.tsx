@@ -46,11 +46,11 @@ const CollaborationChart: React.FC<CollaborationChartProps> = ({ authors, instit
         <CardTitle className="text-forest-700 font-poppins">Colaborações Científicas</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-[300px]">
+        <div className="h-[400px] relative">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={displayData} 
-              margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
               layout="vertical"
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -58,8 +58,13 @@ const CollaborationChart: React.FC<CollaborationChartProps> = ({ authors, instit
               <YAxis 
                 dataKey="name" 
                 type="category"
-                tick={{ fill: '#333', fontFamily: 'Poppins, sans-serif' }}
-                width={120}
+                tick={{ fill: '#333', fontFamily: 'Poppins, sans-serif', fontSize: 12 }}
+                width={150}
+                interval={0}
+                tickFormatter={(value) => {
+                  const words = value.split(' ');
+                  return words.length > 2 ? words.slice(0, 2).join(' ') + '...' : value;
+                }}
               />
               <Tooltip 
                 contentStyle={{ 

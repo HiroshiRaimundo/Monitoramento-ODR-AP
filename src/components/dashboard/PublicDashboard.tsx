@@ -6,7 +6,7 @@ import MonitoringLineChart from "./MonitoringLineChart";
 import CollaborationChart from "./CollaborationChart";
 import { ResearchStudy } from "@/types/research";
 import DashboardControls from "./DashboardControls";
-import { Info, FileBarChart } from "lucide-react";
+import { Info, FileBarChart, MapPin } from "lucide-react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import MapView from "@/components/MapView";
 
@@ -226,6 +226,25 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         isPublic={true}
       />
 
+      {/* Mapa filtrado por período */}
+      <Card className="border-forest-100 shadow-md overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
+          <div className="flex items-center gap-2">
+            <MapPin size={20} className="text-forest-600" />
+            <CardTitle className="text-forest-700">Distribuição Geográfica dos Estudos</CardTitle>
+          </div>
+          <CardDescription className="text-forest-600">
+            Mapa do Amapá com localização dos estudos registrados. 
+            Clique nos marcadores para ver mais detalhes.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100">
+            <MapView studies={filteredMapData} />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Gráficos Públicos - Layout em Grid com 4 gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Evolução de Estudos - Gráfico de Linha */}
@@ -242,11 +261,6 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
           authors={collaborationData.authors} 
           institutions={collaborationData.institutions} 
         />
-      </div>
-
-      {/* Mapa filtrado por período */}
-      <div className="mt-6">
-        <MapView studies={filteredMapData} />
       </div>
 
       {/* Informações adicionais */}
