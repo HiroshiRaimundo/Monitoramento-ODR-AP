@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,16 @@ import {
 } from "lucide-react";
 import { Sparklines, SparklinesLine } from 'react-sparklines';
 import { mapToStatusEnum } from "@/lib/chartUtils";
+
+export interface RecentUpdate {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: string;
+  site: string;
+  status: "error" | "success" | "warning" | "pending";
+}
 
 interface SystemUpdatesProps {
   data: Array<{
@@ -63,10 +74,11 @@ const statusColors = {
 
 const RecentAlert: React.FC<AlertProps> = ({ title, description, date, type, site, status }) => {
   const statusColor = statusColors[status] || statusColors.pending;
-  const statusIcon =
-    status === "error" ? AlertTriangle :
-    status === "success" ? CheckCircle :
-    status === "warning" ? Clock : PackageCheck;
+  let StatusIcon = PackageCheck;
+  
+  if (status === "error") StatusIcon = AlertTriangle;
+  else if (status === "success") StatusIcon = CheckCircle;
+  else if (status === "warning") StatusIcon = Clock;
 
   return (
     <li className="py-2 border-b border-gray-200 last:border-none">
@@ -79,7 +91,7 @@ const RecentAlert: React.FC<AlertProps> = ({ title, description, date, type, sit
             <span className="text-gray-500 text-xs">{date}</span>
           </div>
         </div>
-        <statusIcon className="h-5 w-5 text-gray-500" />
+        <StatusIcon className="h-5 w-5 text-gray-500" />
       </div>
     </li>
   );
@@ -150,102 +162,28 @@ const OverviewCard: React.FC<CardProps> = ({ title, value, percentageChange, pos
 
 interface ChartsTabsProps {
   systemUpdatesData: Array<{ name: string; updates: number }>;
-  recentAlerts: Array<{
-    title: string;
-    description: string;
-    date: string;
-    type: string;
-    site: string;
-    status: string;
-  }>;
-  recentReports: Array<{
-    title: string;
-    description: string;
-    date: string;
-    type: string;
-    site: string;
-  }>;
+  recentAlerts: RecentUpdate[];
+  recentReports: RecentUpdate[];
+  monitoringItems?: any[];
+  categoryData?: any[];
+  frequencyData?: any[];
+  responsibleData?: any[];
+  radarData?: any[];
+  analysisStats?: any[];
 }
 
-const ChartsTabs: React.FC<ChartsTabsProps> = ({ systemUpdatesData, recentAlerts, recentReports }) => {
-  const recentUpdates = [
-    {
-      id: "update-1",
-      title: "Atualização do Monitoramento de Dados IBGE",
-      description: "Atualização automática de dados socioeconômicos do IBGE",
-      date: "2023-05-15",
-      type: "api",
-      site: "IBGE",
-      status: mapToStatusEnum("success")
-    },
-    {
-      id: "update-2",
-      title: "Correção de Bugs no Módulo de Análise Preditiva",
-      description: "Implementação de hotfix para evitar falsos positivos",
-      date: "2023-05-10",
-      type: "code",
-      site: "Sistema Interno",
-      status: mapToStatusEnum("error")
-    },
-    {
-      id: "update-3",
-      title: "Implementação de Novo Algoritmo de Detecção de Anomalias",
-      description: "Novo algoritmo para identificar padrões incomuns nos dados",
-      date: "2023-05-05",
-      type: "algorithm",
-      site: "Servidor de Análise",
-      status: mapToStatusEnum("warning")
-    },
-    {
-      id: "update-4",
-      title: "Migração para Servidores Mais Robustos",
-      description: "Transferência de dados para servidores com maior capacidade de processamento",
-      date: "2023-04-28",
-      type: "infrastructure",
-      site: "Data Center",
-      status: mapToStatusEnum("pending")
-    }
-  ];
-
-  const otherUpdates = [
-    {
-      id: "recent-1",
-      title: "Monitoramento API Transparência",
-      description: "Coleta automática completada",
-      date: "2023-06-01",
-      type: "api",
-      site: "Transparência Gov",
-      status: mapToStatusEnum("success")
-    },
-    {
-      id: "recent-2",
-      title: "Relatório de Desmatamento",
-      description: "Dados de satélite processados",
-      date: "2023-05-28",
-      type: "relatório",
-      site: "INPE",
-      status: mapToStatusEnum("success")
-    },
-    {
-      id: "recent-3",
-      title: "Alerta de Qualidade da Água",
-      description: "Níveis de poluentes acima do normal",
-      date: "2023-05-25",
-      type: "alerta",
-      site: "ANA",
-      status: mapToStatusEnum("error")
-    },
-    {
-      id: "recent-4",
-      title: "Atualização da Legislação Ambiental",
-      description: "Novas leis e decretos publicados",
-      date: "2023-05-20",
-      type: "legislação",
-      site: "Diário Oficial",
-      status: mapToStatusEnum("warning")
-    }
-  ];
-
+const ChartsTabs: React.FC<ChartsTabsProps> = ({ 
+  systemUpdatesData, 
+  recentAlerts, 
+  recentReports,
+  // Added props for future use
+  monitoringItems,
+  categoryData,
+  frequencyData,
+  responsibleData,
+  radarData,
+  analysisStats
+}) => {
   return (
     <div className="grid gap-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -288,7 +226,15 @@ const ChartsTabs: React.FC<ChartsTabsProps> = ({ systemUpdatesData, recentAlerts
         <CardContent className="p-4">
           <ul>
             {recentAlerts.map((alert) => (
-              <RecentAlert key={alert.title} {...alert} />
+              <RecentAlert 
+                key={alert.id} 
+                title={alert.title}
+                description={alert.description}
+                date={alert.date}
+                type={alert.type}
+                site={alert.site}
+                status={alert.status}
+              />
             ))}
           </ul>
         </CardContent>
@@ -301,7 +247,14 @@ const ChartsTabs: React.FC<ChartsTabsProps> = ({ systemUpdatesData, recentAlerts
         <CardContent className="p-4">
           <ul>
             {recentReports.map((report) => (
-              <RecentReport key={report.title} {...report} />
+              <RecentReport 
+                key={report.id}
+                title={report.title}
+                description={report.description}
+                date={report.date}
+                type={report.type}
+                site={report.site}
+              />
             ))}
           </ul>
         </CardContent>
