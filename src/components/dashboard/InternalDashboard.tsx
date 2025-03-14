@@ -14,8 +14,10 @@ import {
 } from "./DashboardUtils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download, Filter } from "lucide-react";
+import { Download, Filter, Map } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import MapView from "@/components/MapView";
+import { ResearchStudy } from "@/types/research";
 
 // Interface para RecentUpdate
 export interface RecentUpdate {
@@ -44,18 +46,20 @@ interface InternalDashboardProps {
   systemUpdatesData: { name: string; updates: number; }[];
   recentAlerts?: RecentUpdate[];
   recentReports?: RecentUpdate[];
+  mapData?: ResearchStudy[]; // Adicionado suporte para dados do mapa
 }
 
 const InternalDashboard: React.FC<InternalDashboardProps> = ({ 
   data, 
   timeRange, 
   setTimeRange, 
-  handleExport, 
+  handleExport,
   isAuthenticated,
   monitoringItems,
   systemUpdatesData,
   recentAlerts = [],
-  recentReports = []
+  recentReports = [],
+  mapData = []
 }) => {
   // Estado para filtro de monitoramento individual
   const [selectedMonitoring, setSelectedMonitoring] = useState<string>("todos");
@@ -66,21 +70,12 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
     return monitoringItems.filter(item => item.id === selectedMonitoring);
   }, [monitoringItems, selectedMonitoring]);
 
-  // Preparar estatísticas derivadas dos dados de monitoramento filtrados
+  // Obter estatísticas para os gráficos
   const categoryData = useMemo(() => getCategoryData(filteredMonitoringItems), [filteredMonitoringItems]);
   const frequencyData = useMemo(() => getFrequencyData(filteredMonitoringItems), [filteredMonitoringItems]);
   const responsibleData = useMemo(() => getResponsibleData(filteredMonitoringItems), [filteredMonitoringItems]);
   const radarData = useMemo(() => getRadarData(filteredMonitoringItems), [filteredMonitoringItems]);
-  
-  // Prepare stats items for dashboard header
-  const headerStats = [
-    { value: monitoringItems.length, label: "Monitoramentos Ativos" },
-    { value: Array.from(new Set(monitoringItems.map(item => item.category))).length, label: "Categorias" },
-    { value: 128, label: "Coletas na Semana" }
-  ];
-
-  // Calcular estatísticas sobre os tipos de análise ativos para cada monitoramento
-  const analysisStats = useMemo(() => getAnalysisTypeStats(), []);
+  const analysisTypeStats = useMemo(() => getAnalysisTypeStats(filteredMonitoringItems), [filteredMonitoringItems]);
 
   // Função para exportar dados do monitoramento selecionado
   const exportSelectedMonitoring = () => {
@@ -103,7 +98,11 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
       <DashboardHeader 
         title="Análise de Dados"
         description="Acompanhamento detalhado dos monitoramentos e análises internas"
-        statsItems={headerStats}
+        statsItems={[
+          { value: monitoringItems.length, label: "Monitoramentos Ativos" },
+          { value: Array.from(new Set(monitoringItems.map(item => item.category))).length, label: "Categorias" },
+          { value: 128, label: "Coletas na Semana" }
+        ]}
       />
 
       {/* Filtro de monitoramento individual */}
@@ -170,10 +169,33 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
         responsibleData={responsibleData}
         radarData={radarData}
         systemUpdatesData={systemUpdatesData}
-        analysisStats={analysisStats}
+        analysisStats={analysisTypeStats}
         recentAlerts={recentAlerts}
         recentReports={recentReports}
       />
+
+      {/* Mapa de Estudos */}
+      <Card className="border-forest-100 shadow-md overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-forest-700 font-poppins text-lg flex items-center">
+              <Map className="w-5 h-5 mr-2" />
+              Mapa de Estudos
+            </CardTitle>
+            <div className="text-sm text-forest-600">
+              {mapData.length} estudos exibidos
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="h-[500px]">
+            <MapView 
+              studies={mapData} 
+              isAuthenticated={isAuthenticated}
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

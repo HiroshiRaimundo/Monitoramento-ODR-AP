@@ -1,5 +1,4 @@
-
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
 import InternalDashboard from "@/components/dashboard/InternalDashboard";
@@ -101,6 +100,14 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
+  // Estado para controlar a aba ativa e prevenir refresh
+  const [activeTab, setActiveTab] = useState("publico");
+
+  // Manipulador para mudança de aba
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   // Usar dados simulados se não houver dados reais suficientes
   const monitoringItems = useMemo(() => {
     if (originalMonitoringItems.length < 20) {
@@ -136,27 +143,61 @@ const TabContent: React.FC<TabContentProps> = ({
     }
   }, [studies, timeRange]);
 
+  // Calcular o número de colunas com base no número de abas visíveis
+  const getGridCols = () => {
+    let visibleTabs = 1; // Público sempre visível
+    if (isAuthenticated) {
+      visibleTabs += 2; // Gerenciamento e Análise
+      visibleTabs += 1; // Assessoria de Imprensa
+      return `grid-cols-${visibleTabs}`;
+    } else {
+      visibleTabs += 1; // Mapa Interativo para não autenticados
+      return `grid-cols-${visibleTabs}`;
+    }
+  };
+
   return (
-    <Tabs defaultValue="publico" className="w-full">
-      <TabsList className="grid grid-cols-5 w-full bg-forest-50 p-1">
-        <TabsTrigger value="publico" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+    <Tabs 
+      value={activeTab} 
+      onValueChange={handleTabChange} 
+      className="w-full"
+    >
+      <TabsList className={`grid ${getGridCols()} w-full bg-forest-50 p-1`}>
+        <TabsTrigger 
+          value="publico" 
+          className="data-[state=active]:bg-forest-600 data-[state=active]:text-white px-4 py-2 text-center font-medium"
+        >
           Público
         </TabsTrigger>
         {isAuthenticated && (
-          <TabsTrigger value="gerenciamento" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          <TabsTrigger 
+            value="gerenciamento" 
+            className="data-[state=active]:bg-forest-600 data-[state=active]:text-white px-4 py-2 text-center font-medium"
+          >
             Gerenciamento
           </TabsTrigger>
         )}
         {isAuthenticated && (
-          <TabsTrigger value="analise" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          <TabsTrigger 
+            value="analise" 
+            className="data-[state=active]:bg-forest-600 data-[state=active]:text-white px-4 py-2 text-center font-medium"
+          >
             Análise
           </TabsTrigger>
         )}
-        <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-          Mapa Interativo
-        </TabsTrigger>
+        {!isAuthenticated && (
+          <TabsTrigger 
+            value="map" 
+            className="data-[state=active]:bg-forest-600 data-[state=active]:text-white px-4 py-2 text-center font-medium"
+          >
+            Mapa Interativo
+          </TabsTrigger>
+        )}
         {isAuthenticated && (
-          <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          <TabsTrigger 
+            value="pressOffice" 
+            className="data-[state=active]:bg-forest-600 data-[state=active]:text-white px-4 py-2 text-center font-medium"
+          >
             Assessoria de Imprensa
           </TabsTrigger>
         )}
@@ -204,17 +245,20 @@ const TabContent: React.FC<TabContentProps> = ({
             systemUpdatesData={systemUpdatesData}
             recentAlerts={recentAlerts}
             recentReports={recentReports}
+            mapData={filteredStudies}
           />
         </TabsContent>
       )}
 
-      <TabsContent value="map">
-        <MapView 
-          studies={filteredStudies} 
-          isAuthenticated={isAuthenticated}
-          onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
-        />
-      </TabsContent>
+      {!isAuthenticated && (
+        <TabsContent value="map">
+          <MapView 
+            studies={filteredStudies} 
+            isAuthenticated={isAuthenticated}
+            onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
+          />
+        </TabsContent>
+      )}
 
       {isAuthenticated && (
         <TabsContent value="pressOffice">
