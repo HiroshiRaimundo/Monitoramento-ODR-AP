@@ -151,11 +151,9 @@ const TabContent: React.FC<TabContentProps> = ({
             Análise
           </TabsTrigger>
         )}
-        {!isAuthenticated && (
-          <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-            Mapa Interativo
-          </TabsTrigger>
-        )}
+        <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          Mapa Interativo
+        </TabsTrigger>
         {isAuthenticated && (
           <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
             Assessoria de Imprensa
@@ -169,7 +167,6 @@ const TabContent: React.FC<TabContentProps> = ({
           timeRange={timeRange}
           setTimeRange={setTimeRange}
           isAuthenticated={isAuthenticated}
-          studies={studies}
           mapData={filteredStudies}
         />
       </TabsContent>
@@ -209,15 +206,13 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsContent>
       )}
 
-      {!isAuthenticated && (
-        <TabsContent value="map">
-          <MapView 
-            studies={filteredStudies} 
-            isAuthenticated={isAuthenticated}
-            onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
-          />
-        </TabsContent>
-      )}
+      <TabsContent value="map">
+        <MapView 
+          studies={filteredStudies} 
+          isAuthenticated={isAuthenticated}
+          onStudySubmit={handleStudySubmit}
+        />
+      </TabsContent>
 
       {isAuthenticated && (
         <TabsContent value="pressOffice">

@@ -6,9 +6,8 @@ import MonitoringLineChart from "./MonitoringLineChart";
 import CollaborationChart from "./CollaborationChart";
 import { ResearchStudy } from "@/types/research";
 import DashboardControls from "./DashboardControls";
-import { Info, FileBarChart, MapPin } from "lucide-react";
+import { Info, FileBarChart } from "lucide-react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
-import MapView from "@/components/MapView";
 
 interface PublicDashboardProps {
   data: Array<{
@@ -21,7 +20,6 @@ interface PublicDashboardProps {
   setTimeRange: (value: string) => void;
   isAuthenticated: boolean;
   studies: ResearchStudy[];
-  mapData?: ResearchStudy[]; // Dados para o mapa
 }
 
 // Interface para os dados do gráfico de categorias
@@ -41,41 +39,8 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
   timeRange, 
   setTimeRange, 
   isAuthenticated,
-  studies,
-  mapData = studies // Por padrão, usa os mesmos estudos
+  studies
 }) => {
-  // Estado para armazenar os dados filtrados do mapa
-  const [filteredMapData, setFilteredMapData] = useState<ResearchStudy[]>(mapData);
-  
-  // Efeito para filtrar os dados do mapa com base no período selecionado
-  useEffect(() => {
-    // Aqui implementamos a lógica de filtragem baseada no timeRange
-    // Por exemplo, podemos filtrar os estudos com base na data de criação
-    // Para este exemplo, vamos apenas simular uma filtragem
-    
-    // Simulação: filtrar aleatoriamente baseado no timeRange
-    const filterStudies = () => {
-      // Em uma implementação real, você usaria datas reais para filtrar
-      switch(timeRange) {
-        case 'diario':
-          // Últimas 24 horas
-          return mapData.filter((_, index) => index % 4 === 0);
-        case 'semanal':
-          // Última semana
-          return mapData.filter((_, index) => index % 3 === 0);
-        case 'mensal':
-          // Último mês
-          return mapData.filter((_, index) => index % 2 === 0);
-        case 'anual':
-          // Último ano
-          return mapData;
-        default:
-          return mapData;
-      }
-    };
-    
-    setFilteredMapData(filterStudies());
-  }, [timeRange, mapData]);
 
   // Calcular as categorias de estudos com base nos dados disponíveis
   const studyCategories = useMemo(() => {
@@ -225,25 +190,6 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         totalItems={studies.length}
         isPublic={true}
       />
-
-      {/* Mapa filtrado por período */}
-      <Card className="border-forest-100 shadow-md overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
-          <div className="flex items-center gap-2">
-            <MapPin size={20} className="text-forest-600" />
-            <CardTitle className="text-forest-700">Distribuição Geográfica dos Estudos</CardTitle>
-          </div>
-          <CardDescription className="text-forest-600">
-            Mapa do Amapá com localização dos estudos registrados. 
-            Clique nos marcadores para ver mais detalhes.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-4">
-          <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100">
-            <MapView studies={filteredMapData} />
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Gráficos Públicos - Layout em Grid com 4 gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
