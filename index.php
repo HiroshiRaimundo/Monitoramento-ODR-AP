@@ -1,10 +1,10 @@
 
 <?php
 /**
- * Frontend Redirector for React App
+ * Frontend Redirector for Simple HTML/CSS/JS App
  * 
  * Este arquivo serve como ponto de entrada para servidores PHP,
- * redirecionando o tráfego para o aplicativo React.
+ * redirecionando o tráfego para o aplicativo HTML/CSS/JS.
  */
 
 // Incluir configuração específica para Hostinger
@@ -20,18 +20,23 @@ error_reporting(E_ALL);
 // Log de erros
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/php-error.log');
-error_log("Iniciando carregamento da aplicação React");
+error_log("Iniciando carregamento da aplicação");
 
-// Verificar se estamos acessando um arquivo JavaScript
+// Verificar se estamos acessando um arquivo JavaScript ou CSS
 $requestUri = $_SERVER['REQUEST_URI'] ?? '';
 $extension = pathinfo($requestUri, PATHINFO_EXTENSION);
 
-// Se for um arquivo JavaScript, garantir o tipo MIME correto
-if ($extension === 'js' || $extension === 'mjs') {
+// Se for um arquivo estático, garantir o tipo MIME correto
+if (in_array($extension, ['js', 'mjs', 'css'])) {
     $filePath = __DIR__ . parse_url($requestUri, PHP_URL_PATH);
     
     if (file_exists($filePath) && is_file($filePath)) {
-        header('Content-Type: application/javascript');
+        if ($extension === 'js' || $extension === 'mjs') {
+            header('Content-Type: application/javascript');
+        } else if ($extension === 'css') {
+            header('Content-Type: text/css');
+        }
+        header('X-Content-Type-Options: nosniff');
         readfile($filePath);
         exit;
     }
@@ -43,30 +48,11 @@ if (php_sapi_name() !== 'cli') {
     header('Content-Type: text/html; charset=utf-8');
     
     // Caminho do arquivo index.html
-    $indexFile = '';
-    $baseDir = __DIR__;
+    $indexFile = __DIR__ . '/index.html';
     
     // Verificar se o arquivo index.html existe
-    if (file_exists($baseDir . '/index.html')) {
-        $indexFile = $baseDir . '/index.html';
+    if (file_exists($indexFile)) {
         error_log("Arquivo encontrado: index.html na raiz");
-    } else if (file_exists($baseDir . '/dist/index.html')) {
-        $indexFile = $baseDir . '/dist/index.html';
-        error_log("Arquivo encontrado: index.html em dist/");
-    } else {
-        // Tentar encontrar em outras pastas comuns
-        $possiblePaths = ['/public/index.html', '/build/index.html', '/www/index.html'];
-        foreach ($possiblePaths as $path) {
-            if (file_exists($baseDir . $path)) {
-                $indexFile = $baseDir . $path;
-                error_log("Arquivo encontrado: " . $path);
-                break;
-            }
-        }
-    }
-    
-    if (!empty($indexFile)) {
-        error_log("Tentando servir arquivo: " . $indexFile);
         
         // Verificar se o arquivo pode ser lido
         if (is_readable($indexFile)) {
@@ -75,11 +61,6 @@ if (php_sapi_name() !== 'cli') {
             
             // Verifica se o conteúdo foi lido corretamente
             if ($content !== false) {
-                // Verificar se os arquivos JS/CSS estão sendo carregados corretamente
-                if (strpos($content, '<script') === false) {
-                    error_log("AVISO: Não encontradas tags <script> no HTML");
-                }
-                
                 // Modificar o HTML para a Hostinger se necessário
                 if (function_exists('isHostinger') && isHostinger() && function_exists('modifyHtmlForHostinger')) {
                     $content = modifyHtmlForHostinger($content);
@@ -105,22 +86,15 @@ if (php_sapi_name() !== 'cli') {
     } else {
         // Erro se não encontrar o arquivo
         http_response_code(500);
-        error_log("Erro: Arquivo index.html não encontrado em nenhum local padrão");
+        error_log("Erro: Arquivo index.html não encontrado");
         echo '<h1>Erro na configuração</h1>';
-        echo '<p>Arquivo index.html não encontrado. Verifique se o build foi concluído corretamente.</p>';
-        echo '<p>Diretório atual: ' . $baseDir . '</p>';
+        echo '<p>Arquivo index.html não encontrado. Verifique se os arquivos foram enviados corretamente.</p>';
+        echo '<p>Diretório atual: ' . __DIR__ . '</p>';
         
         // Listar arquivos do diretório atual para debug
         echo '<p>Arquivos no diretório raiz:</p><pre>';
-        print_r(scandir($baseDir));
+        print_r(scandir(__DIR__));
         echo '</pre>';
-        
-        // Se existir o diretório dist, mostrar seu conteúdo também
-        if (is_dir($baseDir . '/dist')) {
-            echo '<p>Arquivos no diretório dist:</p><pre>';
-            print_r(scandir($baseDir . '/dist'));
-            echo '</pre>';
-        }
     }
     exit;
 }

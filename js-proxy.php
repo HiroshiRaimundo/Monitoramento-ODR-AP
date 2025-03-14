@@ -1,8 +1,8 @@
 <?php
 /**
- * JavaScript Proxy para Hostinger
+ * JavaScript/CSS Proxy para Hostinger
  * 
- * Este arquivo serve como um proxy para arquivos JavaScript,
+ * Este arquivo serve como um proxy para arquivos JavaScript e CSS,
  * garantindo que sejam servidos com o tipo MIME correto.
  * 
  * Uso: js-proxy.php?file=/caminho/para/arquivo.js
@@ -35,7 +35,7 @@ if (strpos($filePath, '../') !== false) {
 // Construir o caminho completo do arquivo
 $fullPath = __DIR__ . $filePath;
 
-// Verificar se o arquivo existe e é um arquivo JavaScript
+// Verificar se o arquivo existe
 if (!file_exists($fullPath) || !is_file($fullPath)) {
     http_response_code(404);
     exit('Arquivo não encontrado');
@@ -43,13 +43,18 @@ if (!file_exists($fullPath) || !is_file($fullPath)) {
 
 // Verificar a extensão do arquivo
 $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-if ($extension !== 'js' && $extension !== 'mjs') {
+
+// Definir o cabeçalho Content-Type apropriado
+if ($extension === 'js' || $extension === 'mjs') {
+    header('Content-Type: application/javascript');
+} elseif ($extension === 'css') {
+    header('Content-Type: text/css');
+} else {
     http_response_code(403);
     exit('Tipo de arquivo não permitido');
 }
 
-// Definir o cabeçalho Content-Type para JavaScript
-header('Content-Type: application/javascript');
+// Adicionar cabeçalho de segurança
 header('X-Content-Type-Options: nosniff');
 
 // Enviar o conteúdo do arquivo
