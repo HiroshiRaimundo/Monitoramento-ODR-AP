@@ -24,13 +24,11 @@ interface PublicDashboardProps {
   mapData?: ResearchStudy[]; // Dados para o mapa
 }
 
-// Interface para os dados do gráfico de categorias
 interface CategoryData {
   name: string;
   value: number;
 }
 
-// Interface para os dados de colaboração
 interface CollaborationData {
   name: string;
   count: number;
@@ -44,30 +42,18 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
   studies,
   mapData = studies // Por padrão, usa os mesmos estudos
 }) => {
-  // Estado para armazenar os dados filtrados do mapa
   const [filteredMapData, setFilteredMapData] = useState<ResearchStudy[]>(mapData);
-  
-  // Efeito para filtrar os dados do mapa com base no período selecionado
+
   useEffect(() => {
-    // Aqui implementamos a lógica de filtragem baseada no timeRange
-    // Por exemplo, podemos filtrar os estudos com base na data de criação
-    // Para este exemplo, vamos apenas simular uma filtragem
-    
-    // Simulação: filtrar aleatoriamente baseado no timeRange
     const filterStudies = () => {
-      // Em uma implementação real, você usaria datas reais para filtrar
       switch(timeRange) {
         case 'diario':
-          // Últimas 24 horas
           return mapData.filter((_, index) => index % 4 === 0);
         case 'semanal':
-          // Última semana
           return mapData.filter((_, index) => index % 3 === 0);
         case 'mensal':
-          // Último mês
           return mapData.filter((_, index) => index % 2 === 0);
         case 'anual':
-          // Último ano
           return mapData;
         default:
           return mapData;
@@ -77,9 +63,7 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
     setFilteredMapData(filterStudies());
   }, [timeRange, mapData]);
 
-  // Calcular as categorias de estudos com base nos dados disponíveis
   const studyCategories = useMemo(() => {
-    // Contadores para cada tipo de estudo
     const categoryCounts: Record<string, number> = {
       "Artigo": 0,
       "Dissertação": 0,
@@ -89,7 +73,6 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
       "Outros": 0
     };
     
-    // Contar estudos por tipo
     studies.forEach(study => {
       switch(study.type) {
         case "artigo":
@@ -113,12 +96,10 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
       }
     });
     
-    // Converter para o formato esperado pelo CategoryChart
     const result: CategoryData[] = Object.entries(categoryCounts)
-      .filter(([_, count]) => count > 0) // Remover categorias sem estudos
+      .filter(([_, count]) => count > 0)
       .map(([name, value]) => ({ name, value }));
     
-    // Se não houver dados reais, usar dados simulados
     if (result.length === 0) {
       return [
         { name: "Artigo", value: 12 },
@@ -131,7 +112,6 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
     return result;
   }, [studies]);
 
-  // Dados para o gráfico de monitoramento
   const monitoringData = useMemo(() => {
     return data.map(item => ({
       name: item.name,
@@ -139,41 +119,34 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
     }));
   }, [data]);
 
-  // Dados para o gráfico de colaboração
   const collaborationData = useMemo(() => {
-    // Contagem de autores
     const authorCounts: Record<string, number> = {};
     const institutionCounts: Record<string, number> = {};
     
     studies.forEach(study => {
-      // Contagem de autores
       if (study.author) {
         authorCounts[study.author] = (authorCounts[study.author] || 0) + 1;
       }
       
-      // Contagem de instituições (simulado, pois não vimos o campo no tipo)
-      // Na implementação real, você usaria o campo correto
       const institution = study.location || "Instituição Desconhecida";
       institutionCounts[institution] = (institutionCounts[institution] || 0) + 1;
     });
     
-    // Converter para arrays
     const authors: CollaborationData[] = Object.entries(authorCounts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10); // Limitar a 10 para melhor visualização
+      .slice(0, 10);
     
     const institutions: CollaborationData[] = Object.entries(institutionCounts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10); // Limitar a 10 para melhor visualização
+      .slice(0, 10);
     
     return { authors, institutions };
   }, [studies]);
 
   return (
     <div className="grid gap-6 font-poppins">
-      {/* Cabeçalho */}
       <Card className="border-forest-100 shadow-md overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
           <div className="flex items-center gap-2">
@@ -216,7 +189,6 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         </CardContent>
       </Card>
 
-      {/* Filtros simples */}
       <DashboardControls 
         timeRange={timeRange}
         setTimeRange={setTimeRange}
@@ -226,30 +198,25 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         isPublic={true}
       />
 
-      {/* Gráficos Públicos - Layout em Grid com 4 gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Evolução de Estudos - Gráfico de Linha */}
         <StudiesChart data={data} />
-
-        {/* Distribuição por Categoria - Gráfico de Pizza */}
         <CategoryChart data={studyCategories} title="Estudos por Categoria" />
-        
-        {/* Trabalhos Monitorados - Gráfico de Linha */}
         <MonitoringLineChart data={monitoringData} />
-        
-        {/* Colaborações Científicas - Gráfico de Barras */}
         <CollaborationChart 
           authors={collaborationData.authors} 
           institutions={collaborationData.institutions} 
         />
       </div>
 
-      {/* Mapa filtrado por período */}
       <div className="mt-6">
-        <MapView studies={filteredMapData} />
+        <MapView 
+          studies={filteredMapData} 
+          showRegistrationForm={false}
+          title="Visualização Geográfica"
+          description="Distribuição espacial dos estudos e pesquisas na região amazônica"
+        />
       </div>
 
-      {/* Informações adicionais */}
       <Card className="border-forest-100 shadow-md overflow-hidden mt-4">
         <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
           <CardTitle className="text-forest-700 font-poppins text-lg">Como Interpretar os Dados</CardTitle>

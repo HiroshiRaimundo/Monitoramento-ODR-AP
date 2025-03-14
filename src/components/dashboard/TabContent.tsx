@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
@@ -33,7 +32,6 @@ interface TabContentProps {
   setResponsibleFilter?: (responsible: string) => void;
 }
 
-// Dados simulados para o dashboard
 const simulatedMonthlyData = Array.from({ length: 12 }, (_, i) => ({
   name: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][i],
   estudos: Math.floor(Math.random() * 10) + 15,
@@ -41,7 +39,6 @@ const simulatedMonthlyData = Array.from({ length: 12 }, (_, i) => ({
   atualizacoes: Math.floor(Math.random() * 20) + 25
 }));
 
-// Simulação de monitoramentos com os pesquisadores solicitados
 const simulateMonitoringItems = (): MonitoringItem[] => {
   const researchers = [
     "Marilia Gabriela Silva Lobato", "Patrícia Helena Turola Takamatsu", "Lylian Caroline Maciel",
@@ -101,7 +98,6 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
-  // Usar dados simulados se não houver dados reais suficientes
   const monitoringItems = useMemo(() => {
     if (originalMonitoringItems.length < 20) {
       return simulateMonitoringItems();
@@ -109,19 +105,14 @@ const TabContent: React.FC<TabContentProps> = ({
     return originalMonitoringItems;
   }, [originalMonitoringItems]);
 
-  // Preparar dados no formato correto para o gráfico de atualizações
   const systemUpdatesData = useMemo(() => {
     return mapToSystemUpdates(simulatedMonthlyData);
   }, []);
 
-  // Buscar alertas e relatórios simulados
   const recentAlerts = useMemo(() => getRecentAlerts(), []);
   const recentReports = useMemo(() => getRecentReports(), []);
 
-  // Filtrar estudos com base no timeRange para o mapa
   const filteredStudies = useMemo(() => {
-    // Em uma implementação real, você usaria datas reais para filtrar
-    // Aqui estamos apenas simulando uma filtragem baseada no timeRange
     switch(timeRange) {
       case 'diario':
         return studies.filter((_, index) => index % 4 === 0);
@@ -152,9 +143,11 @@ const TabContent: React.FC<TabContentProps> = ({
             Análise
           </TabsTrigger>
         )}
-        <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-          Registro de Estudos
-        </TabsTrigger>
+        {isAuthenticated && (
+          <TabsTrigger value="registroEstudos" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Registro de Estudos
+          </TabsTrigger>
+        )}
         {isAuthenticated && (
           <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
             Assessoria de Imprensa
@@ -208,13 +201,18 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsContent>
       )}
 
-      <TabsContent value="map">
-        <MapView 
-          studies={filteredStudies} 
-          isAuthenticated={isAuthenticated}
-          onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
-        />
-      </TabsContent>
+      {isAuthenticated && (
+        <TabsContent value="registroEstudos">
+          <MapView 
+            studies={filteredStudies} 
+            isAuthenticated={isAuthenticated}
+            onStudySubmit={handleStudySubmit}
+            showRegistrationForm={true}
+            title="Registro de Estudos"
+            description="Cadastre novos estudos para serem exibidos no mapa."
+          />
+        </TabsContent>
+      )}
 
       {isAuthenticated && (
         <TabsContent value="pressOffice">
