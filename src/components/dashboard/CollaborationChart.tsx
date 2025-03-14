@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -39,6 +40,12 @@ const CollaborationChart: React.FC<CollaborationChartProps> = ({ authors, instit
 
   // Limitar a 10 itens para melhor visualização
   const displayData = combinedData.slice(0, 10);
+  
+  // Truncar nomes longos para evitar sobreposição
+  const truncatedData = displayData.map(item => ({
+    ...item,
+    displayName: item.name.length > 20 ? item.name.substring(0, 18) + "..." : item.name
+  }));
 
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300">
@@ -46,20 +53,24 @@ const CollaborationChart: React.FC<CollaborationChartProps> = ({ authors, instit
         <CardTitle className="text-forest-700 font-poppins">Colaborações Científicas</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-[300px]">
+        <div className="h-[350px]"> {/* Aumentei a altura para dar mais espaço */}
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
-              data={displayData} 
-              margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+              data={truncatedData} 
+              margin={{ top: 10, right: 30, left: 15, bottom: 5 }}
               layout="vertical"
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis type="number" />
               <YAxis 
-                dataKey="name" 
+                dataKey="displayName" 
                 type="category"
-                tick={{ fill: '#333', fontFamily: 'Poppins, sans-serif' }}
-                width={120}
+                tick={{ 
+                  fill: '#333', 
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: 11, // Reduzir tamanho da fonte
+                }}
+                width={150} // Aumentar largura para acomodar os nomes
               />
               <Tooltip 
                 contentStyle={{ 
@@ -68,6 +79,14 @@ const CollaborationChart: React.FC<CollaborationChartProps> = ({ authors, instit
                   borderRadius: '8px',
                   boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
                   fontFamily: 'Poppins, sans-serif'
+                }}
+                formatter={(value, name) => {
+                  return [value, name === "autores" ? "Autores" : "Instituições"];
+                }}
+                labelFormatter={(label) => {
+                  // Encontrar o item completo para mostrar o nome completo no tooltip
+                  const item = displayData.find(i => i.name.startsWith(label.split('...')[0]));
+                  return item ? item.name : label;
                 }}
               />
               <Legend 
