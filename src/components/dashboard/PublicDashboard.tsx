@@ -1,11 +1,11 @@
-
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import StudiesChart from "./StudiesChart";
 import CategoryChart from "./CategoryChart";
 import { ResearchStudy } from "@/types/research";
 import DashboardControls from "./DashboardControls";
 import { Info, FileBarChart } from "lucide-react";
+import { MonitoringItem } from "@/hooks/useMonitoring";
 
 interface PublicDashboardProps {
   data: Array<{
@@ -20,6 +20,12 @@ interface PublicDashboardProps {
   studies: ResearchStudy[];
 }
 
+// Interface para os dados do gráfico de categorias
+interface CategoryData {
+  name: string;
+  value: number;
+}
+
 const PublicDashboard: React.FC<PublicDashboardProps> = ({ 
   data, 
   timeRange, 
@@ -27,13 +33,62 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
   isAuthenticated,
   studies
 }) => {
-  // Definir categorias manualmente (já que ResearchStudy não tem propriedade category)
-  const studyCategories = [
-    { name: "Biodiversidade", value: 3 },
-    { name: "Clima", value: 5 },
-    { name: "Socioambiental", value: 7 },
-    { name: "Econômico", value: 4 }
-  ];
+  // Não precisamos mais deste estado, pois estamos usando diretamente o prop data
+  // const [monitoringItems, setMonitoringItems] = useState<MonitoringItem[]>([]);
+
+  // Calcular as categorias de estudos com base nos dados disponíveis
+  const studyCategories = useMemo(() => {
+    // Contadores para cada tipo de estudo
+    const categoryCounts: Record<string, number> = {
+      "Artigo": 0,
+      "Dissertação": 0,
+      "Tese": 0,
+      "Livros": 0,
+      "E-books": 0,
+      "Outros": 0
+    };
+    
+    // Contar estudos por tipo
+    studies.forEach(study => {
+      switch(study.type) {
+        case "artigo":
+          categoryCounts["Artigo"]++;
+          break;
+        case "dissertacao":
+          categoryCounts["Dissertação"]++;
+          break;
+        case "tese":
+          categoryCounts["Tese"]++;
+          break;
+        case "livros":
+          categoryCounts["Livros"]++;
+          break;
+        case "ebooks":
+          categoryCounts["E-books"]++;
+          break;
+        case "outro":
+          categoryCounts["Outros"]++;
+          break;
+      }
+    });
+    
+    // Converter para o formato esperado pelo CategoryChart
+    const result: CategoryData[] = Object.entries(categoryCounts)
+      .filter(([_, count]) => count > 0) // Remover categorias sem estudos
+      .map(([name, value]) => ({ name, value }));
+    
+    // Se não houver dados reais, usar dados simulados
+    if (result.length === 0) {
+      return [
+        { name: "Artigo", value: 12 },
+        { name: "Dissertação", value: 8 },
+        { name: "Tese", value: 5 },
+        { name: "Livros", value: 3 }
+      ];
+    }
+    
+    return result;
+  }, [studies]);
 
   return (
     <div className="grid gap-6 font-poppins">
