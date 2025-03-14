@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import React from 'react';
 import App from './App.js';
-import './index.css';
+// Removed CSS import that was causing MIME type error
 
 // Adicionar depuração para identificar problemas
 console.log('React app initializing...');
