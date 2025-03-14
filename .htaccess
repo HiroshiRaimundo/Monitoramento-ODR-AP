@@ -3,15 +3,11 @@
   RewriteEngine On
   RewriteBase /
   
-  # Servir arquivos da pasta dist se existirem
-  RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -f
-  RewriteRule ^(.*)$ /dist/$1 [L]
-  
   # Não aplicar regras a arquivos existentes ou diretórios
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   
-  # Para todas as outras requisições, reescreva para index.html (SPA React)
+  # Para todas as outras requisições, reescreva para index.html
   RewriteRule . /index.html [L]
 </IfModule>
 
@@ -20,8 +16,6 @@
   # JavaScript
   AddType application/javascript .js
   AddType application/javascript .mjs
-  AddType application/javascript .jsx
-  AddType application/javascript .tsx
   
   # JSON
   AddType application/json .json
@@ -44,7 +38,7 @@
 </IfModule>
 
 # Definir cabeçalhos para arquivos específicos
-<FilesMatch "\.(js|mjs|jsx|tsx)$">
+<FilesMatch "\.(js|mjs)$">
   <IfModule mod_headers.c>
     Header set Content-Type "application/javascript; charset=UTF-8"
     Header set X-Content-Type-Options "nosniff"
@@ -70,11 +64,4 @@
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
   Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-</IfModule>
-
-# Desativar o cache para desenvolvimento
-<IfModule mod_headers.c>
-  Header set Cache-Control "no-cache, no-store, must-revalidate"
-  Header set Pragma "no-cache"
-  Header set Expires 0
 </IfModule>

@@ -31,12 +31,19 @@ function isHostinger() {
     return false;
 }
 
-// Função para modificar o HTML para usar o proxy JS
+// Função para modificar o HTML para usar o proxy JS/CSS
 function modifyHtmlForHostinger($html) {
-    // Substituir scripts de módulo para usar o proxy
+    // Substituir scripts para usar o proxy
     $html = preg_replace(
-        '/<script type="module" src="(\/[^"]+\.js)"><\/script>/',
-        '<script type="module" src="/js-proxy.php?file=$1"></script>',
+        '/<script src="([^"]+\.js)"><\/script>/',
+        '<script src="/js-proxy.php?file=$1"></script>',
+        $html
+    );
+    
+    // Substituir links CSS para usar o proxy
+    $html = preg_replace(
+        '/<link rel="stylesheet" href="([^"]+\.css)">/',
+        '<link rel="stylesheet" href="/js-proxy.php?file=$1">',
         $html
     );
     
