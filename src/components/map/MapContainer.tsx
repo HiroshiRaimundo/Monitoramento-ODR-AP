@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// Removed CSS import that was causing MIME type error
 import { MapPoint } from '@/types/map';
 import MapMarker from './MapMarker';
 
