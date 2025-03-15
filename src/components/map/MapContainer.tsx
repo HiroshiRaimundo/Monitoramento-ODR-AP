@@ -1,7 +1,7 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// Removed CSS import that was causing MIME type error
 import { MapPoint } from '@/types/map';
 import MapMarker from './MapMarker';
 
@@ -13,7 +13,6 @@ interface MapContainerProps {
 const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Coordenadas do centro do Amapá
   const amapaCenterLng = -51.0669;
@@ -53,7 +52,6 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
         'high-color': 'rgb(200, 200, 225)',
         'horizon-blend': 0.2,
       });
-      setMapLoaded(true);
     });
 
     // Desabilita o zoom do scroll para uma experiência mais suave
@@ -67,7 +65,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
 
   // Ajustar a visualização do mapa quando os pontos mudam
   useEffect(() => {
-    if (!map.current || !mapLoaded || !points) return;
+    if (!map.current || !points) return;
 
     if (points.length > 1) {
       const bounds = new mapboxgl.LngLatBounds();
@@ -93,7 +91,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
         pitch: 30
       });
     }
-  }, [points, mapLoaded]);
+  }, [points]);
 
   // Function to group points by coordinates
   const groupPointsByLocation = () => {
@@ -115,13 +113,13 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
       <div ref={mapContainer} className="absolute inset-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent to-background/10 rounded-lg" />
       
-      {mapLoaded && map.current && (() => {
+      {map.current && (() => {
         const locationGroups = groupPointsByLocation();
         
         return Object.values(locationGroups).flatMap(group => 
           group.map((point, index) => (
             <MapMarker 
-              key={`${point.id}-${index}`} 
+              key={point.id} 
               point={point} 
               map={map.current!} 
               onClick={onSelectPoint}

@@ -1,8 +1,7 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Activity, BarChart3, PieChart, TrendingUp, Users, ServerCrash, Zap, Layers } from "lucide-react";
+import { Activity, BarChart3, PieChart, TrendingUp, Users, ServerCrash, Zap, Layers, MapPin } from "lucide-react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ChartContainer } from "@/components/ui/chart";
 import CategoryChart from "./CategoryChart";
@@ -13,9 +12,8 @@ import SystemUpdatesChart from "./SystemUpdatesChart";
 import RecentMonitorings from "./RecentMonitorings";
 import RecentUpdates from "./RecentUpdates";
 import AnalysisTools from "./AnalysisTools";
+import MapView from "@/components/MapView";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { toast } from "@/components/ui/use-toast";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Definir a interface para as estatísticas de análise
 interface AnalysisStats {
@@ -23,17 +21,6 @@ interface AnalysisStats {
   sentimentAnalysis: number;
   crossAnalysis: number;
   nlpAnalysis: number;
-}
-
-// Interface para RecentUpdate
-export interface RecentUpdate {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  type: string;
-  site?: string;
-  status?: string;
 }
 
 // Simulação de atualizações recentes para RecentUpdates
@@ -51,9 +38,43 @@ interface ChartsTabsProps {
   radarData?: { subject: string; A: number; fullMark: number }[];
   systemUpdatesData: { name: string; updates: number }[];
   analysisStats?: AnalysisStats;
-  recentAlerts?: RecentUpdate[];
-  recentReports?: RecentUpdate[];
 }
+
+const mockStudies = [
+  {
+    id: "1",
+    title: "Análise da Biodiversidade na Floresta Nacional do Amapá",
+    author: "Maria Silva",
+    coAuthors: "João Santos, Ana Oliveira",
+    summary: "Estudo sobre a biodiversidade e conservação na região da Floresta Nacional do Amapá.",
+    repositoryUrl: "https://repositorio.unifap.br/estudo1",
+    location: "Floresta Nacional do Amapá",
+    coordinates: [-51.2, 0.9],
+    type: "artigo"
+  },
+  {
+    id: "2",
+    title: "Impactos Socioeconômicos da Mineração no Amapá",
+    author: "Carlos Mendes",
+    coAuthors: "Fernanda Lima",
+    summary: "Pesquisa sobre os impactos da mineração nas comunidades locais do estado do Amapá.",
+    repositoryUrl: "https://repositorio.unifap.br/estudo2",
+    location: "Serra do Navio",
+    coordinates: [-52.0, 0.9],
+    type: "dissertacao"
+  },
+  {
+    id: "3",
+    title: "Conservação de Manguezais na Costa do Amapá",
+    author: "Juliana Costa",
+    coAuthors: "Roberto Alves",
+    summary: "Estudo sobre a importância dos manguezais para o ecossistema costeiro do Amapá.",
+    repositoryUrl: "https://repositorio.unifap.br/estudo3",
+    location: "Macapá",
+    coordinates: [-51.05, 0.03],
+    type: "tese"
+  }
+];
 
 const ChartsTabs = ({ 
   monitoringItems, 
@@ -67,115 +88,11 @@ const ChartsTabs = ({
     sentimentAnalysis: 0,
     crossAnalysis: 0,
     nlpAnalysis: 0
-  },
-  recentAlerts = [],
-  recentReports = []
+  }
 }: ChartsTabsProps) => {
-  // Função para download de relatório mensal
-  const handleDownloadMonthlyReport = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    try {
-      // Criar dados de exemplo para o relatório
-      const reportData = {
-        title: "Relatório Mensal - Maio/2024",
-        date: new Date().toLocaleDateString('pt-BR'),
-        monitoringCount: monitoringItems.length,
-        categories: categoryData,
-        frequencies: frequencyData,
-        responsibles: responsibleData?.slice(0, 5),
-        summary: "Resumo completo dos dados coletados em todos os monitoramentos durante o mês."
-      };
-      
-      // Converter para JSON
-      const jsonContent = JSON.stringify(reportData, null, 2);
-      const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const fileName = `relatorio-mensal-maio-2024.json`;
-      
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', fileName);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast({
-        title: "Relatório baixado",
-        description: `Arquivo ${fileName} baixado com sucesso.`,
-        variant: "default",
-      });
-    } catch (error) {
-      console.error("Erro ao baixar relatório:", error);
-      toast({
-        title: "Erro no download",
-        description: "Não foi possível baixar o relatório. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  }, [monitoringItems, categoryData, frequencyData, responsibleData]);
-
-  // Função para download de análise comparativa
-  const handleDownloadComparativeAnalysis = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    try {
-      // Criar dados de exemplo para o relatório
-      const reportData = {
-        title: "Análise Comparativa - Q1 2024",
-        date: new Date().toLocaleDateString('pt-BR'),
-        currentQuarter: {
-          monitoringCount: monitoringItems.length,
-          categories: categoryData,
-          frequencies: frequencyData
-        },
-        previousQuarter: {
-          monitoringCount: Math.floor(monitoringItems.length * 0.8),
-          categories: categoryData?.map(item => ({ 
-            name: item.name, 
-            value: Math.floor(item.value * 0.8) 
-          })),
-          frequencies: frequencyData?.map(item => ({ 
-            frequency: item.frequency, 
-            quantidade: Math.floor(item.quantidade * 0.8) 
-          }))
-        },
-        summary: "Comparação dos dados do primeiro trimestre de 2024 com períodos anteriores."
-      };
-      
-      // Converter para JSON
-      const jsonContent = JSON.stringify(reportData, null, 2);
-      const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const fileName = `analise-comparativa-q1-2024.json`;
-      
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', fileName);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast({
-        title: "Análise baixada",
-        description: `Arquivo ${fileName} baixado com sucesso.`,
-        variant: "default",
-      });
-    } catch (error) {
-      console.error("Erro ao baixar análise:", error);
-      toast({
-        title: "Erro no download",
-        description: "Não foi possível baixar a análise. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  }, [monitoringItems, categoryData, frequencyData]);
-
   return (
     <Tabs defaultValue="visão-geral" className="w-full">
-      <TabsList className="w-full grid grid-cols-4 mb-6">
+      <TabsList className="w-full grid grid-cols-5 mb-6">
         <TabsTrigger value="visão-geral" className="flex items-center gap-2">
           <Activity className="h-4 w-4" />
           <span>Visão Geral</span>
@@ -192,12 +109,15 @@ const ChartsTabs = ({
           <BarChart3 className="h-4 w-4" />
           <span>Análises</span>
         </TabsTrigger>
+        <TabsTrigger value="mapa-interativo" className="flex items-center gap-2">
+          <MapPin className="h-4 w-4" />
+          <span>Mapa Interativo</span>
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="visão-geral">
-        <div className="grid grid-cols-1 gap-6">
-          {/* Gráfico principal em largura total */}
-          <Card className="col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="col-span-2">
             <CardHeader>
               <CardTitle>Atualizações do Sistema</CardTitle>
               <CardDescription>Monitoramento de atualizações ao longo do tempo</CardDescription>
@@ -209,55 +129,49 @@ const ChartsTabs = ({
             </CardContent>
           </Card>
 
-          {/* Primeira linha de gráficos - 2 colunas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribuição por Categorias</CardTitle>
-                <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={{}} className="h-60">
-                  <CategoryChart data={categoryData || []} />
-                </ChartContainer>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Categorias</CardTitle>
+              <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-60">
+                <CategoryChart data={categoryData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribuição por Frequência</CardTitle>
-                <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={{}} className="h-60">
-                  <FrequencyChart data={frequencyData || []} />
-                </ChartContainer>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição por Frequência</CardTitle>
+              <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{}} className="h-60">
+                <FrequencyChart data={frequencyData || []} />
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-          {/* Segunda linha de gráficos - 2 colunas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Monitoramentos Recentes</CardTitle>
-                <CardDescription>Últimos monitoramentos adicionados</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentMonitorings monitorings={monitoringItems} />
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Monitoramentos Recentes</CardTitle>
+              <CardDescription>Últimos monitoramentos adicionados</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RecentMonitorings monitorings={monitoringItems} />
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Atualizações Recentes</CardTitle>
-                <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentUpdates updates={recentAlerts && recentAlerts.length > 0 ? recentAlerts : mockUpdates} />
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Atualizações Recentes</CardTitle>
+              <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RecentUpdates updates={mockUpdates} />
+            </CardContent>
+          </Card>
         </div>
       </TabsContent>
 
@@ -365,7 +279,7 @@ const ChartsTabs = ({
               <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates updates={recentAlerts && recentAlerts.length > 0 ? recentAlerts : mockUpdates} />
+              <RecentUpdates updates={mockUpdates} />
             </CardContent>
           </Card>
 
@@ -502,21 +416,9 @@ const ChartsTabs = ({
                     Resumo completo dos dados coletados em todos os monitoramentos durante o mês.
                   </p>
                   <div className="flex justify-end">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button 
-                            className="text-xs px-3 py-1 bg-forest-600 text-white rounded"
-                            onClick={handleDownloadMonthlyReport}
-                          >
-                            Download
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Baixar relatório mensal completo em formato JSON</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <button className="text-xs px-3 py-1 bg-forest-600 text-white rounded">
+                      Download
+                    </button>
                   </div>
                 </div>
                 
@@ -529,21 +431,9 @@ const ChartsTabs = ({
                     Comparação dos dados do primeiro trimestre de 2024 com períodos anteriores.
                   </p>
                   <div className="flex justify-end">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button 
-                            className="text-xs px-3 py-1 bg-forest-600 text-white rounded"
-                            onClick={handleDownloadComparativeAnalysis}
-                          >
-                            Download
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Baixar análise comparativa em formato CSV</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <button className="text-xs px-3 py-1 bg-forest-600 text-white rounded">
+                      Download
+                    </button>
                   </div>
                 </div>
                 
@@ -557,6 +447,25 @@ const ChartsTabs = ({
                   </p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="mapa-interativo">
+        <div className="grid grid-cols-1 gap-6">
+          <Card className="col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-forest-600" />
+                <span>Mapa Interativo de Estudos</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MapView 
+                studies={mockStudies} 
+                isAuthenticated={false}
+              />
             </CardContent>
           </Card>
         </div>
