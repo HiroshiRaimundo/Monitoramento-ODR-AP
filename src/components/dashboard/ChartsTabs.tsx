@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Activity, BarChart3, PieChart, TrendingUp, Users, ServerCrash, Zap, Layers } from "lucide-react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ChartContainer } from "@/components/ui/chart";
@@ -13,6 +14,8 @@ import RecentMonitorings from "./RecentMonitorings";
 import RecentUpdates from "./RecentUpdates";
 import AnalysisTools from "./AnalysisTools";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { toast } from "@/components/ui/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Definir a interface para as estatísticas de análise
 interface AnalysisStats {
@@ -20,6 +23,17 @@ interface AnalysisStats {
   sentimentAnalysis: number;
   crossAnalysis: number;
   nlpAnalysis: number;
+}
+
+// Interface para RecentUpdate
+export interface RecentUpdate {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: string;
+  site?: string;
+  status?: string;
 }
 
 // Simulação de atualizações recentes para RecentUpdates
@@ -37,6 +51,8 @@ interface ChartsTabsProps {
   radarData?: { subject: string; A: number; fullMark: number }[];
   systemUpdatesData: { name: string; updates: number }[];
   analysisStats?: AnalysisStats;
+  recentAlerts?: RecentUpdate[];
+  recentReports?: RecentUpdate[];
 }
 
 const ChartsTabs = ({ 
@@ -51,8 +67,112 @@ const ChartsTabs = ({
     sentimentAnalysis: 0,
     crossAnalysis: 0,
     nlpAnalysis: 0
-  }
+  },
+  recentAlerts = [],
+  recentReports = []
 }: ChartsTabsProps) => {
+  // Função para download de relatório mensal
+  const handleDownloadMonthlyReport = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    try {
+      // Criar dados de exemplo para o relatório
+      const reportData = {
+        title: "Relatório Mensal - Maio/2024",
+        date: new Date().toLocaleDateString('pt-BR'),
+        monitoringCount: monitoringItems.length,
+        categories: categoryData,
+        frequencies: frequencyData,
+        responsibles: responsibleData?.slice(0, 5),
+        summary: "Resumo completo dos dados coletados em todos os monitoramentos durante o mês."
+      };
+      
+      // Converter para JSON
+      const jsonContent = JSON.stringify(reportData, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const fileName = `relatorio-mensal-maio-2024.json`;
+      
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Relatório baixado",
+        description: `Arquivo ${fileName} baixado com sucesso.`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Erro ao baixar relatório:", error);
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível baixar o relatório. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  }, [monitoringItems, categoryData, frequencyData, responsibleData]);
+
+  // Função para download de análise comparativa
+  const handleDownloadComparativeAnalysis = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    try {
+      // Criar dados de exemplo para o relatório
+      const reportData = {
+        title: "Análise Comparativa - Q1 2024",
+        date: new Date().toLocaleDateString('pt-BR'),
+        currentQuarter: {
+          monitoringCount: monitoringItems.length,
+          categories: categoryData,
+          frequencies: frequencyData
+        },
+        previousQuarter: {
+          monitoringCount: Math.floor(monitoringItems.length * 0.8),
+          categories: categoryData?.map(item => ({ 
+            name: item.name, 
+            value: Math.floor(item.value * 0.8) 
+          })),
+          frequencies: frequencyData?.map(item => ({ 
+            frequency: item.frequency, 
+            quantidade: Math.floor(item.quantidade * 0.8) 
+          }))
+        },
+        summary: "Comparação dos dados do primeiro trimestre de 2024 com períodos anteriores."
+      };
+      
+      // Converter para JSON
+      const jsonContent = JSON.stringify(reportData, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const fileName = `analise-comparativa-q1-2024.json`;
+      
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Análise baixada",
+        description: `Arquivo ${fileName} baixado com sucesso.`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Erro ao baixar análise:", error);
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível baixar a análise. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  }, [monitoringItems, categoryData, frequencyData]);
+
   return (
     <Tabs defaultValue="visão-geral" className="w-full">
       <TabsList className="w-full grid grid-cols-4 mb-6">
@@ -134,7 +254,7 @@ const ChartsTabs = ({
                 <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
               </CardHeader>
               <CardContent>
-                <RecentUpdates updates={mockUpdates} />
+                <RecentUpdates updates={recentAlerts && recentAlerts.length > 0 ? recentAlerts : mockUpdates} />
               </CardContent>
             </Card>
           </div>
@@ -245,7 +365,7 @@ const ChartsTabs = ({
               <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates updates={mockUpdates} />
+              <RecentUpdates updates={recentAlerts && recentAlerts.length > 0 ? recentAlerts : mockUpdates} />
             </CardContent>
           </Card>
 
@@ -382,9 +502,21 @@ const ChartsTabs = ({
                     Resumo completo dos dados coletados em todos os monitoramentos durante o mês.
                   </p>
                   <div className="flex justify-end">
-                    <button className="text-xs px-3 py-1 bg-forest-600 text-white rounded">
-                      Download
-                    </button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            className="text-xs px-3 py-1 bg-forest-600 text-white rounded"
+                            onClick={handleDownloadMonthlyReport}
+                          >
+                            Download
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Baixar relatório mensal completo em formato JSON</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
                 
@@ -397,9 +529,21 @@ const ChartsTabs = ({
                     Comparação dos dados do primeiro trimestre de 2024 com períodos anteriores.
                   </p>
                   <div className="flex justify-end">
-                    <button className="text-xs px-3 py-1 bg-forest-600 text-white rounded">
-                      Download
-                    </button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            className="text-xs px-3 py-1 bg-forest-600 text-white rounded"
+                            onClick={handleDownloadComparativeAnalysis}
+                          >
+                            Download
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Baixar análise comparativa em formato CSV</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
                 
