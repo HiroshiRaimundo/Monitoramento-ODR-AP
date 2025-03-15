@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -90,9 +89,17 @@ const MapContainer: React.FC<MapContainerProps> = ({
     
     const groups: {[key: string]: MapPoint[]} = {};
     
+    // Precisão para agrupar pontos (reduzir para agrupar pontos mais próximos)
+    const precision = 0.0001; // Aproximadamente 10 metros
+    
     points.forEach(point => {
       if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
-        const locationKey = `${point.coordinates[0]},${point.coordinates[1]}`;
+        // Arredondar coordenadas para agrupar pontos próximos
+        const roundedLng = Math.round(point.coordinates[0] / precision) * precision;
+        const roundedLat = Math.round(point.coordinates[1] / precision) * precision;
+        
+        const locationKey = `${roundedLng},${roundedLat}`;
+        
         if (!groups[locationKey]) {
           groups[locationKey] = [];
         }

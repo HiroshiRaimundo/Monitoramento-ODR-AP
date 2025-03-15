@@ -1,4 +1,3 @@
-
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapPoint } from '@/types/map';
@@ -56,14 +55,25 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     }
 
     // Calcular deslocamento de posição para marcadores no mesmo local
-    // Isso cria um padrão circular ao redor das coordenadas reais
     let offsetX = 0;
     let offsetY = 0;
     
     if (total > 1) {
-      // Calcular posições em um padrão circular
-      const radius = Math.min(total * 3, 20); // Limitar o raio
-      const angle = (index / total) * 2 * Math.PI;
+      // Implementar um padrão em espiral para distribuir os marcadores
+      const angleStep = (2 * Math.PI) / Math.min(total, 8); // Limitar a 8 marcadores por círculo
+      const baseRadius = 25; // Raio base em pixels (aumentado para maior separação)
+      
+      // Determinar em qual "anel" da espiral este marcador deve estar
+      const ring = Math.floor(index / 8);
+      const indexInRing = index % 8;
+      
+      // Calcular o raio com base no anel (aumenta para anéis externos)
+      const radius = baseRadius * (ring + 1);
+      
+      // Calcular o ângulo para este marcador
+      const angle = indexInRing * angleStep;
+      
+      // Calcular as coordenadas x e y
       offsetX = Math.cos(angle) * radius;
       offsetY = Math.sin(angle) * radius;
     }
@@ -78,6 +88,17 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     el.style.cursor = 'pointer';
     el.style.border = '2px solid white';
     el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.4)';
+    
+    // Adicionar um número ao marcador se houver vários no mesmo local
+    if (total > 1) {
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.color = 'white';
+      el.style.fontSize = '10px';
+      el.style.fontWeight = 'bold';
+      el.innerText = `${index + 1}`;
+    }
 
     // Adicionar o marcador ao mapa
     const marker = new mapboxgl.Marker({ 
