@@ -14,7 +14,7 @@ interface MapContainerProps {
 const MapContainer: React.FC<MapContainerProps> = ({ 
   points, 
   onSelectPoint,
-  centerOnAmapa = false 
+  centerOnAmapa = true // Alterado para true por padrão
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -24,8 +24,11 @@ const MapContainer: React.FC<MapContainerProps> = ({
   const amapaCenterLng = -51.0669;
   const amapaCenterLat = 1.0354;
 
+  // Inicialização do mapa
   useEffect(() => {
     if (!mapContainer.current) return;
+
+    console.log("Inicializando mapa com", points.length, "pontos");
 
     // Initialize map with the provided token
     mapboxgl.accessToken = 'pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag';
@@ -34,12 +37,12 @@ const MapContainer: React.FC<MapContainerProps> = ({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
-      zoom: 7, // Zoom mais próximo para ver o Amapá
+      zoom: 6, // Zoom inicial para ver o Amapá
       center: [amapaCenterLng, amapaCenterLat], // Centralizado no Amapá
       pitch: 30,
       maxBounds: [
-        [amapaCenterLng - 3, amapaCenterLat - 3], // Sudoeste
-        [amapaCenterLng + 3, amapaCenterLat + 3]  // Nordeste
+        [amapaCenterLng - 5, amapaCenterLat - 5], // Sudoeste (ampliado)
+        [amapaCenterLng + 5, amapaCenterLat + 5]  // Nordeste (ampliado)
       ]
     });
 
@@ -58,66 +61,82 @@ const MapContainer: React.FC<MapContainerProps> = ({
         'high-color': 'rgb(200, 200, 225)',
         'horizon-blend': 0.2,
       });
+      console.log("Mapa carregado");
       setMapLoaded(true);
     });
 
-    // Desabilita o zoom do scroll para uma experiência mais suave
-    map.current.scrollZoom.disable();
-
     // Cleanup
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        console.log("Removendo mapa");
+        map.current.remove();
+      }
     };
   }, []);
 
   // Ajustar a visualização do mapa quando os pontos mudam
   useEffect(() => {
-    if (!map.current || !mapLoaded || !points) return;
+    if (!map.current || !mapLoaded) return;
 
-    if (centerOnAmapa) {
-      // Se a opção centerOnAmapa estiver ativa, sempre centraliza no Amapá
-      map.current.flyTo({
-        center: [amapaCenterLng, amapaCenterLat],
-        zoom: 7,
-        pitch: 30,
-        essential: true
-      });
-    } else if (points.length > 1) {
-      const bounds = new mapboxgl.LngLatBounds();
-      points.forEach(point => {
-        bounds.extend(point.coordinates as mapboxgl.LngLatLike);
-      });
-      
-      map.current.fitBounds(bounds, {
-        padding: 50,
-        maxZoom: 12
-      });
-    } else if (points.length === 1) {
+    console.log("Atualizando visualização do mapa com", points.length, "pontos");
+    
+    // Sempre centraliza no Amapá primeiro para garantir uma boa visualização inicial
+    map.current.flyTo({
+      center: [amapaCenterLng, amapaCenterLat],
+      zoom: 6,
+      pitch: 30,
+      essential: true,
+      duration: 1000
+    });
+    
+    // Após centralizar no Amapá, ajusta para mostrar todos os pontos se houver mais de um
+    if (points.length > 1) {
+      setTimeout(() => {
+        if (!map.current) return;
+        
+        const bounds = new mapboxgl.LngLatBounds();
+        points.forEach(point => {
+          if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
+            bounds.extend(point.coordinates as mapboxgl.LngLatLike);
+          }
+        });
+        
+        // Só ajusta o bounds se houver pontos válidos
+        if (!bounds.isEmpty()) {
+          console.log("Ajustando bounds para mostrar todos os pontos");
+          map.current.fitBounds(bounds, {
+            padding: 100,
+            maxZoom: 10
+          });
+        }
+      }, 1500); // Delay para permitir que a primeira animação termine
+    } else if (points.length === 1 && points[0].coordinates) {
       // Se há apenas um ponto, centraliza o mapa nele
-      map.current.flyTo({
-        center: points[0].coordinates,
-        zoom: 12
-      });
-    } else {
-      // Se não há pontos, volta para a visão padrão do Amapá
-      map.current.flyTo({
-        center: [amapaCenterLng, amapaCenterLat],
-        zoom: 7,
-        pitch: 30
-      });
+      setTimeout(() => {
+        if (!map.current) return;
+        
+        console.log("Centralizando em um único ponto:", points[0].coordinates);
+        map.current.flyTo({
+          center: points[0].coordinates,
+          zoom: 10,
+          duration: 1000
+        });
+      }, 1500);
     }
-  }, [points, mapLoaded, centerOnAmapa]);
+  }, [points, mapLoaded]);
 
   // Function to group points by coordinates
   const groupPointsByLocation = () => {
     const locationGroups: { [key: string]: MapPoint[] } = {};
     
     points.forEach(point => {
-      const locationKey = `${point.coordinates[0]},${point.coordinates[1]}`;
-      if (!locationGroups[locationKey]) {
-        locationGroups[locationKey] = [];
+      if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
+        const locationKey = `${point.coordinates[0]},${point.coordinates[1]}`;
+        if (!locationGroups[locationKey]) {
+          locationGroups[locationKey] = [];
+        }
+        locationGroups[locationKey].push(point);
       }
-      locationGroups[locationKey].push(point);
     });
     
     return locationGroups;
@@ -130,6 +149,7 @@ const MapContainer: React.FC<MapContainerProps> = ({
       
       {mapLoaded && map.current && (() => {
         const locationGroups = groupPointsByLocation();
+        console.log("Grupos de localização:", Object.keys(locationGroups).length);
         
         return Object.values(locationGroups).flatMap(group => 
           group.map((point, index) => (

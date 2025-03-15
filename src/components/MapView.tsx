@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ const MapView: React.FC<MapViewProps> = ({
   showRegistrationForm = true,
   title = "Registro de Estudos",
   description = "Cadastre novos estudos para serem exibidos no mapa.",
-  centerOnAmapa = false,
+  centerOnAmapa = true,
   onStudiesUpdate
 }) => {
   const studyForm = useForm<ResearchStudyFormData>({
@@ -34,6 +34,16 @@ const MapView: React.FC<MapViewProps> = ({
       type: "artigo" // Valor padrão para o campo type
     }
   });
+  
+  // Log para depuração
+  useEffect(() => {
+    console.log("MapView: Estudos recebidos:", studies.length);
+    
+    // Notificar componente pai sobre estudos atualizados
+    if (onStudiesUpdate) {
+      onStudiesUpdate(studies);
+    }
+  }, [studies, onStudiesUpdate]);
 
   // Manipulador de envio do formulário com feedback para o usuário
   const handleFormSubmit = async (data: ResearchStudyFormData) => {

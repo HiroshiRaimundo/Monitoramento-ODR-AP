@@ -5,7 +5,6 @@ import MapView from "@/components/MapView";
 import { ResearchStudy } from "@/types/research";
 import { toast } from "@/hooks/use-toast";
 import ResearchList from "@/components/ResearchList";
-import { Card } from "@/components/ui/card";
 
 interface MapaTabContentProps {
   isAuthenticated: boolean;
@@ -22,11 +21,12 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
 }) => {
   if (!isAuthenticated) return null;
   
-  // Estado local para rastrear estudos adicionados recentemente
+  // Estado local para rastrear estudos
   const [localStudies, setLocalStudies] = useState<ResearchStudy[]>(studies);
   
   // Atualiza o estado local quando os estudos originais mudam
   useEffect(() => {
+    console.log("MapaTabContent: Atualizando estudos locais", studies.length);
     setLocalStudies(studies);
   }, [studies]);
   
@@ -57,9 +57,19 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
     if (handleDeleteStudy) {
       try {
         await handleDeleteStudy(id);
-        // Atualização local será feita automaticamente via useEffect quando studies mudar
+        // Exibir feedback positivo para o usuário
+        toast({
+          title: "Estudo removido com sucesso",
+          description: "O estudo foi removido do sistema.",
+        });
       } catch (error) {
         console.error("Erro ao excluir estudo:", error);
+        // Notificar o usuário sobre o erro
+        toast({
+          title: "Erro ao remover estudo",
+          description: "Ocorreu um problema ao tentar remover o estudo.",
+          variant: "destructive"
+        });
       }
     }
   };
@@ -75,6 +85,7 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
             showRegistrationForm={true}
             title="Registro de Estudos"
             description="Cadastre novos estudos para serem exibidos no mapa da área pública."
+            centerOnAmapa={true}
           />
         </div>
         

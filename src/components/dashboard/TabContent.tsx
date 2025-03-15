@@ -55,6 +55,7 @@ const TabContent: React.FC<TabContentProps> = ({
   
   // Atualiza o estado local quando os estudos originais mudam
   useEffect(() => {
+    console.log("TabContent: Atualizando estudos com", originalStudies.length, "itens");
     setStudies(originalStudies);
   }, [originalStudies]);
 
@@ -66,12 +67,14 @@ const TabContent: React.FC<TabContentProps> = ({
   }, [originalMonitoringItems]);
 
   const filteredStudies = useMemo(() => {
+    console.log("TabContent: Aplicando filtro de tempo a", studies.length, "estudos");
     return filterStudiesByTimeRange(studies, timeRange);
   }, [studies, timeRange]);
 
   // Manipulador para manter os estudos sincronizados após o envio de um novo estudo
   const handleStudySubmitSync = async (data: Omit<ResearchStudy, "id" | "coordinates">) => {
     try {
+      console.log("TabContent: Enviando novo estudo:", data.title);
       // Chamar o manipulador original para adicionar o estudo
       await handleStudySubmit(data);
       
@@ -118,7 +121,7 @@ const TabContent: React.FC<TabContentProps> = ({
 
       <MapaTabContent 
         isAuthenticated={isAuthenticated}
-        studies={filteredStudies}
+        studies={studies}  // Usar todos os estudos sem filtrar por tempo
         handleStudySubmit={handleStudySubmitSync}
         handleDeleteStudy={handleDeleteStudy}
       />

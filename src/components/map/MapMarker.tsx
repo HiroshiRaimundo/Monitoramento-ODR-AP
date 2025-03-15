@@ -29,25 +29,29 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     `);
 
     // Escolher cor do marcador com base no tipo de estudo
-    let markerColor = '#FF0000';
-    switch (point.type) {
-      case 'artigo':
-        markerColor = '#FF0000'; // Vermelho
-        break;
-      case 'dissertacao':
-        markerColor = '#0066FF'; // Azul
-        break;
-      case 'tese':
-        markerColor = '#008000'; // Verde
-        break;
-      case 'livros':
-        markerColor = '#800080'; // Roxo
-        break;
-      case 'ebooks':
-        markerColor = '#FF6600'; // Laranja
-        break;
-      default:
-        markerColor = '#808080'; // Cinza para 'outro'
+    let markerColor = '#FF0000'; // Padrão vermelho para todos os marcadores
+    
+    // Aplicar cores específicas apenas se houver um tipo
+    if (point.type) {
+      switch (point.type) {
+        case 'artigo':
+          markerColor = '#FF0000'; // Vermelho
+          break;
+        case 'dissertacao':
+          markerColor = '#0066FF'; // Azul
+          break;
+        case 'tese':
+          markerColor = '#008000'; // Verde
+          break;
+        case 'livros':
+          markerColor = '#800080'; // Roxo
+          break;
+        case 'ebooks':
+          markerColor = '#FF6600'; // Laranja
+          break;
+        default:
+          markerColor = '#FF0000'; // Vermelho para 'outro' ou indefinido
+      }
     }
 
     // Calcular deslocamento de posição para marcadores no mesmo local
@@ -63,17 +67,18 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       offsetY = Math.sin(angle) * radius;
     }
 
-    // Criar um elemento DOM personalizado para o marcador para torná-lo mais visível
+    // Criar um elemento DOM personalizado para o marcador com maior visibilidade
     const el = document.createElement('div');
     el.className = 'marker';
     el.style.backgroundColor = markerColor;
-    el.style.width = '20px';
-    el.style.height = '20px';
+    el.style.width = '24px';
+    el.style.height = '24px';
     el.style.borderRadius = '50%';
     el.style.cursor = 'pointer';
-    el.style.border = '2px solid white';
-    el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+    el.style.border = '3px solid white';
+    el.style.boxShadow = '0 3px 6px rgba(0,0,0,0.5)';
 
+    // Adicionar o marcador ao mapa
     const marker = new mapboxgl.Marker({ 
       element: el,
       offset: [offsetX, offsetY]
