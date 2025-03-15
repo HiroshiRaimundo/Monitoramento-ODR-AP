@@ -12,6 +12,7 @@ const Map: React.FC<MapProps> = ({ points = [] }) => {
   const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
 
   const handleSelectPoint = (point: MapPoint) => {
+    // Se o ponto já estiver selecionado, não adicione novamente
     if (!selectedStudies.find(study => study.id === point.id)) {
       setSelectedStudies(prev => [...prev, point]);
     }
@@ -23,15 +24,19 @@ const Map: React.FC<MapProps> = ({ points = [] }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <MapContainer 
-        points={points} 
-        onSelectPoint={handleSelectPoint} 
-      />
+      <div className="border border-forest-100 rounded-lg overflow-hidden shadow-md">
+        <MapContainer 
+          points={points} 
+          onSelectPoint={handleSelectPoint} 
+        />
+      </div>
       
-      <StudyDetail 
-        selectedStudies={selectedStudies}
-        onRemoveStudy={removeStudyFromList}
-      />
+      {selectedStudies.length > 0 && (
+        <StudyDetail 
+          selectedStudies={selectedStudies}
+          onRemoveStudy={removeStudyFromList}
+        />
+      )}
     </div>
   );
 };

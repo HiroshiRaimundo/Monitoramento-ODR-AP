@@ -20,7 +20,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       offset: [0, -10],
       className: 'custom-popup'
     }).setHTML(`
-      <div class="p-2 text-sm">
+      <div class="p-2 text-sm bg-white rounded shadow">
         <h4 class="font-bold mb-1">${point.title}</h4>
         <p class="text-xs">Autor: ${point.author}</p>
         <p class="text-xs">Tipo: ${point.type}</p>
@@ -62,8 +62,19 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       offsetY = Math.sin(angle) * radius;
     }
 
+    // Create a custom DOM element for the marker to make it more visible
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.style.backgroundColor = markerColor;
+    el.style.width = '20px';
+    el.style.height = '20px';
+    el.style.borderRadius = '50%';
+    el.style.cursor = 'pointer';
+    el.style.border = '2px solid white';
+    el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+
     const marker = new mapboxgl.Marker({ 
-      color: markerColor,
+      element: el,
       offset: [offsetX, offsetY]
     })
       .setLngLat(point.coordinates)
