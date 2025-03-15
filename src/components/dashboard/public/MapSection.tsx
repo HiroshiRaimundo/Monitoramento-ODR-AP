@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from "react";
-import MapView from "@/components/MapView";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { MapPin } from "lucide-react";
+import Map from "@/components/Map";
 import { ResearchStudy } from "@/types/research";
 import SearchPanel from "@/components/map/SearchPanel";
 import { MapPoint } from "@/types/map";
@@ -45,16 +47,38 @@ const MapSection: React.FC<MapSectionProps> = ({
     }
   };
 
+  // Preparar os pontos para o mapa
+  const mapPoints = displayData.map(study => ({
+    id: study.id,
+    title: study.title,
+    author: study.author,
+    coordinates: study.coordinates,
+    location: study.location,
+    repositoryUrl: study.repositoryUrl,
+    type: study.type,
+    summary: study.summary
+  }));
+
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="md:col-span-2">
-        <MapView 
-          studies={displayData} 
-          showRegistrationForm={false}
-          title="Visualização Geográfica"
-          description="Distribuição espacial dos estudos e pesquisas na região amazônica"
-          centerOnAmapa={true}
-        />
+        <Card className="border-forest-100 shadow-md overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
+            <div className="flex items-center gap-2">
+              <MapPin size={20} className="text-forest-600" />
+              <CardTitle className="text-forest-700">Visualização Geográfica</CardTitle>
+            </div>
+            <CardDescription className="text-forest-600">
+              Distribuição espacial dos estudos e pesquisas na região amazônica
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4">
+            <Map 
+              points={mapPoints}
+              centerOnAmapa={true}
+            />
+          </CardContent>
+        </Card>
       </div>
       
       <div className="md:col-span-1">

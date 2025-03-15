@@ -75,6 +75,18 @@ const MapView: React.FC<MapViewProps> = ({
     }
   };
 
+  // Preparar os pontos para o mapa
+  const mapPoints = studies.map(study => ({
+    id: study.id,
+    title: study.title,
+    author: study.author,
+    coordinates: study.coordinates,
+    location: study.location,
+    repositoryUrl: study.repositoryUrl,
+    type: study.type,
+    summary: study.summary
+  }));
+
   // Renderiza o conteúdo baseado no modo de exibição
   const renderContent = () => {
     // Se showRegistrationForm é false, mostrar apenas o mapa
@@ -82,16 +94,7 @@ const MapView: React.FC<MapViewProps> = ({
       return (
         <div className="space-y-4">
           <Map 
-            points={studies.map(study => ({
-              id: study.id,
-              title: study.title,
-              author: study.author,
-              coordinates: study.coordinates,
-              location: study.location,
-              repositoryUrl: study.repositoryUrl,
-              type: study.type,
-              summary: study.summary
-            }))} 
+            points={mapPoints}
             centerOnAmapa={centerOnAmapa}
           />
         </div>
@@ -113,6 +116,7 @@ const MapView: React.FC<MapViewProps> = ({
       );
     }
 
+    // Mostrar o formulário de registro e a lista de estudos (não o mapa)
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-lg p-4 border border-forest-100">
@@ -120,22 +124,6 @@ const MapView: React.FC<MapViewProps> = ({
           <ResearchForm 
             form={studyForm} 
             onSubmit={handleFormSubmit} 
-          />
-        </div>
-        
-        <div className="space-y-4">
-          <Map 
-            points={studies.map(study => ({
-              id: study.id,
-              title: study.title,
-              author: study.author,
-              coordinates: study.coordinates,
-              location: study.location,
-              repositoryUrl: study.repositoryUrl,
-              type: study.type,
-              summary: study.summary
-            }))} 
-            centerOnAmapa={centerOnAmapa}
           />
         </div>
       </div>

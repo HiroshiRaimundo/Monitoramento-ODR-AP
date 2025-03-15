@@ -33,7 +33,9 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
   const [filteredMapData, setFilteredMapData] = useState<ResearchStudy[]>(mapData);
 
   useEffect(() => {
-    setFilteredMapData(filterStudiesByTimeRange(mapData, timeRange));
+    const filtered = filterStudiesByTimeRange(mapData, timeRange);
+    console.log("PublicDashboard: Filtrando dados do mapa", mapData.length, "->", filtered.length);
+    setFilteredMapData(filtered);
   }, [timeRange, mapData]);
 
   return (

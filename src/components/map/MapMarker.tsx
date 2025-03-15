@@ -18,22 +18,23 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       closeButton: false,
       closeOnClick: false,
       offset: [0, -10],
-      className: 'custom-popup'
+      className: 'custom-popup',
+      maxWidth: '300px'
     }).setHTML(`
       <div class="p-2 text-sm bg-white rounded shadow">
         <h4 class="font-bold mb-1">${point.title}</h4>
         <p class="text-xs">Autor: ${point.author}</p>
-        <p class="text-xs">Tipo: ${point.type}</p>
+        <p class="text-xs">Tipo: ${point.type || 'Não especificado'}</p>
         ${point.summary ? `<p class="text-xs mt-1">Resumo: ${point.summary.substring(0, 100)}${point.summary.length > 100 ? '...' : ''}</p>` : ''}
       </div>
     `);
 
-    // Escolher cor do marcador com base no tipo de estudo
-    let markerColor = '#FF0000'; // Padrão vermelho para todos os marcadores
+    // Definir a cor do marcador com base no tipo
+    let markerColor = '#FF0000'; // Vermelho por padrão
     
     // Aplicar cores específicas apenas se houver um tipo
     if (point.type) {
-      switch (point.type) {
+      switch (point.type.toLowerCase()) {
         case 'artigo':
           markerColor = '#FF0000'; // Vermelho
           break;
@@ -61,7 +62,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     
     if (total > 1) {
       // Calcular posições em um padrão circular
-      const radius = Math.min(total * 5, 25); // Limitar o raio
+      const radius = Math.min(total * 3, 20); // Limitar o raio
       const angle = (index / total) * 2 * Math.PI;
       offsetX = Math.cos(angle) * radius;
       offsetY = Math.sin(angle) * radius;
@@ -71,12 +72,12 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     const el = document.createElement('div');
     el.className = 'marker';
     el.style.backgroundColor = markerColor;
-    el.style.width = '24px';
-    el.style.height = '24px';
+    el.style.width = '20px';
+    el.style.height = '20px';
     el.style.borderRadius = '50%';
     el.style.cursor = 'pointer';
-    el.style.border = '3px solid white';
-    el.style.boxShadow = '0 3px 6px rgba(0,0,0,0.5)';
+    el.style.border = '2px solid white';
+    el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.4)';
 
     // Adicionar o marcador ao mapa
     const marker = new mapboxgl.Marker({ 
