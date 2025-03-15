@@ -120,6 +120,7 @@ const TabContent: React.FC<TabContentProps> = ({
         isAuthenticated={isAuthenticated}
         studies={filteredStudies}
         handleStudySubmit={handleStudySubmitSync}
+        handleDeleteStudy={handleDeleteStudy}
       />
 
       <PressTabContent 

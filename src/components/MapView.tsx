@@ -104,12 +104,30 @@ const MapView: React.FC<MapViewProps> = ({
     }
 
     return (
-      <div className="bg-white rounded-lg p-4 border border-forest-100">
-        <h2 className="text-xl font-medium text-forest-700 mb-4">Registrar Novo Estudo</h2>
-        <ResearchForm 
-          form={studyForm} 
-          onSubmit={handleFormSubmit} 
-        />
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg p-4 border border-forest-100">
+          <h2 className="text-xl font-medium text-forest-700 mb-4">Registrar Novo Estudo</h2>
+          <ResearchForm 
+            form={studyForm} 
+            onSubmit={handleFormSubmit} 
+          />
+        </div>
+        
+        <div className="space-y-4">
+          <Map 
+            points={studies.map(study => ({
+              id: study.id,
+              title: study.title,
+              author: study.author,
+              coordinates: study.coordinates,
+              location: study.location,
+              repositoryUrl: study.repositoryUrl,
+              type: study.type,
+              summary: study.summary
+            }))} 
+            centerOnAmapa={centerOnAmapa}
+          />
+        </div>
       </div>
     );
   };

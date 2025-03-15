@@ -7,13 +7,13 @@ interface MapMarkerProps {
   point: MapPoint;
   map: mapboxgl.Map;
   onClick: (point: MapPoint) => void;
-  index: number; // Add index to help with positioning
-  total: number; // Add total number of markers at this location
+  index: number; // Índice para ajudar no posicionamento
+  total: number; // Número total de marcadores nesta localização
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total }) => {
   React.useEffect(() => {
-    // Create a detailed popup with more information
+    // Criar um popup detalhado com mais informações
     const popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false,
@@ -24,45 +24,46 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
         <h4 class="font-bold mb-1">${point.title}</h4>
         <p class="text-xs">Autor: ${point.author}</p>
         <p class="text-xs">Tipo: ${point.type}</p>
+        ${point.summary ? `<p class="text-xs mt-1">Resumo: ${point.summary.substring(0, 100)}${point.summary.length > 100 ? '...' : ''}</p>` : ''}
       </div>
     `);
 
-    // Choose marker color based on study type
+    // Escolher cor do marcador com base no tipo de estudo
     let markerColor = '#FF0000';
     switch (point.type) {
       case 'artigo':
-        markerColor = '#FF0000'; // Red
+        markerColor = '#FF0000'; // Vermelho
         break;
       case 'dissertacao':
-        markerColor = '#0066FF'; // Blue
+        markerColor = '#0066FF'; // Azul
         break;
       case 'tese':
-        markerColor = '#008000'; // Green
+        markerColor = '#008000'; // Verde
         break;
       case 'livros':
-        markerColor = '#800080'; // Purple
+        markerColor = '#800080'; // Roxo
         break;
       case 'ebooks':
-        markerColor = '#FF6600'; // Orange
+        markerColor = '#FF6600'; // Laranja
         break;
       default:
-        markerColor = '#808080'; // Grey for 'outro'
+        markerColor = '#808080'; // Cinza para 'outro'
     }
 
-    // Calculate position offset for markers at the same location
-    // This creates a circular pattern around the actual coordinates
+    // Calcular deslocamento de posição para marcadores no mesmo local
+    // Isso cria um padrão circular ao redor das coordenadas reais
     let offsetX = 0;
     let offsetY = 0;
     
     if (total > 1) {
-      // Calculate positions in a circular pattern
-      const radius = Math.min(total * 5, 25); // Limit the radius
+      // Calcular posições em um padrão circular
+      const radius = Math.min(total * 5, 25); // Limitar o raio
       const angle = (index / total) * 2 * Math.PI;
       offsetX = Math.cos(angle) * radius;
       offsetY = Math.sin(angle) * radius;
     }
 
-    // Create a custom DOM element for the marker to make it more visible
+    // Criar um elemento DOM personalizado para o marcador para torná-lo mais visível
     const el = document.createElement('div');
     el.className = 'marker';
     el.style.backgroundColor = markerColor;
@@ -80,7 +81,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       .setLngLat(point.coordinates)
       .addTo(map);
 
-    // Show popup on hover
+    // Mostrar popup ao passar o mouse
     marker.getElement().addEventListener('mouseenter', () => {
       popup.addTo(map);
       popup.setLngLat(point.coordinates);
