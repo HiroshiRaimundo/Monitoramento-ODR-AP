@@ -8,9 +8,14 @@ import MapMarker from './MapMarker';
 interface MapContainerProps {
   points: MapPoint[];
   onSelectPoint: (point: MapPoint) => void;
+  centerOnAmapa?: boolean;
 }
 
-const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) => {
+const MapContainer: React.FC<MapContainerProps> = ({ 
+  points, 
+  onSelectPoint,
+  centerOnAmapa = false 
+}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -69,7 +74,15 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
   useEffect(() => {
     if (!map.current || !mapLoaded || !points) return;
 
-    if (points.length > 1) {
+    if (centerOnAmapa) {
+      // Se a opção centerOnAmapa estiver ativa, sempre centraliza no Amapá
+      map.current.flyTo({
+        center: [amapaCenterLng, amapaCenterLat],
+        zoom: 7,
+        pitch: 30,
+        essential: true
+      });
+    } else if (points.length > 1) {
       const bounds = new mapboxgl.LngLatBounds();
       points.forEach(point => {
         bounds.extend(point.coordinates as mapboxgl.LngLatLike);
@@ -93,7 +106,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
         pitch: 30
       });
     }
-  }, [points, mapLoaded]);
+  }, [points, mapLoaded, centerOnAmapa]);
 
   // Function to group points by coordinates
   const groupPointsByLocation = () => {

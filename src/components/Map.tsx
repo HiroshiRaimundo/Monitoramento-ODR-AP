@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import MapContainer from './map/MapContainer';
 import StudyDetail from './map/StudyDetail';
 import { MapPoint } from '@/types/map';
+import SearchPanel from './map/SearchPanel';
 
 interface MapProps {
   points?: MapPoint[];
+  centerOnAmapa?: boolean;
 }
 
-const Map: React.FC<MapProps> = ({ points = [] }) => {
+const Map: React.FC<MapProps> = ({ points = [], centerOnAmapa = false }) => {
   const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
 
   const handleSelectPoint = (point: MapPoint) => {
@@ -27,7 +29,8 @@ const Map: React.FC<MapProps> = ({ points = [] }) => {
       <div className="border border-forest-100 rounded-lg overflow-hidden shadow-md">
         <MapContainer 
           points={points} 
-          onSelectPoint={handleSelectPoint} 
+          onSelectPoint={handleSelectPoint}
+          centerOnAmapa={centerOnAmapa}
         />
       </div>
       

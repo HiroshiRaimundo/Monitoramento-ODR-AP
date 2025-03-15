@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
@@ -14,6 +13,7 @@ interface MapViewProps {
   showRegistrationForm?: boolean;
   title?: string;
   description?: string;
+  centerOnAmapa?: boolean;
 }
 
 const MapView: React.FC<MapViewProps> = ({ 
@@ -22,7 +22,8 @@ const MapView: React.FC<MapViewProps> = ({
   onStudySubmit,
   showRegistrationForm = true,
   title = "Registro de Estudos",
-  description = "Cadastre novos estudos para serem exibidos no mapa."
+  description = "Cadastre novos estudos para serem exibidos no mapa.",
+  centerOnAmapa = false
 }) => {
   const studyForm = useForm<ResearchStudyFormData>({
     defaultValues: {
@@ -36,16 +37,19 @@ const MapView: React.FC<MapViewProps> = ({
     if (!showRegistrationForm) {
       return (
         <div className="space-y-4">
-          <Map points={studies.map(study => ({
-            id: study.id,
-            title: study.title,
-            author: study.author,
-            coordinates: study.coordinates,
-            location: study.location,
-            repositoryUrl: study.repositoryUrl,
-            type: study.type,
-            summary: study.summary
-          }))} />
+          <Map 
+            points={studies.map(study => ({
+              id: study.id,
+              title: study.title,
+              author: study.author,
+              coordinates: study.coordinates,
+              location: study.location,
+              repositoryUrl: study.repositoryUrl,
+              type: study.type,
+              summary: study.summary
+            }))} 
+            centerOnAmapa={centerOnAmapa}
+          />
         </div>
       );
     }
