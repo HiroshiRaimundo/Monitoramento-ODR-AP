@@ -70,7 +70,9 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   ];
 
   // Calcular estatísticas sobre os tipos de análise ativos para cada monitoramento
-  const analysisStats = useMemo(() => getAnalysisTypeStats(), []);
+  const analysisStats = useMemo(() => {
+    return [getAnalysisTypeStats()];
+  }, []);
 
   // Função para exportar dados do monitoramento selecionado
   const exportSelectedMonitoring = () => {

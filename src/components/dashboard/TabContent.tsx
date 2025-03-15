@@ -1,5 +1,5 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { ResearchStudy } from "@/types/research";
@@ -38,7 +38,7 @@ const TabContent: React.FC<TabContentProps> = ({
   setTimeRange,
   handleExport,
   monitoringItems: originalMonitoringItems,
-  studies,
+  studies: originalStudies,
   monitoringForm,
   studyForm,
   handleAddMonitoring,
@@ -50,6 +50,14 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
+  // Estado para armazenar a lista atualizada de estudos
+  const [studies, setStudies] = useState<ResearchStudy[]>(originalStudies);
+  
+  // Atualiza o estado local quando os estudos originais mudam
+  useEffect(() => {
+    setStudies(originalStudies);
+  }, [originalStudies]);
+
   const monitoringItems = useMemo(() => {
     if (originalMonitoringItems.length < 20) {
       return simulateMonitoringItems();
@@ -60,6 +68,19 @@ const TabContent: React.FC<TabContentProps> = ({
   const filteredStudies = useMemo(() => {
     return filterStudiesByTimeRange(studies, timeRange);
   }, [studies, timeRange]);
+
+  // Manipulador para manter os estudos sincronizados após o envio de um novo estudo
+  const handleStudySubmitSync = async (data: Omit<ResearchStudy, "id" | "coordinates">) => {
+    try {
+      // Chamar o manipulador original para adicionar o estudo
+      await handleStudySubmit(data);
+      
+      // Após adicionar com sucesso, podemos confiar que originalStudies será atualizado
+      // no próximo ciclo de renderização por meio do useEffect
+    } catch (error) {
+      console.error("Erro ao sincronizar estudos:", error);
+    }
+  };
 
   return (
     <Tabs defaultValue="publico" className="w-full">
@@ -98,7 +119,7 @@ const TabContent: React.FC<TabContentProps> = ({
       <MapaTabContent 
         isAuthenticated={isAuthenticated}
         studies={filteredStudies}
-        handleStudySubmit={handleStudySubmit}
+        handleStudySubmit={handleStudySubmitSync}
       />
 
       <PressTabContent 

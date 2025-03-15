@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
@@ -5,6 +6,7 @@ import { useForm } from "react-hook-form";
 import ResearchForm from "@/components/ResearchForm";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
 import Map from "@/components/Map";
+import { toast } from "@/hooks/use-toast";
 
 interface MapViewProps {
   studies: ResearchStudy[];
@@ -14,6 +16,7 @@ interface MapViewProps {
   title?: string;
   description?: string;
   centerOnAmapa?: boolean;
+  onStudiesUpdate?: (studies: ResearchStudy[]) => void;
 }
 
 const MapView: React.FC<MapViewProps> = ({ 
@@ -23,13 +26,44 @@ const MapView: React.FC<MapViewProps> = ({
   showRegistrationForm = true,
   title = "Registro de Estudos",
   description = "Cadastre novos estudos para serem exibidos no mapa.",
-  centerOnAmapa = false
+  centerOnAmapa = false,
+  onStudiesUpdate
 }) => {
   const studyForm = useForm<ResearchStudyFormData>({
     defaultValues: {
       type: "artigo" // Valor padrão para o campo type
     }
   });
+
+  // Manipulador de envio do formulário com feedback para o usuário
+  const handleFormSubmit = async (data: ResearchStudyFormData) => {
+    try {
+      // Chamar o callback de envio do formulário se existir
+      if (onStudySubmit) {
+        await onStudySubmit(data);
+        
+        // Notificar o usuário sobre o sucesso
+        toast({
+          title: "Estudo registrado com sucesso",
+          description: "O estudo foi adicionado e já está disponível no mapa público.",
+        });
+        
+        // Resetar o formulário após o envio bem-sucedido
+        studyForm.reset({
+          type: "artigo" // Manter o valor padrão
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao registrar estudo:", error);
+      
+      // Notificar o usuário sobre o erro
+      toast({
+        title: "Erro ao registrar estudo",
+        description: "Ocorreu um problema ao adicionar o estudo. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
 
   // Renderiza o conteúdo baseado no modo de exibição
   const renderContent = () => {
@@ -74,7 +108,7 @@ const MapView: React.FC<MapViewProps> = ({
         <h2 className="text-xl font-medium text-forest-700 mb-4">Registrar Novo Estudo</h2>
         <ResearchForm 
           form={studyForm} 
-          onSubmit={onStudySubmit} 
+          onSubmit={handleFormSubmit} 
         />
       </div>
     );
