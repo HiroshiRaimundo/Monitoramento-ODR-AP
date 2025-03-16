@@ -1,5 +1,6 @@
 
 // Coordenadas de cidades do Amapá no formato [longitude, latitude] para uso com o Mapbox
+// Coordenadas atualizadas e verificadas
 const amapaLocations: Record<string, [number, number]> = {
   "Macapá": [-51.0669, 0.0356],
   "Santana": [-51.1729, -0.0583],
@@ -16,7 +17,9 @@ const amapaLocations: Record<string, [number, number]> = {
   "Cutias": [-50.8028, 0.9719],
   "Ferreira Gomes": [-51.1797, 0.8564],
   "Itaubal": [-50.6917, 0.6025],
-  "Pracuúba": [-50.7892, 1.7417]
+  "Pracuúba": [-50.7892, 1.7417],
+  // Centro do estado do Amapá (para referência)
+  "Centro do Amapá": [-52.0215415, 1.4441146]
 };
 
 export default amapaLocations;

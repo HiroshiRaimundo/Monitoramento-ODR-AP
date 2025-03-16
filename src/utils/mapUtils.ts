@@ -18,8 +18,8 @@ export const groupPointsByLocation = (points: MapPoint[]) => {
   
   const groups: {[key: string]: MapPoint[]} = {};
   
-  // Precisão para agrupar pontos (reduzir para agrupar pontos mais próximos)
-  const precision = 0.0001; // Aproximadamente 10 metros
+  // Precisão para agrupar pontos (aumentado para ter menos agrupamentos e mais alfinetes visíveis)
+  const precision = 0.001; // Aproximadamente 100 metros - aumentado para espalhar mais os pontos
   
   points.forEach(point => {
     if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
@@ -46,6 +46,12 @@ export const groupPointsByLocation = (points: MapPoint[]) => {
   });
   
   console.log("Grupos de localização:", Object.keys(groups).length);
+  
+  // Log detalhado dos grupos formados
+  Object.entries(groups).forEach(([key, group]) => {
+    console.log(`Grupo ${key}: ${group.length} pontos`);
+  });
+  
   return groups;
 };
 
@@ -75,4 +81,3 @@ export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
     coordinates: point.coordinates
   };
 };
-

@@ -49,6 +49,11 @@ const MapContainer: React.FC<MapContainerProps> = ({
     
     console.log(`MapContainer: ${validPoints.length} pontos válidos de ${points.length} totais`);
     
+    // Detalhando os primeiros pontos para depuração
+    validPoints.slice(0, 5).forEach((point, idx) => {
+      console.log(`Detalhe do ponto ${idx}: ID=${point.id}, Título=${point.title}, Coords=[${point.coordinates}]`);
+    });
+    
     // Agrupar pontos por localização
     const groups = groupPointsByLocation(validPoints);
     console.log("MapContainer: Grupos criados:", Object.keys(groups).length);
@@ -79,6 +84,13 @@ const MapContainer: React.FC<MapContainerProps> = ({
         />
       ))}
       
+      {/* Contador visual de alfinetes */}
+      {mapLoaded && (
+        <div className="absolute top-2 left-2 bg-white/80 p-2 rounded-lg text-sm font-medium z-10">
+          {Object.values(markerGroups).reduce((acc, group) => acc + group.length, 0)} alfinetes no mapa
+        </div>
+      )}
+      
       {/* Indicador visual quando não há pontos */}
       {points.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/30">
@@ -92,4 +104,3 @@ const MapContainer: React.FC<MapContainerProps> = ({
 };
 
 export default MapContainer;
-

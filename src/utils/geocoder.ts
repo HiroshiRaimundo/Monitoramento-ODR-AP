@@ -10,13 +10,14 @@ export const geocodeLocation = (location: string): [number, number] => {
   for (const [city, coords] of Object.entries(amapaLocations)) {
     if (normalizedLocation.includes(city.toLowerCase())) {
       console.log(`Localização encontrada: ${city}. Coordenadas:`, coords);
-      // Garante que as coordenadas estejam no formato [longitude, latitude] para o Mapbox
+      // Garantir que as coordenadas estejam no formato correto [longitude, latitude]
       return coords as [number, number];
     }
   }
   
-  // Se não encontrar, retorna coordenadas de Macapá como fallback
-  console.log("Localização não encontrada, usando Macapá como fallback");
-  return amapaLocations["Macapá"];
+  // Se não encontrar, retorna coordenadas de Macapá com posição ligeiramente deslocada
+  // para evitar sobreposição com outros pontos
+  const randomOffset = (Math.random() - 0.5) * 0.01; // Pequeno deslocamento aleatório para separar os pontos
+  console.log("Localização não encontrada, usando Macapá com deslocamento como fallback");
+  return [amapaLocations["Macapá"][0] + randomOffset, amapaLocations["Macapá"][1] + randomOffset];
 };
-

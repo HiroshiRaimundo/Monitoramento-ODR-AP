@@ -31,7 +31,7 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
-      zoom: 6, // Zoom inicial para ver o Amapá
+      zoom: 7, // Zoom inicial para ver o Amapá
       center: [amapaCenterLng, amapaCenterLat], // Coordenadas corretas do Amapá
       pitchWithRotate: false, // Desabilita pitch automático ao rotacionar
       pitch: 0, // Começa sem inclinação para evitar instabilidade
@@ -39,8 +39,8 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
       interactive: true, // Mantém o mapa interativo
       renderWorldCopies: false, // Evita renderizar múltiplas cópias do mundo
       maxBounds: [
-        [amapaCenterLng - 10, amapaCenterLat - 10], // Sudoeste (ampliado)
-        [amapaCenterLng + 10, amapaCenterLat + 10]  // Nordeste (ampliado)
+        [amapaCenterLng - 5, amapaCenterLat - 5], // Sudoeste (mais restrito)
+        [amapaCenterLng + 5, amapaCenterLat + 5]  // Nordeste (mais restrito)
       ]
     });
 
@@ -69,67 +69,74 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
     };
   }, []);
 
-  // Ajustar a visualização do mapa apenas uma vez quando os pontos são carregados
+  // Ajustar a visualização do mapa quando os pontos são carregados
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
     console.log("Ajustando visualização do mapa com", points.length, "pontos");
     
-    // Centraliza no Amapá e ajusta para mostrar todos os pontos
+    // Se não tiver sido inicializado ainda, centraliza no Amapá
     if (centerOnAmapa && !initializedRef.current) {
       // Primeiro, centraliza no Amapá
       map.current.jumpTo({
         center: [amapaCenterLng, amapaCenterLat],
-        zoom: 6,
+        zoom: 7,
         pitch: 0
       });
-      
-      // Depois, ajusta para mostrar todos os pontos se houver mais de um
-      if (points.length > 1) {
-        try {
-          const bounds = new mapboxgl.LngLatBounds();
-          let validPointsCount = 0;
-          
-          // Verificar cada ponto para garantir coordenadas válidas
-          points.forEach(point => {
-            if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
-              // Verificar se as coordenadas são números válidos
-              if (!isNaN(point.coordinates[0]) && !isNaN(point.coordinates[1])) {
-                // Importante: No Mapbox, as coordenadas são [longitude, latitude]
-                bounds.extend(point.coordinates as mapboxgl.LngLatLike);
-                validPointsCount++;
-                console.log(`Ponto válido: ${point.title} [${point.coordinates}]`);
-              } else {
-                console.warn(`Coordenadas inválidas para ${point.title}: [${point.coordinates}]`);
-              }
-            } else {
-              console.warn(`Estrutura de coordenadas inválida para ${point.title}`);
-            }
-          });
-          
-          console.log(`useMapbox: ${validPointsCount} pontos válidos para ajustar bounds`);
-          
-          // Só ajusta o bounds se houver pontos válidos
-          if (validPointsCount > 0 && !bounds.isEmpty()) {
-            console.log("Ajustando bounds para mostrar todos os pontos");
-            map.current.fitBounds(bounds, {
-              padding: 100,
-              maxZoom: 8, // Limita o zoom máximo para evitar zoom excessivo
-              duration: 500 // Animação suave
-            });
-          } else {
-            console.log("Sem pontos válidos para ajustar bounds");
-          }
-        } catch (err) {
-          console.error("Erro ao ajustar bounds:", err);
-        }
-      }
-      
-      // Marca que o mapa já foi inicializado
       initializedRef.current = true;
+    }
+
+    // Só ajusta o bounds se houver pontos válidos
+    if (points.length > 0) {
+      try {
+        // Criar bounds para incluir todos os pontos
+        const bounds = new mapboxgl.LngLatBounds();
+        let validPointsCount = 0;
+        
+        // Verificar cada ponto para garantir coordenadas válidas
+        points.forEach(point => {
+          if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
+            // Verificar se as coordenadas são números válidos
+            if (!isNaN(point.coordinates[0]) && !isNaN(point.coordinates[1])) {
+              bounds.extend(point.coordinates as mapboxgl.LngLatLike);
+              validPointsCount++;
+              console.log(`Ponto válido: ${point.title} [${point.coordinates}]`);
+            } else {
+              console.warn(`Coordenadas inválidas para ${point.title}: [${point.coordinates}]`);
+            }
+          } else {
+            console.warn(`Estrutura de coordenadas inválida para ${point.title}`);
+          }
+        });
+        
+        console.log(`useMapbox: ${validPointsCount} pontos válidos para ajustar bounds`);
+        
+        // Só ajusta o bounds se houver pontos válidos
+        if (validPointsCount > 0 && !bounds.isEmpty()) {
+          console.log("Ajustando bounds para mostrar todos os pontos");
+          map.current.fitBounds(bounds, {
+            padding: 100,
+            maxZoom: 10, // Limita o zoom máximo para evitar zoom excessivo
+            duration: 500 // Animação suave
+          });
+        } else {
+          console.log("Usando visualização padrão para o Amapá");
+          // Se não houver pontos válidos, centraliza no Amapá
+          map.current.jumpTo({
+            center: [amapaCenterLng, amapaCenterLat],
+            zoom: 7
+          });
+        }
+      } catch (err) {
+        console.error("Erro ao ajustar bounds:", err);
+        // Em caso de erro, volta para a visualização padrão
+        map.current.jumpTo({
+          center: [amapaCenterLng, amapaCenterLat],
+          zoom: 7
+        });
+      }
     }
   }, [points, mapLoaded, centerOnAmapa]);
 
   return { mapContainer, map, mapLoaded };
 };
-

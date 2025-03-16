@@ -78,7 +78,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       
       // Determinar em qual "anel" da espiral este marcador deve estar
       const ring = Math.floor(index / 8);
-      const indexInRing = index % A8;
+      const indexInRing = index % 8; // Corrigido o erro A8 para 8
       
       // Calcular o raio com base no anel (aumenta para anéis externos)
       const radius = baseRadius * (ring + 1);
@@ -153,4 +153,3 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
 };
 
 export default MapMarker;
-
