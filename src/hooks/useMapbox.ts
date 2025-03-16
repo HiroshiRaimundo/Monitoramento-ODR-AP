@@ -14,7 +14,7 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const initializedRef = useRef(false);
 
-  // Coordenadas corrigidas do centro do Amapá
+  // Coordenadas corretas do centro do Amapá
   const amapaCenterLng = -52.0215415;
   const amapaCenterLat = 1.4441146;
 
@@ -32,7 +32,7 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
       zoom: 6, // Zoom inicial para ver o Amapá
-      center: [amapaCenterLng, amapaCenterLat], // Coordenadas corrigidas do Amapá
+      center: [amapaCenterLng, amapaCenterLat], // Coordenadas corretas do Amapá
       pitchWithRotate: false, // Desabilita pitch automático ao rotacionar
       pitch: 0, // Começa sem inclinação para evitar instabilidade
       dragRotate: false, // Desabilita rotação para manter o mapa estável
@@ -71,7 +71,7 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
 
   // Ajustar a visualização do mapa apenas uma vez quando os pontos são carregados
   useEffect(() => {
-    if (!map.current || !mapLoaded || !points.length) return;
+    if (!map.current || !mapLoaded) return;
 
     console.log("Ajustando visualização do mapa com", points.length, "pontos");
     
@@ -86,30 +86,42 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
       
       // Depois, ajusta para mostrar todos os pontos se houver mais de um
       if (points.length > 1) {
-        const bounds = new mapboxgl.LngLatBounds();
-        let validPointsCount = 0;
-        
-        points.forEach(point => {
-          if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
-            // Verificar se as coordenadas são números válidos
-            if (!isNaN(point.coordinates[0]) && !isNaN(point.coordinates[1])) {
-              // No Mapbox, as coordenadas são [longitude, latitude]
-              bounds.extend([point.coordinates[1], point.coordinates[0]] as mapboxgl.LngLatLike);
-              validPointsCount++;
+        try {
+          const bounds = new mapboxgl.LngLatBounds();
+          let validPointsCount = 0;
+          
+          // Verificar cada ponto para garantir coordenadas válidas
+          points.forEach(point => {
+            if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
+              // Verificar se as coordenadas são números válidos
+              if (!isNaN(point.coordinates[0]) && !isNaN(point.coordinates[1])) {
+                // Importante: No Mapbox, as coordenadas são [longitude, latitude]
+                bounds.extend(point.coordinates as mapboxgl.LngLatLike);
+                validPointsCount++;
+                console.log(`Ponto válido: ${point.title} [${point.coordinates}]`);
+              } else {
+                console.warn(`Coordenadas inválidas para ${point.title}: [${point.coordinates}]`);
+              }
+            } else {
+              console.warn(`Estrutura de coordenadas inválida para ${point.title}`);
             }
-          }
-        });
-        
-        console.log(`useMapbox: ${validPointsCount} pontos válidos para ajustar bounds`);
-        
-        // Só ajusta o bounds se houver pontos válidos
-        if (!bounds.isEmpty()) {
-          console.log("Ajustando bounds para mostrar todos os pontos");
-          map.current.fitBounds(bounds, {
-            padding: 100,
-            maxZoom: 8, // Limita o zoom máximo para evitar zoom excessivo
-            duration: 500 // Animação suave
           });
+          
+          console.log(`useMapbox: ${validPointsCount} pontos válidos para ajustar bounds`);
+          
+          // Só ajusta o bounds se houver pontos válidos
+          if (validPointsCount > 0 && !bounds.isEmpty()) {
+            console.log("Ajustando bounds para mostrar todos os pontos");
+            map.current.fitBounds(bounds, {
+              padding: 100,
+              maxZoom: 8, // Limita o zoom máximo para evitar zoom excessivo
+              duration: 500 // Animação suave
+            });
+          } else {
+            console.log("Sem pontos válidos para ajustar bounds");
+          }
+        } catch (err) {
+          console.error("Erro ao ajustar bounds:", err);
         }
       }
       
@@ -120,3 +132,4 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
 
   return { mapContainer, map, mapLoaded };
 };
+

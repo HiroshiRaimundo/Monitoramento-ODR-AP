@@ -18,20 +18,28 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
   map, 
   onSelectPoint 
 }) => {
+  console.log(`Renderizando grupo de marcadores em ${locationKey} com ${pointsGroup.length} pontos`);
+  
   return (
     <>
-      {pointsGroup.map((point, index) => (
-        <MapMarker 
-          key={`${point.id}-${index}`} 
-          point={formatMapboxCoordinates(point)} 
-          map={map} 
-          onClick={onSelectPoint}
-          index={index}
-          total={pointsGroup.length}
-        />
-      ))}
+      {pointsGroup.map((point, index) => {
+        console.log(`Preparando marcador ${index+1}/${pointsGroup.length} para ${point.title}`);
+        // Formatando as coordenadas antes de passar para o marcador
+        const formattedPoint = formatMapboxCoordinates(point);
+        return (
+          <MapMarker 
+            key={`${point.id}-${index}`} 
+            point={formattedPoint} 
+            map={map} 
+            onClick={onSelectPoint}
+            index={index}
+            total={pointsGroup.length}
+          />
+        );
+      })}
     </>
   );
 };
 
 export default MapMarkerGroup;
+

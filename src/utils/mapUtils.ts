@@ -50,10 +50,29 @@ export const groupPointsByLocation = (points: MapPoint[]) => {
 };
 
 export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
+  // Verificar se as coordenadas existem e são válidas
+  if (!point.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
+    console.warn("formatMapboxCoordinates: Coordenadas inválidas para o ponto:", point.id, point.title);
+    // Usar coordenadas padrão para Macapá como fallback
+    return {
+      ...point,
+      coordinates: [-51.0669, 0.0356] // Coordenadas de Macapá como fallback
+    };
+  }
+  
+  // Verificar se as coordenadas são números
+  if (isNaN(point.coordinates[0]) || isNaN(point.coordinates[1])) {
+    console.warn("formatMapboxCoordinates: Coordenadas não numéricas para o ponto:", point.id, point.title);
+    return {
+      ...point,
+      coordinates: [-51.0669, 0.0356] // Coordenadas de Macapá como fallback
+    };
+  }
+
+  // Garantir o formato [longitude, latitude] para o Mapbox
   return {
     ...point,
-    // Garantir que as coordenadas já estão no formato correto para o Mapbox [longitude, latitude]
-    // Não alteramos aqui, pois já estamos formatando corretamente nos serviços
     coordinates: point.coordinates
   };
 };
+

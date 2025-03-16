@@ -19,12 +19,50 @@ const MapContainer: React.FC<MapContainerProps> = ({
 }) => {
   const { mapContainer, map, mapLoaded } = useMapbox({ centerOnAmapa, points });
   const [markerGroups, setMarkerGroups] = useState<{[key: string]: MapPoint[]}>({});
+  const [markersRendered, setMarkersRendered] = useState<boolean>(false);
 
   // Agrupar pontos por localização uma vez quando os pontos mudam
   useEffect(() => {
-    const groups = groupPointsByLocation(points);
+    console.log("MapContainer: Atualizando grupos de pontos, total:", points.length);
+    
+    // Verificar se há pontos para processar
+    if (!points || points.length === 0) {
+      console.log("MapContainer: Sem pontos para agrupar");
+      setMarkerGroups({});
+      return;
+    }
+    
+    // Verificação adicional de coordenadas válidas
+    const validPoints = points.filter(point => {
+      const hasValidCoords = point.coordinates && 
+                            Array.isArray(point.coordinates) && 
+                            point.coordinates.length === 2 &&
+                            !isNaN(point.coordinates[0]) && 
+                            !isNaN(point.coordinates[1]);
+                            
+      if (!hasValidCoords) {
+        console.warn(`Ponto inválido: ${point.id} (${point.title})`, point.coordinates);
+      }
+      
+      return hasValidCoords;
+    });
+    
+    console.log(`MapContainer: ${validPoints.length} pontos válidos de ${points.length} totais`);
+    
+    // Agrupar pontos por localização
+    const groups = groupPointsByLocation(validPoints);
+    console.log("MapContainer: Grupos criados:", Object.keys(groups).length);
     setMarkerGroups(groups);
+    setMarkersRendered(false); // Marcadores precisam ser renderizados novamente
   }, [points]);
+
+  // Efeito para registrar quando os marcadores são renderizados
+  useEffect(() => {
+    if (mapLoaded && map.current && Object.keys(markerGroups).length > 0 && !markersRendered) {
+      console.log("MapContainer: Renderizando", Object.keys(markerGroups).length, "grupos de marcadores");
+      setMarkersRendered(true);
+    }
+  }, [mapLoaded, map, markerGroups, markersRendered]);
 
   return (
     <div className="relative w-full h-[500px] rounded-lg overflow-hidden">
@@ -36,12 +74,22 @@ const MapContainer: React.FC<MapContainerProps> = ({
           key={locationKey}
           locationKey={locationKey}
           pointsGroup={pointsGroup}
-          map={map.current}
+          map={map.current!}
           onSelectPoint={onSelectPoint}
         />
       ))}
+      
+      {/* Indicador visual quando não há pontos */}
+      {points.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/30">
+          <div className="bg-white p-4 rounded-lg shadow text-center">
+            <p className="text-gray-700">Nenhum ponto para exibir no mapa</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default MapContainer;
+

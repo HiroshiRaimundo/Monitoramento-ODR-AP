@@ -19,6 +19,12 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       return;
     }
 
+    // Verificar se as coordenadas são números válidos
+    if (isNaN(point.coordinates[0]) || isNaN(point.coordinates[1])) {
+      console.error(`Coordenadas não são números válidos para o ponto ${point.id} (${point.title}):`, point.coordinates);
+      return;
+    }
+
     // Criar um popup detalhado com mais informações
     const popup = new mapboxgl.Popup({
       closeButton: false,
@@ -72,7 +78,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       
       // Determinar em qual "anel" da espiral este marcador deve estar
       const ring = Math.floor(index / 8);
-      const indexInRing = index % 8;
+      const indexInRing = index % A8;
       
       // Calcular o raio com base no anel (aumenta para anéis externos)
       const radius = baseRadius * (ring + 1);
@@ -107,38 +113,44 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       el.innerText = `${index + 1}`;
     }
 
-    // Log para debug
-    console.log(`Adicionando marcador para ${point.title} em:`, point.coordinates);
+    // Log detalhado para debug
+    console.log(`Adicionando marcador ${index+1}/${total} para '${point.title}' em [${point.coordinates[0]}, ${point.coordinates[1]}]`);
 
-    // Adicionar o marcador ao mapa
-    const marker = new mapboxgl.Marker({ 
-      element: el,
-      offset: [offsetX, offsetY]
-    })
-      .setLngLat(point.coordinates)
-      .addTo(map);
+    try {
+      // Adicionar o marcador ao mapa
+      const marker = new mapboxgl.Marker({ 
+        element: el,
+        offset: [offsetX, offsetY]
+      })
+        .setLngLat(point.coordinates)
+        .addTo(map);
 
-    // Mostrar popup ao passar o mouse
-    marker.getElement().addEventListener('mouseenter', () => {
-      popup.addTo(map);
-      popup.setLngLat(point.coordinates);
-    });
+      // Mostrar popup ao passar o mouse
+      marker.getElement().addEventListener('mouseenter', () => {
+        popup.addTo(map);
+        popup.setLngLat(point.coordinates);
+      });
 
-    marker.getElement().addEventListener('mouseleave', () => {
-      popup.remove();
-    });
+      marker.getElement().addEventListener('mouseleave', () => {
+        popup.remove();
+      });
 
-    marker.getElement().addEventListener('click', () => {
-      onClick(point);
-    });
+      marker.getElement().addEventListener('click', () => {
+        onClick(point);
+        console.log("Marcador clicado:", point.title);
+      });
 
-    return () => {
-      marker.remove();
-      popup.remove();
-    };
+      return () => {
+        marker.remove();
+        popup.remove();
+      };
+    } catch (err) {
+      console.error("Erro ao adicionar marcador:", err);
+    }
   }, [map, point, onClick, index, total]);
 
   return null;
 };
 
 export default MapMarker;
+
