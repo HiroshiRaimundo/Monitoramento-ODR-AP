@@ -8,6 +8,7 @@ export const geocodeLocation = (location: string): [number, number] | null => {
   // Verifica se a localização está nas cidades do Amapá
   for (const [city, coords] of Object.entries(amapaLocations)) {
     if (normalizedLocation.includes(city.toLowerCase())) {
+      // Garante que as coordenadas estejam no formato [longitude, latitude] para o Mapbox
       return coords as [number, number];
     }
   }

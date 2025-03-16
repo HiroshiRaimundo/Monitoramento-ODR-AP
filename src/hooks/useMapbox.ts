@@ -14,9 +14,9 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const initializedRef = useRef(false);
 
-  // Coordenadas do centro do Amapá
-  const amapaCenterLng = -51.0669;
-  const amapaCenterLat = 0.0356;
+  // Coordenadas corrigidas do centro do Amapá
+  const amapaCenterLng = -52.0215415;
+  const amapaCenterLat = 1.4441146;
 
   // Inicialização do mapa
   useEffect(() => {
@@ -32,7 +32,7 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
       zoom: 6, // Zoom inicial para ver o Amapá
-      center: [amapaCenterLng, amapaCenterLat], // Centralizado no Amapá
+      center: [amapaCenterLng, amapaCenterLat], // Coordenadas corrigidas do Amapá
       pitchWithRotate: false, // Desabilita pitch automático ao rotacionar
       pitch: 0, // Começa sem inclinação para evitar instabilidade
       dragRotate: false, // Desabilita rotação para manter o mapa estável
@@ -71,12 +71,12 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
 
   // Ajustar a visualização do mapa apenas uma vez quando os pontos são carregados
   useEffect(() => {
-    if (!map.current || !mapLoaded || !points.length || initializedRef.current) return;
+    if (!map.current || !mapLoaded || !points.length) return;
 
-    console.log("Ajustando visualização do mapa uma única vez com", points.length, "pontos");
+    console.log("Ajustando visualização do mapa com", points.length, "pontos");
     
     // Centraliza no Amapá e ajusta para mostrar todos os pontos
-    if (centerOnAmapa) {
+    if (centerOnAmapa && !initializedRef.current) {
       // Primeiro, centraliza no Amapá
       map.current.jumpTo({
         center: [amapaCenterLng, amapaCenterLat],

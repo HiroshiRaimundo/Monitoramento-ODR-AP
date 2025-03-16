@@ -2,34 +2,35 @@
 import { toast } from "@/hooks/use-toast";
 import { geocodeLocation } from "@/utils/geocoder";
 
-// Coordenadas aproximadas de diferentes municípios do Amapá
+// Coordenadas atualizadas de diferentes municípios do Amapá
 export const amapaCoordinates: Record<string, [number, number]> = {
-  "macapá": [0.0356, -51.0705],
-  "santana": [-0.0583, -51.1811],
-  "laranjal do jari": [-0.8044, -52.4550],
-  "oiapoque": [3.8417, -51.8331],
-  "mazagão": [-0.1153, -51.2894],
-  "porto grande": [0.7128, -51.4136],
-  "tartarugalzinho": [1.5067, -50.9083],
-  "pedra branca do amapari": [0.7767, -51.9503],
-  "vitória do jari": [-0.9381, -52.4239],
-  "calçoene": [2.5042, -50.9511],
-  "amapá": [2.0525, -50.7961],
-  "ferreira gomes": [0.8569, -51.1794],
-  "cutias": [0.9708, -50.8008],
-  "itaubal": [0.6022, -50.6992],
-  "pracuúba": [1.7400, -50.7892],
-  "serra do navio": [0.9014, -52.0036]
+  "macapá": [-51.0669, 0.0356],
+  "santana": [-51.1729, -0.0583],
+  "laranjal do jari": [-52.5153, -0.8044],
+  "oiapoque": [-51.8333, 3.8333],
+  "porto grande": [-51.4086, 0.7128],
+  "mazagão": [-51.2891, -0.1156],
+  "vitória do jari": [-52.4247, -1.1275],
+  "tartarugalzinho": [-51.1492, 1.5064],
+  "amapá": [-51.0667, 2.0500],
+  "calçoene": [-50.9500, 2.5000],
+  "pedra branca do amapari": [-51.9472, 0.7772],
+  "serra do navio": [-52.0042, 0.9014],
+  "cutias": [-50.8028, 0.9719],
+  "ferreira gomes": [-51.1797, 0.8564],
+  "itaubal": [-50.6917, 0.6025],
+  "pracuúba": [-50.7892, 1.7417]
 };
 
-// Coordenadas padrão para o centro do Amapá
-export const defaultCoordinates: [number, number] = [0.9028, -51.6536];
+// Coordenadas corrigidas para o centro do Amapá
+export const defaultCoordinates: [number, number] = [-52.0215415, 1.4441146];
 
 // Get coordinates for a location
 export const getCoordinatesForLocation = async (location: string): Promise<[number, number]> => {
   try {
     const coordinates = await geocodeLocation(location);
-    return coordinates as [number, number];
+    // Certificando que retornamos as coordenadas no formato [longitude, latitude] para o Mapbox
+    return coordinates || defaultCoordinates;
   } catch (geoError) {
     console.log('Erro na geocodificação:', geoError);
     // Busca no dicionário de coordenadas do Amapá (ignorando maiúsculas/minúsculas)

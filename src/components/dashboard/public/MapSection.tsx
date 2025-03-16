@@ -24,6 +24,12 @@ const MapSection: React.FC<MapSectionProps> = ({
   // Determina quais dados mostrar no mapa: resultados da busca ou todos os dados
   const displayData = searchResults.length > 0 ? searchResults : filteredMapData;
 
+  // Log para debug
+  useEffect(() => {
+    console.log("MapSection: Total de estudos carregados:", filteredMapData.length);
+    console.log("MapSection: Estudos sendo exibidos:", displayData.length);
+  }, [filteredMapData, displayData]);
+
   // Avisa quando os dados são atualizados (quando um novo estudo é adicionado)
   useEffect(() => {
     if (onStudiesUpdate) {
@@ -66,7 +72,7 @@ const MapSection: React.FC<MapSectionProps> = ({
 
   // Handler para quando um ponto é selecionado no mapa
   const handleSelectPoint = (point: MapPoint) => {
-    console.log("Ponto selecionado:", point.title);
+    console.log("Ponto selecionado:", point.title, point.coordinates);
     
     // Verificar se o estudo já está selecionado
     const isAlreadySelected = selectedStudies.some(study => study.id === point.id);
@@ -102,17 +108,29 @@ const MapSection: React.FC<MapSectionProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4">
-            <Map 
-              points={mapPoints}
-              centerOnAmapa={true}
-              onSelectPoint={handleSelectPoint}
-            />
-            
-            {/* Componente de detalhe do estudo selecionado */}
-            <StudyDetail 
-              selectedStudies={selectedStudies} 
-              onRemoveStudy={handleRemoveStudy}
-            />
+            {mapPoints.length > 0 ? (
+              <>
+                <Map 
+                  points={mapPoints}
+                  centerOnAmapa={true}
+                  onSelectPoint={handleSelectPoint}
+                />
+                
+                {/* Componente de detalhe do estudo selecionado */}
+                <StudyDetail 
+                  selectedStudies={selectedStudies} 
+                  onRemoveStudy={handleRemoveStudy}
+                />
+              </>
+            ) : (
+              <div className="h-[500px] flex items-center justify-center text-gray-500 bg-gray-50 rounded-lg">
+                <div className="text-center p-8">
+                  <MapPin size={40} className="mx-auto mb-4 text-gray-400" />
+                  <p className="text-lg font-medium">Nenhum estudo encontrado</p>
+                  <p className="mt-2">Cadastre estudos na aba "Registro de Estudos" para visualizá-los no mapa.</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

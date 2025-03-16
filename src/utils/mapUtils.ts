@@ -30,10 +30,11 @@ export const groupPointsByLocation = (points: MapPoint[]) => {
       }
       
       // Arredondar coordenadas para agrupar pontos próximos
-      const roundedLng = Math.round(point.coordinates[1] / precision) * precision;
-      const roundedLat = Math.round(point.coordinates[0] / precision) * precision;
+      // Garantir que estamos usando a convenção [longitude, latitude] do Mapbox
+      const roundedLng = Math.round(point.coordinates[0] / precision) * precision;
+      const roundedLat = Math.round(point.coordinates[1] / precision) * precision;
       
-      const locationKey = `${roundedLat},${roundedLng}`;
+      const locationKey = `${roundedLng},${roundedLat}`;
       
       if (!groups[locationKey]) {
         groups[locationKey] = [];
@@ -51,7 +52,8 @@ export const groupPointsByLocation = (points: MapPoint[]) => {
 export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
   return {
     ...point,
-    // Garantir que as coordenadas estejam no formato correto para o Mapbox [longitude, latitude]
-    coordinates: [point.coordinates[1], point.coordinates[0]]
+    // Garantir que as coordenadas já estão no formato correto para o Mapbox [longitude, latitude]
+    // Não alteramos aqui, pois já estamos formatando corretamente nos serviços
+    coordinates: point.coordinates
   };
 };

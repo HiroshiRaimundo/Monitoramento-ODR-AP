@@ -1,3 +1,4 @@
+
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapPoint } from '@/types/map';
@@ -12,6 +13,12 @@ interface MapMarkerProps {
 
 const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total }) => {
   React.useEffect(() => {
+    // Verificar se as coordenadas são válidas
+    if (!point.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
+      console.error("Coordenadas inválidas para o ponto:", point.id, point.title);
+      return;
+    }
+
     // Criar um popup detalhado com mais informações
     const popup = new mapboxgl.Popup({
       closeButton: false,
@@ -99,6 +106,9 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       el.style.fontWeight = 'bold';
       el.innerText = `${index + 1}`;
     }
+
+    // Log para debug
+    console.log(`Adicionando marcador para ${point.title} em:`, point.coordinates);
 
     // Adicionar o marcador ao mapa
     const marker = new mapboxgl.Marker({ 
