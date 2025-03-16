@@ -7,6 +7,7 @@ import { ResearchStudy } from "@/types/research";
 import SearchPanel from "@/components/map/SearchPanel";
 import { MapPoint } from "@/types/map";
 import { toast } from "@/hooks/use-toast";
+import StudyDetail from "@/components/map/StudyDetail";
 
 interface MapSectionProps {
   filteredMapData: ResearchStudy[];
@@ -18,6 +19,7 @@ const MapSection: React.FC<MapSectionProps> = ({
   onStudiesUpdate 
 }) => {
   const [searchResults, setSearchResults] = useState<ResearchStudy[]>([]);
+  const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
   
   // Determina quais dados mostrar no mapa: resultados da busca ou todos os dados
   const displayData = searchResults.length > 0 ? searchResults : filteredMapData;
@@ -32,6 +34,9 @@ const MapSection: React.FC<MapSectionProps> = ({
   // Manipulador para quando novos resultados de pesquisa estão disponíveis
   const handleSearchResults = (results: ResearchStudy[]) => {
     setSearchResults(results);
+    // Limpar estudos selecionados ao mudar a pesquisa
+    setSelectedStudies([]);
+    
     if (results.length === 0 && searchResults.length > 0) {
       // Notifica que a pesquisa foi limpa
       toast({
@@ -59,6 +64,30 @@ const MapSection: React.FC<MapSectionProps> = ({
     summary: study.summary
   }));
 
+  // Handler para quando um ponto é selecionado no mapa
+  const handleSelectPoint = (point: MapPoint) => {
+    console.log("Ponto selecionado:", point.title);
+    
+    // Verificar se o estudo já está selecionado
+    const isAlreadySelected = selectedStudies.some(study => study.id === point.id);
+    
+    if (!isAlreadySelected) {
+      // Adicionar o estudo à lista de selecionados
+      setSelectedStudies(prev => [...prev, point]);
+      
+      // Notificar o usuário
+      toast({
+        title: "Estudo selecionado",
+        description: `"${point.title}" foi adicionado aos detalhes abaixo do mapa.`,
+      });
+    }
+  };
+
+  // Handler para remover um estudo da lista de selecionados
+  const handleRemoveStudy = (studyId: string) => {
+    setSelectedStudies(prev => prev.filter(study => study.id !== studyId));
+  };
+
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="md:col-span-2">
@@ -76,6 +105,13 @@ const MapSection: React.FC<MapSectionProps> = ({
             <Map 
               points={mapPoints}
               centerOnAmapa={true}
+              onSelectPoint={handleSelectPoint}
+            />
+            
+            {/* Componente de detalhe do estudo selecionado */}
+            <StudyDetail 
+              selectedStudies={selectedStudies} 
+              onRemoveStudy={handleRemoveStudy}
             />
           </CardContent>
         </Card>

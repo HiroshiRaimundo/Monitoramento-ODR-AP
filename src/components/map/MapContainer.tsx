@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -131,15 +132,16 @@ const MapContainer: React.FC<MapContainerProps> = ({
 
     console.log("Ajustando visualização do mapa uma única vez com", points.length, "pontos");
     
-    // Centraliza no Amapá sem animação
+    // Centraliza no Amapá e ajusta para mostrar todos os pontos
     if (centerOnAmapa) {
+      // Primeiro, centraliza no Amapá
       map.current.jumpTo({
         center: [amapaCenterLng, amapaCenterLat],
         zoom: 6,
         pitch: 0
       });
       
-      // Ajusta para mostrar todos os pontos sem animação
+      // Depois, ajusta para mostrar todos os pontos se houver mais de um
       if (points.length > 1) {
         const bounds = new mapboxgl.LngLatBounds();
         let validPointsCount = 0;
@@ -163,13 +165,13 @@ const MapContainer: React.FC<MapContainerProps> = ({
           map.current.fitBounds(bounds, {
             padding: 100,
             maxZoom: 8, // Limita o zoom máximo para evitar zoom excessivo
-            duration: 0 // Sem animação
+            duration: 500 // Animação suave
           });
-          
-          // Marca que o mapa já foi inicializado
-          initializedRef.current = true;
         }
       }
+      
+      // Marca que o mapa já foi inicializado
+      initializedRef.current = true;
     }
   }, [points, mapLoaded, centerOnAmapa]);
 
@@ -179,7 +181,6 @@ const MapContainer: React.FC<MapContainerProps> = ({
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent to-background/10 rounded-lg" />
       
       {mapLoaded && map.current && Object.entries(markerGroups).map(([locationKey, pointsGroup]) => {
-        console.log(`Renderizando grupo de ${pointsGroup.length} marcadores em ${locationKey}`);
         return pointsGroup.map((point, index) => (
           <MapMarker 
             key={`${point.id}-${index}`} 
