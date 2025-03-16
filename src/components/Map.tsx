@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import MapContainer from './map/MapContainer';
 import { MapPoint } from '@/types/map';
 
