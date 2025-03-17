@@ -55,7 +55,7 @@ const TabContent: React.FC<TabContentProps> = ({
   
   // Atualiza o estado local quando os estudos originais mudam
   useEffect(() => {
-    console.log("TabContent: Atualizando estudos com", originalStudies.length, "itens");
+    console.log("TabContent: Atualizando estudos com", originalStudies.length, "itens", originalStudies);
     setStudies(originalStudies);
   }, [originalStudies]);
 
@@ -76,10 +76,13 @@ const TabContent: React.FC<TabContentProps> = ({
     try {
       console.log("TabContent: Enviando novo estudo:", data.title);
       // Chamar o manipulador original para adicionar o estudo
-      await handleStudySubmit(data);
+      const newStudy = await handleStudySubmit(data);
       
-      // Após adicionar com sucesso, podemos confiar que originalStudies será atualizado
-      // no próximo ciclo de renderização por meio do useEffect
+      // Se tivermos um novo estudo retornado, podemos atualizá-lo imediatamente
+      if (newStudy) {
+        console.log("TabContent: Novo estudo adicionado, atualizando lista local:", newStudy);
+        setStudies(prev => [newStudy, ...prev]);
+      }
     } catch (error) {
       console.error("Erro ao sincronizar estudos:", error);
     }

@@ -18,10 +18,23 @@ const Index: React.FC = () => {
   const monitoring = useMonitoring();
   const research = useResearch();
 
-  // Carregar dados do Supabase ao iniciar
+  // Carregar dados do Supabase ao iniciar e quando houver alterações
   useEffect(() => {
-    monitoring.fetchMonitoringItems();
-    research.fetchResearchStudies();
+    console.log("Index: Carregando dados iniciais...");
+    
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          monitoring.fetchMonitoringItems(),
+          research.fetchResearchStudies()
+        ]);
+        console.log("Index: Dados carregados com sucesso");
+      } catch (error) {
+        console.error("Erro ao carregar dados iniciais:", error);
+      }
+    };
+    
+    loadData();
     
     // Set up event listener for storage changes (for cross-tab login/logout synchronization)
     const handleStorageChange = (e: StorageEvent) => {

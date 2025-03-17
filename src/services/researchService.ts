@@ -23,7 +23,7 @@ export const fetchResearchStudies = async (): Promise<ResearchStudy[]> => {
       return [];
     }
     
-    console.log(`Recuperados ${data.length} estudos do banco de dados`);
+    console.log(`Recuperados ${data.length} estudos do banco de dados:`, data);
     
     // Converter formato do banco para o formato da aplicação
     const formattedStudies = data.map(study => ({
@@ -46,6 +46,8 @@ export const fetchResearchStudies = async (): Promise<ResearchStudy[]> => {
           isNaN(study.coordinates[0]) || 
           isNaN(study.coordinates[1])) {
         console.warn(`Estudo com coordenadas inválidas: ${study.id} (${study.title})`);
+      } else {
+        console.log(`Estudo "${study.title}" tem coordenadas válidas:`, study.coordinates);
       }
     });
     
@@ -104,7 +106,7 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
       throw new Error("Erro ao recuperar o estudo após inserção");
     }
     
-    console.log("Estudo adicionado com sucesso:", newStudy.id);
+    console.log("Estudo adicionado com sucesso:", newStudy);
     
     // Converter para o formato da aplicação
     const formattedStudy: ResearchStudy = {
@@ -126,6 +128,8 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
         isNaN(formattedStudy.coordinates[0]) || 
         isNaN(formattedStudy.coordinates[1])) {
       console.warn(`Estudo adicionado com coordenadas potencialmente inválidas: ${formattedStudy.id}`);
+    } else {
+      console.log(`Estudo "${formattedStudy.title}" adicionado com coordenadas válidas:`, formattedStudy.coordinates);
     }
     
     return formattedStudy;

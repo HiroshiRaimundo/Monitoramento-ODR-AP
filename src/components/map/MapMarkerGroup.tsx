@@ -28,6 +28,8 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
     
     if (!isValid) {
       console.warn(`Ponto inválido removido de grupo ${locationKey}:`, point);
+    } else {
+      console.log(`Ponto válido em grupo ${locationKey}:`, point.title, point.coordinates);
     }
     
     return isValid;

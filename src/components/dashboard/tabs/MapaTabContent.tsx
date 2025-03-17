@@ -56,7 +56,7 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
         description: "O estudo foi adicionado e está disponível no mapa da aba pública.",
       });
       
-      // Resetar o formulário
+      // Resetar o formulário explicitamente
       studyForm.reset({
         title: '',
         author: '',
@@ -66,6 +66,8 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
         location: '',
         type: "artigo" // Manter o valor padrão
       });
+      
+      console.log("MapaTabContent: Formulário resetado após envio");
     } catch (error) {
       console.error("Erro ao registrar estudo:", error);
       

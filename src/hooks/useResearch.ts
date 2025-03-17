@@ -30,6 +30,7 @@ export const useResearch = () => {
       const fetchedStudies = await fetchStudies();
       console.log(`useResearch: Carregados ${fetchedStudies.length} estudos`);
       setStudies(fetchedStudies);
+      return fetchedStudies;
     } catch (error) {
       console.error('Erro ao buscar estudos:', error);
       toast({
@@ -37,6 +38,7 @@ export const useResearch = () => {
         description: "Não foi possível buscar os estudos. Tente novamente mais tarde.",
         variant: "destructive"
       });
+      return [];
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +58,8 @@ export const useResearch = () => {
       const newStudy = await addResearchStudy(data);
       
       if (newStudy) {
+        console.log("useResearch: Estudo adicionado com sucesso:", newStudy);
+        
         // Atualizar estudos localmente para evitar nova requisição
         setStudies(prev => [newStudy, ...prev]);
         
@@ -78,7 +82,11 @@ export const useResearch = () => {
         
         // Forçar uma atualização completa da lista
         setRefreshTrigger(prev => prev + 1);
+        
+        // Retornar o novo estudo para uso em outros componentes
+        return newStudy;
       }
+      return null;
     } catch (error) {
       console.error('Erro ao adicionar estudo:', error);
       toast({
@@ -86,6 +94,7 @@ export const useResearch = () => {
         description: "Verifique os dados e tente novamente.",
         variant: "destructive"
       });
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +119,10 @@ export const useResearch = () => {
         
         // Forçar uma atualização completa da lista
         setRefreshTrigger(prev => prev + 1);
+        
+        return true;
       }
+      return false;
     } catch (error) {
       console.error('Erro ao remover estudo:', error);
       toast({
@@ -118,6 +130,7 @@ export const useResearch = () => {
         description: "Não foi possível remover a análise. Tente novamente.",
         variant: "destructive"
       });
+      return false;
     } finally {
       setIsLoading(false);
     }

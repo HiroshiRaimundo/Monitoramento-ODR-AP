@@ -11,7 +11,7 @@ export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPo
   }
   
   const groups: {[key: string]: MapPoint[]} = {};
-  const precision = 0.01; // Precisão de agrupamento (aumentada para separar melhor)
+  const precision = 0.01; // Precisão de agrupamento
   
   // Filtrar pontos com coordenadas válidas
   const validPoints = points.filter(point => {
@@ -24,6 +24,8 @@ export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPo
     
     if (!isValid) {
       console.warn("Ponto com coordenadas inválidas descartado:", point);
+    } else {
+      console.log("Ponto válido para agrupamento:", point.title, point.coordinates);
     }
     
     return isValid;
@@ -46,6 +48,7 @@ export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPo
     const isDuplicate = groups[locationKey].some(p => p.id === point.id);
     if (!isDuplicate) {
       groups[locationKey].push(point);
+      console.log(`Ponto "${point.title}" adicionado ao grupo ${locationKey}`);
     }
   });
   
@@ -81,5 +84,6 @@ export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
     };
   }
   
+  console.log(`Coordenadas formatadas para "${point.title}":`, point.coordinates);
   return point;
 };

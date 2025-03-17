@@ -28,7 +28,7 @@ export const geocodeLocation = (location: string): [number, number] => {
   for (const [city, coords] of Object.entries(amapaLocations)) {
     if (normalizedLocation.includes(city.toLowerCase())) {
       // Adicionar pequeno offset para evitar sobreposições exatas
-      const jitter = 0.01; // Reduzido para minimizar dispersão
+      const jitter = 0.005; // Reduzido para minimizar dispersão
       const offsetLng = (Math.random() - 0.5) * jitter;
       const offsetLat = (Math.random() - 0.5) * jitter;
       
@@ -47,8 +47,8 @@ export const geocodeLocation = (location: string): [number, number] => {
   // Usar coordenadas do centro do Amapá com offset aleatório 
   // como fallback para localizações desconhecidas
   const baseCoords = amapaLocations["Centro do Amapá"];
-  const offsetLng = (Math.random() - 0.5) * 0.1;
-  const offsetLat = (Math.random() - 0.5) * 0.1;
+  const offsetLng = (Math.random() - 0.5) * 0.05;
+  const offsetLat = (Math.random() - 0.5) * 0.05;
   
   const result: [number, number] = [
     baseCoords[0] + offsetLng,
