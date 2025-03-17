@@ -1,58 +1,61 @@
 
 import amapaLocations from "./amapaLocations";
 
-// Função de geocodificação - em uma aplicação real, usaria uma API de geocodificação
+// Cache para coordenadas já pesquisadas
+const coordinateCache: Record<string, [number, number]> = {};
+
+/**
+ * Geocodifica uma localização para coordenadas [longitude, latitude]
+ * Simplificada para maior estabilidade e performance
+ */
 export const geocodeLocation = (location: string): [number, number] => {
+  // Validação básica
   if (!location || typeof location !== 'string') {
-    console.warn("Localização inválida para geocodificação:", location);
-    return amapaLocations["Centro do Amapá"]; // Retorna o centro do Amapá como fallback
+    console.log("Localização inválida:", location);
+    return amapaLocations["Centro do Amapá"];
   }
   
   const normalizedLocation = location.trim().toLowerCase();
-  console.log("Geocodificando localização:", normalizedLocation);
   
-  // Verificação de cache para evitar múltiplas geocodificações da mesma localização
-  const cachedLocations: Record<string, [number, number]> = {};
-  
-  if (cachedLocations[normalizedLocation]) {
-    console.log("Usando localização em cache:", normalizedLocation);
-    return cachedLocations[normalizedLocation];
+  // Verificar cache primeiro
+  if (coordinateCache[normalizedLocation]) {
+    console.log("Usando coordenadas em cache para:", normalizedLocation);
+    return coordinateCache[normalizedLocation];
   }
   
-  // Verifica se a localização está nas cidades do Amapá
+  // Buscar nas localizações conhecidas do Amapá
   for (const [city, coords] of Object.entries(amapaLocations)) {
     if (normalizedLocation.includes(city.toLowerCase())) {
-      console.log(`Localização encontrada: ${city}. Coordenadas:`, coords);
+      // Adicionar pequeno offset para evitar sobreposições exatas
+      const jitter = 0.01; // Reduzido para minimizar dispersão
+      const offsetLng = (Math.random() - 0.5) * jitter;
+      const offsetLat = (Math.random() - 0.5) * jitter;
       
-      // Adiciona um pequeno desvio aleatório para evitar sobreposição exata
-      const smallOffsetLng = (Math.random() - 0.5) * 0.01;
-      const smallOffsetLat = (Math.random() - 0.5) * 0.01;
-      
-      const offsetCoords: [number, number] = [
-        coords[0] + smallOffsetLng,
-        coords[1] + smallOffsetLat
+      const result: [number, number] = [
+        coords[0] + offsetLng,
+        coords[1] + offsetLat
       ];
       
-      // Guardar no cache
-      cachedLocations[normalizedLocation] = offsetCoords;
-      return offsetCoords;
+      // Armazenar no cache
+      coordinateCache[normalizedLocation] = result;
+      console.log(`Coordenadas encontradas para ${location}:`, result);
+      return result;
     }
   }
   
-  // Gerar um deslocamento aleatório para evitar sobreposição de alfinetes
-  // Usando um raio maior para separar melhor os pontos
+  // Usar coordenadas do centro do Amapá com offset aleatório 
+  // como fallback para localizações desconhecidas
   const baseCoords = amapaLocations["Centro do Amapá"];
-  const randomOffsetLng = (Math.random() - 0.5) * 0.2; // Offset maior em longitude
-  const randomOffsetLat = (Math.random() - 0.5) * 0.2; // Offset maior em latitude
+  const offsetLng = (Math.random() - 0.5) * 0.1;
+  const offsetLat = (Math.random() - 0.5) * 0.1;
   
-  const resultCoords: [number, number] = [
-    baseCoords[0] + randomOffsetLng,
-    baseCoords[1] + randomOffsetLat
+  const result: [number, number] = [
+    baseCoords[0] + offsetLng,
+    baseCoords[1] + offsetLat
   ];
   
-  console.log("Localização não encontrada, usando coordenadas com deslocamento aleatório:", resultCoords);
-  
-  // Guardar no cache
-  cachedLocations[normalizedLocation] = resultCoords;
-  return resultCoords;
+  // Armazenar no cache
+  coordinateCache[normalizedLocation] = result;
+  console.log(`Coordenadas geradas para ${location}:`, result);
+  return result;
 };

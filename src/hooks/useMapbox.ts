@@ -8,141 +8,84 @@ interface UseMapboxProps {
   points: MapPoint[];
 }
 
-export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
+export const useMapbox = ({ centerOnAmapa = true }: UseMapboxProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const initializedRef = useRef(false);
-  const pointsRef = useRef<MapPoint[]>([]);
-
-  // Coordenadas corretas do centro do Amapá
+  
+  // Coordenadas do centro do Amapá
   const amapaCenterLng = -52.0215415;
   const amapaCenterLat = 1.4441146;
 
-  // Inicialização do mapa - apenas uma vez
+  // Inicializar mapa apenas uma vez
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    console.log("Inicializando mapa com", points.length, "pontos");
-    pointsRef.current = points;
-
-    // Initialize map with the provided token
+    // Inicializar Mapbox
     mapboxgl.accessToken = 'pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag';
     
+    // Criar mapa estático e estável
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      projection: 'mercator',
-      zoom: 7, // Zoom inicial para ver o Amapá
-      center: [amapaCenterLng, amapaCenterLat], // Coordenadas corretas do Amapá
-      pitchWithRotate: false, // Desabilita pitch automático ao rotacionar
-      pitch: 0, // Começa sem inclinação para manter o mapa estável
-      dragRotate: false, // Desabilita rotação para manter o mapa estável
-      interactive: true, // Mantém o mapa interativo
-      renderWorldCopies: false, // Evita renderizar múltiplas cópias do mundo
+      center: [amapaCenterLng, amapaCenterLat], // Centro do Amapá
+      zoom: 7,
+      pitch: 0, // Sem inclinação para maior estabilidade
+      bearing: 0, // Sem rotação para maior estabilidade
+      
+      // Opções para estabilidade:
+      dragRotate: false,             // Desabilitar rotação
+      pitchWithRotate: false,        // Desabilitar inclinação
+      attributionControl: false,     // Remover controle de atribuição
+      
+      // Limitar a área visível para o Amapá
       maxBounds: [
-        [amapaCenterLng - 5, amapaCenterLat - 5], // Sudoeste (mais restrito)
-        [amapaCenterLng + 5, amapaCenterLat + 5]  // Nordeste (mais restrito)
-      ],
-      attributionControl: false // Remove o controle de atribuição para economizar espaço
+        [amapaCenterLng - 4, amapaCenterLat - 4], // Sudoeste
+        [amapaCenterLng + 4, amapaCenterLat + 4]  // Nordeste
+      ]
     });
-
-    // Adiciona controles de navegação simplificados
+    
+    // Adicionar controles simplificados
     map.current.addControl(
       new mapboxgl.NavigationControl({
-        visualizePitch: false, // Desabilita visualização de pitch
-        showCompass: false, // Remove a bússola
-        showZoom: true // Mantém os botões de zoom
+        visualizePitch: false,
+        showCompass: false
       }),
       'top-right'
     );
 
-    // Anti-tremulação: desativar eventos que podem causar instabilidade
+    // Desabilitar interações que causam instabilidade
     map.current.dragRotate.disable();
     map.current.touchZoomRotate.disableRotation();
-    map.current.touchPitch.disable();
-
-    // Configura eventos apenas uma vez na inicialização
-    map.current.on('style.load', () => {
-      console.log("Mapa carregado completamente");
+    
+    // Marcar quando o mapa estiver carregado
+    map.current.on('load', () => {
       setMapLoaded(true);
+      console.log("Mapa carregado com sucesso");
     });
 
-    // Cleanup
+    // Limpeza ao desmontar
     return () => {
       if (map.current) {
-        console.log("Removendo mapa");
         map.current.remove();
         map.current = null;
       }
     };
   }, []);
 
-  // Ajustar a visualização do mapa quando os pontos são carregados
+  // Recentrar mapa quando solicitado
   useEffect(() => {
-    if (!map.current || !mapLoaded) return;
-
-    console.log("Ajustando visualização do mapa com", points.length, "pontos");
-    console.log("Pontos anteriores:", pointsRef.current.length);
+    if (!map.current || !mapLoaded || !centerOnAmapa) return;
     
-    // Armazenar os pontos no ref para comparação
-    pointsRef.current = points;
-    
-    // Forçar centralização no Amapá sempre
-    if (centerOnAmapa && !initializedRef.current) {
-      console.log("Centralizando mapa no Amapá");
-      // Centralizar no Amapá
-      map.current.jumpTo({
-        center: [amapaCenterLng, amapaCenterLat],
-        zoom: 7,
-        pitch: 0,
-        bearing: 0 // Garante que o mapa esteja apontado para o norte
-      });
-      initializedRef.current = true;
-    }
-
-    // Só ajusta o bounds se houver pontos válidos e for a primeira vez
-    if (points.length > 0 && !initializedRef.current) {
-      try {
-        // Criar bounds para incluir todos os pontos
-        const bounds = new mapboxgl.LngLatBounds();
-        let validPointsCount = 0;
-        
-        // Verificar cada ponto para garantir coordenadas válidas
-        points.forEach(point => {
-          if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
-            // Verificar se as coordenadas são números válidos
-            if (!isNaN(point.coordinates[0]) && !isNaN(point.coordinates[1])) {
-              bounds.extend(point.coordinates as mapboxgl.LngLatLike);
-              validPointsCount++;
-              console.log(`Ponto válido: ${point.title} [${point.coordinates}]`);
-            }
-          }
-        });
-        
-        console.log(`useMapbox: ${validPointsCount} pontos válidos para ajustar bounds`);
-        
-        // Só ajusta o bounds se houver pontos válidos e estiver dentro dos limites do Amapá
-        if (validPointsCount > 0 && !bounds.isEmpty()) {
-          console.log("Ajustando bounds para mostrar todos os pontos");
-          map.current.fitBounds(bounds, {
-            padding: 100,
-            maxZoom: 10, // Limita o zoom máximo
-            duration: 0 // Sem animação para evitar problemas
-          });
-          initializedRef.current = true;
-        }
-      } catch (err) {
-        console.error("Erro ao ajustar bounds:", err);
-        // Em caso de erro, volta para a visualização padrão
-        map.current.jumpTo({
-          center: [amapaCenterLng, amapaCenterLat],
-          zoom: 7
-        });
-        initializedRef.current = true;
-      }
-    }
-  }, [points, mapLoaded, centerOnAmapa]);
+    // Centralizar no Amapá de forma suave
+    map.current.flyTo({
+      center: [amapaCenterLng, amapaCenterLat],
+      zoom: 7,
+      pitch: 0,
+      bearing: 0,
+      essential: true // Garante que a animação é completada
+    });
+  }, [centerOnAmapa, mapLoaded]);
 
   return { mapContainer, map, mapLoaded };
 };

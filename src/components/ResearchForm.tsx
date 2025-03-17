@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
@@ -15,6 +14,19 @@ interface ResearchFormProps {
 }
 
 const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
+  const handleSubmit = async (data: ResearchStudyFormData) => {
+    await onSubmit(data);
+    form.reset({
+      title: '',
+      author: '',
+      coAuthors: '',
+      summary: '',
+      repositoryUrl: '',
+      location: '',
+      type: 'artigo'
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -25,7 +37,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="title"

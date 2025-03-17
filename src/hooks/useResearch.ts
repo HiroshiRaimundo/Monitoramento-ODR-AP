@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
@@ -8,16 +8,27 @@ import { fetchResearchStudies as fetchStudies, addResearchStudy, deleteResearchS
 export const useResearch = () => {
   const [studies, setStudies] = useState<ResearchStudy[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Para forçar atualizações
+  
+  // Inicializar o formulário com valores padrão
   const form = useForm<ResearchStudyFormData>({
     defaultValues: {
-      type: "artigo" // Valor padrão para o campo type
+      title: '',
+      author: '',
+      coAuthors: '',
+      summary: '',
+      repositoryUrl: '',
+      location: '',
+      type: "artigo"
     }
   });
 
+  // Carregar estudos do banco de dados
   const fetchResearchStudies = async () => {
     setIsLoading(true);
     try {
       const fetchedStudies = await fetchStudies();
+      console.log(`useResearch: Carregados ${fetchedStudies.length} estudos`);
       setStudies(fetchedStudies);
     } catch (error) {
       console.error('Erro ao buscar estudos:', error);
@@ -31,22 +42,40 @@ export const useResearch = () => {
     }
   };
 
+  // Efeito para carregar estudos inicialmente e quando refreshTrigger mudar
+  useEffect(() => {
+    fetchResearchStudies();
+  }, [refreshTrigger]);
+
+  // Manipulador para envio de formulário
   const handleStudySubmit = async (data: ResearchStudyFormData) => {
     setIsLoading(true);
     try {
       const newStudy = await addResearchStudy(data);
       
       if (newStudy) {
-        // Atualizar estado
+        // Atualizar estudos localmente para evitar nova requisição
         setStudies(prev => [newStudy, ...prev]);
+        
+        // Limpar o formulário exceto pelo tipo
         form.reset({
-          type: "artigo" // Reinicia o formulário mantendo o valor padrão
+          title: '',
+          author: '',
+          coAuthors: '',
+          summary: '',
+          repositoryUrl: '',
+          location: '',
+          type: "artigo"
         });
         
+        // Notificar o usuário
         toast({
           title: "Estudo adicionado",
           description: `"${data.title}" foi adicionado ao mapa.`
         });
+        
+        // Forçar uma atualização completa da lista
+        setRefreshTrigger(prev => prev + 1);
       }
     } catch (error) {
       console.error('Erro ao adicionar estudo:', error);
@@ -60,18 +89,24 @@ export const useResearch = () => {
     }
   };
 
+  // Manipulador para excluir estudo
   const handleDeleteStudy = async (id: string) => {
     setIsLoading(true);
     try {
       const success = await deleteResearchStudy(id);
       
       if (success) {
+        // Atualizar estudos localmente
         setStudies(prev => prev.filter(study => study.id !== id));
         
+        // Notificar o usuário
         toast({
           title: "Análise removida",
           description: "A análise foi removida com sucesso."
         });
+        
+        // Forçar uma atualização completa da lista
+        setRefreshTrigger(prev => prev + 1);
       }
     } catch (error) {
       console.error('Erro ao remover estudo:', error);
