@@ -20,11 +20,17 @@ const Map: React.FC<MapProps> = ({
   
   // Processar pontos recebidos
   useEffect(() => {
-    console.log(`Map: Recebidos ${points.length} pontos`);
+    console.log(`Map: Recebidos ${points?.length || 0} pontos`);
+    
+    if (!points || points.length === 0) {
+      console.log("Map: Nenhum ponto recebido, limpando exibição");
+      setDisplayPoints([]);
+      return;
+    }
     
     // Filtrar pontos válidos
     const validPoints = points.filter(point => 
-      point.coordinates && 
+      point && point.coordinates && 
       Array.isArray(point.coordinates) && 
       point.coordinates.length === 2 &&
       !isNaN(point.coordinates[0]) && 
@@ -33,12 +39,27 @@ const Map: React.FC<MapProps> = ({
     
     console.log(`Map: ${validPoints.length} pontos válidos para exibir`);
     
+    // Verificar pontos inválidos para diagnóstico
+    const invalidPoints = points.filter(point => 
+      !point || !point.coordinates || 
+      !Array.isArray(point.coordinates) || 
+      point.coordinates.length !== 2 ||
+      isNaN(point.coordinates[0]) || 
+      isNaN(point.coordinates[1])
+    );
+    
+    if (invalidPoints.length > 0) {
+      console.warn(`Map: ${invalidPoints.length} pontos inválidos descartados:`, invalidPoints);
+    }
+    
     // Atualizar pontos para exibição
     setDisplayPoints(validPoints);
   }, [points]);
   
   // Handler para seleção de ponto no mapa
   const handleSelectPoint = (point: MapPoint) => {
+    console.log(`Map: Ponto selecionado: ${point.title}`);
+    
     // Se onSelectPoint foi fornecido, usar
     if (onSelectPoint) {
       onSelectPoint(point);
@@ -56,8 +77,12 @@ const Map: React.FC<MapProps> = ({
   
   // Handler para remover estudo da lista
   const handleRemoveStudy = (studyId: string) => {
+    console.log(`Map: Removendo estudo dos detalhes: ${studyId}`);
     setSelectedStudies(prev => prev.filter(study => study.id !== studyId));
   };
+  
+  // Log de diagnóstico para verificar o que está sendo renderizado
+  console.log(`Map: Renderizando com ${displayPoints.length} pontos válidos`);
   
   return (
     <div className="flex flex-col gap-4">

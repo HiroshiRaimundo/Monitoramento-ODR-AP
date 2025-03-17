@@ -7,12 +7,14 @@ import { geocodeLocation } from "@/utils/geocoder";
 // Buscar todos os estudos
 export const fetchResearchStudies = async (): Promise<ResearchStudy[]> => {
   try {
+    console.log("Buscando estudos do banco de dados...");
     const { data, error } = await supabase
       .from('research_studies')
       .select('*')
       .order('created_at', { ascending: false });
     
     if (error) {
+      console.error("Erro na consulta ao banco:", error);
       throw error;
     }
     
@@ -24,7 +26,7 @@ export const fetchResearchStudies = async (): Promise<ResearchStudy[]> => {
     console.log(`Recuperados ${data.length} estudos do banco de dados`);
     
     // Converter formato do banco para o formato da aplicação
-    return data.map(study => ({
+    const formattedStudies = data.map(study => ({
       id: study.id,
       title: study.title,
       author: study.author,
@@ -35,6 +37,19 @@ export const fetchResearchStudies = async (): Promise<ResearchStudy[]> => {
       coordinates: study.coordinates as [number, number],
       type: study.type as "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro"
     }));
+    
+    // Verificar coordenadas dos estudos
+    formattedStudies.forEach(study => {
+      if (!study.coordinates || 
+          !Array.isArray(study.coordinates) || 
+          study.coordinates.length !== 2 ||
+          isNaN(study.coordinates[0]) || 
+          isNaN(study.coordinates[1])) {
+        console.warn(`Estudo com coordenadas inválidas: ${study.id} (${study.title})`);
+      }
+    });
+    
+    return formattedStudies;
   } catch (error) {
     console.error("Erro ao buscar estudos:", error);
     toast({
@@ -57,6 +72,11 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
     // Obter coordenadas para a localização
     const coordinates = await geocodeLocation(data.location);
     console.log(`Coordenadas obtidas para ${data.location}:`, coordinates);
+    
+    if (!coordinates || coordinates.length !== 2 || isNaN(coordinates[0]) || isNaN(coordinates[1])) {
+      console.error("Coordenadas inválidas geradas:", coordinates);
+      throw new Error("Não foi possível gerar coordenadas válidas para a localização");
+    }
     
     // Inserir no banco de dados
     const { data: newStudy, error } = await supabase
@@ -87,7 +107,7 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
     console.log("Estudo adicionado com sucesso:", newStudy.id);
     
     // Converter para o formato da aplicação
-    return {
+    const formattedStudy: ResearchStudy = {
       id: newStudy.id,
       title: newStudy.title,
       author: newStudy.author,
@@ -98,6 +118,17 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
       coordinates: newStudy.coordinates as [number, number],
       type: newStudy.type as "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro"
     };
+    
+    // Verificar se as coordenadas do estudo são válidas
+    if (!formattedStudy.coordinates || 
+        !Array.isArray(formattedStudy.coordinates) || 
+        formattedStudy.coordinates.length !== 2 ||
+        isNaN(formattedStudy.coordinates[0]) || 
+        isNaN(formattedStudy.coordinates[1])) {
+      console.warn(`Estudo adicionado com coordenadas potencialmente inválidas: ${formattedStudy.id}`);
+    }
+    
+    return formattedStudy;
   } catch (error) {
     console.error("Erro ao adicionar estudo:", error);
     toast({
@@ -112,12 +143,14 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
 // Excluir um estudo
 export const deleteResearchStudy = async (id: string): Promise<boolean> => {
   try {
+    console.log("Tentando remover estudo:", id);
     const { error } = await supabase
       .from('research_studies')
       .delete()
       .eq('id', id);
     
     if (error) {
+      console.error("Erro ao remover estudo:", error);
       throw error;
     }
     

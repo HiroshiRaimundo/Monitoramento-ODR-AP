@@ -44,6 +44,7 @@ export const useResearch = () => {
 
   // Efeito para carregar estudos inicialmente e quando refreshTrigger mudar
   useEffect(() => {
+    console.log("useResearch: Carregando estudos...");
     fetchResearchStudies();
   }, [refreshTrigger]);
 
@@ -51,13 +52,14 @@ export const useResearch = () => {
   const handleStudySubmit = async (data: ResearchStudyFormData) => {
     setIsLoading(true);
     try {
+      console.log("useResearch: Adicionando novo estudo:", data.title);
       const newStudy = await addResearchStudy(data);
       
       if (newStudy) {
         // Atualizar estudos localmente para evitar nova requisição
         setStudies(prev => [newStudy, ...prev]);
         
-        // Limpar o formulário exceto pelo tipo
+        // Limpar o formulário completamente
         form.reset({
           title: '',
           author: '',
@@ -93,6 +95,7 @@ export const useResearch = () => {
   const handleDeleteStudy = async (id: string) => {
     setIsLoading(true);
     try {
+      console.log("useResearch: Removendo estudo:", id);
       const success = await deleteResearchStudy(id);
       
       if (success) {

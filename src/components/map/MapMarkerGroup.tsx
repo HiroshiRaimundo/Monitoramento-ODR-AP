@@ -18,14 +18,25 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
   map, 
   onSelectPoint 
 }) => {
-  // Filtrar pontos com coordenadas válidas
-  const validPoints = pointsGroup.filter(point => 
-    point.coordinates && 
-    Array.isArray(point.coordinates) && 
-    point.coordinates.length === 2 &&
-    !isNaN(point.coordinates[0]) && 
-    !isNaN(point.coordinates[1])
-  );
+  // Filtrar pontos com coordenadas válidas e registrar no console para diagnóstico
+  const validPoints = pointsGroup.filter(point => {
+    const isValid = point.coordinates && 
+      Array.isArray(point.coordinates) && 
+      point.coordinates.length === 2 &&
+      !isNaN(point.coordinates[0]) && 
+      !isNaN(point.coordinates[1]);
+    
+    if (!isValid) {
+      console.warn(`Ponto inválido removido de grupo ${locationKey}:`, point);
+    }
+    
+    return isValid;
+  });
+  
+  // Log para diagnóstico
+  if (validPoints.length > 0) {
+    console.log(`Grupo ${locationKey}: renderizando ${validPoints.length} pontos válidos`);
+  }
   
   return (
     <>
@@ -35,7 +46,7 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
         
         return (
           <MapMarker 
-            key={`marker-${point.id}-${index}`} 
+            key={`marker-${formattedPoint.id}-${index}-${locationKey}`}
             point={formattedPoint} 
             map={map} 
             onClick={onSelectPoint}

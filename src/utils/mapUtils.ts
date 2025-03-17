@@ -6,6 +6,7 @@ import { MapPoint } from '@/types/map';
  */
 export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPoint[]} => {
   if (!points || !Array.isArray(points) || points.length === 0) {
+    console.log("Nenhum ponto para agrupar");
     return {};
   }
   
@@ -13,14 +14,22 @@ export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPo
   const precision = 0.01; // Precisão de agrupamento (aumentada para separar melhor)
   
   // Filtrar pontos com coordenadas válidas
-  const validPoints = points.filter(point => 
-    point && 
-    point.coordinates && 
-    Array.isArray(point.coordinates) && 
-    point.coordinates.length === 2 &&
-    !isNaN(point.coordinates[0]) && 
-    !isNaN(point.coordinates[1])
-  );
+  const validPoints = points.filter(point => {
+    const isValid = point && 
+      point.coordinates && 
+      Array.isArray(point.coordinates) && 
+      point.coordinates.length === 2 &&
+      !isNaN(point.coordinates[0]) && 
+      !isNaN(point.coordinates[1]);
+    
+    if (!isValid) {
+      console.warn("Ponto com coordenadas inválidas descartado:", point);
+    }
+    
+    return isValid;
+  });
+  
+  console.log(`groupPointsByLocation: Processando ${validPoints.length} pontos válidos de ${points.length} total`);
   
   validPoints.forEach(point => {
     // Arredondar coordenadas para agrupar pontos próximos
@@ -40,6 +49,12 @@ export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPo
     }
   });
   
+  // Log dos grupos criados para diagnóstico
+  console.log(`Criados ${Object.keys(groups).length} grupos de localização`);
+  Object.entries(groups).forEach(([key, group]) => {
+    console.log(`Grupo ${key}: ${group.length} pontos`);
+  });
+  
   return groups;
 };
 
@@ -48,7 +63,7 @@ export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPo
  */
 export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
   if (!point || !point.coordinates) {
-    console.warn("Ponto inválido:", point);
+    console.warn("Ponto inválido formatado com coordenadas padrão:", point);
     return {
       ...point,
       coordinates: [-52.0215415, 1.4441146] // Centro do Amapá
@@ -59,7 +74,7 @@ export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
       point.coordinates.length !== 2 || 
       isNaN(point.coordinates[0]) || 
       isNaN(point.coordinates[1])) {
-    console.warn("Coordenadas inválidas:", point.coordinates);
+    console.warn("Coordenadas inválidas formatadas:", point.coordinates);
     return {
       ...point,
       coordinates: [-52.0215415, 1.4441146] // Centro do Amapá

@@ -16,10 +16,11 @@ export const geocodeLocation = (location: string): [number, number] => {
   }
   
   const normalizedLocation = location.trim().toLowerCase();
+  console.log(`Geocodificando localização: "${normalizedLocation}"`);
   
   // Verificar cache primeiro
   if (coordinateCache[normalizedLocation]) {
-    console.log("Usando coordenadas em cache para:", normalizedLocation);
+    console.log("Usando coordenadas em cache para:", normalizedLocation, coordinateCache[normalizedLocation]);
     return coordinateCache[normalizedLocation];
   }
   
