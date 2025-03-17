@@ -1,13 +1,8 @@
-<<<<<<< Updated upstream
 
-import React from 'react';
-import MapContainer from './map/MapContainer';
-=======
 import React, { useState, useEffect } from 'react';
 import MapContainer from './map/MapContainer';
 import StudyDetail from './map/StudyDetail';
 import AddStudyForm from './AddStudyForm';
->>>>>>> Stashed changes
 import { MapPoint } from '@/types/map';
 
 interface MapProps {
@@ -16,14 +11,11 @@ interface MapProps {
   onSelectPoint?: (point: MapPoint) => void;
 }
 
-<<<<<<< Updated upstream
 const Map: React.FC<MapProps> = ({ 
-  points,
-  centerOnAmapa = true,
-  onSelectPoint = () => {} // Valor padrão para evitar erros
+  points = [], 
+  centerOnAmapa = true, 
+  onSelectPoint
 }) => {
-=======
-const Map: React.FC<MapProps> = ({ points = [], centerOnAmapa = true }) => {
   const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
   const [validPoints, setValidPoints] = useState<MapPoint[]>([]);
   const [allPoints, setAllPoints] = useState<MapPoint[]>(points);
@@ -41,7 +33,20 @@ const Map: React.FC<MapProps> = ({ points = [], centerOnAmapa = true }) => {
     setValidPoints(filtered);
   }, [allPoints]);
 
+  // Atualizar allPoints quando points mudar
+  useEffect(() => {
+    console.log("Map: Recebendo novos pontos:", points.length);
+    setAllPoints(points);
+  }, [points]);
+
   const handleSelectPoint = (point: MapPoint) => {
+    // Se onSelectPoint foi fornecido, use-o
+    if (onSelectPoint) {
+      onSelectPoint(point);
+      return;
+    }
+    
+    // Se não, use a lógica interna
     // Se o ponto já estiver selecionado, não adicione novamente
     if (!selectedStudies.find(study => study.id === point.id)) {
       setSelectedStudies(prev => [...prev, point]);
@@ -55,21 +60,13 @@ const Map: React.FC<MapProps> = ({ points = [], centerOnAmapa = true }) => {
   const handleAddStudy = (newPoint: MapPoint) => {
     setAllPoints(prev => [...prev, newPoint]);
   };
-
->>>>>>> Stashed changes
+  
   // Log para depuração
-  console.log("Map: Recebendo", points.length, "pontos");
+  console.log("Map: Renderizando com", validPoints.length, "pontos válidos");
   
   return (
-<<<<<<< Updated upstream
-    <MapContainer 
-      points={points} 
-      centerOnAmapa={centerOnAmapa}
-      onSelectPoint={onSelectPoint}
-    />
-=======
     <div className="flex flex-col gap-4">
-      <AddStudyForm onAddStudy={handleAddStudy} />
+      {!onSelectPoint && <AddStudyForm onAddStudy={handleAddStudy} />}
       <div className="border border-forest-100 rounded-lg overflow-hidden shadow-md">
         <MapContainer 
           points={validPoints} 
@@ -78,14 +75,13 @@ const Map: React.FC<MapProps> = ({ points = [], centerOnAmapa = true }) => {
         />
       </div>
       
-      {selectedStudies.length > 0 && (
+      {!onSelectPoint && selectedStudies.length > 0 && (
         <StudyDetail 
           selectedStudies={selectedStudies}
           onRemoveStudy={removeStudyFromList}
         />
       )}
     </div>
->>>>>>> Stashed changes
   );
 };
 

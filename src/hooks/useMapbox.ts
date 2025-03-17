@@ -75,9 +75,9 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
 
     console.log("Ajustando visualização do mapa com", points.length, "pontos");
     
-    // Se não tiver sido inicializado ainda, centraliza no Amapá
-    if (centerOnAmapa && !initializedRef.current) {
-      // Primeiro, centraliza no Amapá
+    // Forçar centralização no Amapá sempre
+    if (centerOnAmapa) {
+      // Centralizar no Amapá
       map.current.jumpTo({
         center: [amapaCenterLng, amapaCenterLat],
         zoom: 7,
@@ -111,20 +111,13 @@ export const useMapbox = ({ centerOnAmapa = true, points }: UseMapboxProps) => {
         
         console.log(`useMapbox: ${validPointsCount} pontos válidos para ajustar bounds`);
         
-        // Só ajusta o bounds se houver pontos válidos
+        // Só ajusta o bounds se houver pontos válidos e estiver dentro dos limites do Amapá
         if (validPointsCount > 0 && !bounds.isEmpty()) {
           console.log("Ajustando bounds para mostrar todos os pontos");
           map.current.fitBounds(bounds, {
             padding: 100,
             maxZoom: 10, // Limita o zoom máximo para evitar zoom excessivo
             duration: 500 // Animação suave
-          });
-        } else {
-          console.log("Usando visualização padrão para o Amapá");
-          // Se não houver pontos válidos, centraliza no Amapá
-          map.current.jumpTo({
-            center: [amapaCenterLng, amapaCenterLat],
-            zoom: 7
           });
         }
       } catch (err) {

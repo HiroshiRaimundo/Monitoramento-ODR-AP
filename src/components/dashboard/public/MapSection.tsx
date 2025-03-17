@@ -28,6 +28,11 @@ const MapSection: React.FC<MapSectionProps> = ({
   useEffect(() => {
     console.log("MapSection: Total de estudos carregados:", filteredMapData.length);
     console.log("MapSection: Estudos sendo exibidos:", displayData.length);
+    
+    // Detalhes dos primeiros 5 estudos para debug
+    displayData.slice(0, 5).forEach((study, idx) => {
+      console.log(`Estudo ${idx}: ID=${study.id}, Título=${study.title}, Coords=[${study.coordinates}]`);
+    });
   }, [filteredMapData, displayData]);
 
   // Avisa quando os dados são atualizados (quando um novo estudo é adicionado)
@@ -58,17 +63,25 @@ const MapSection: React.FC<MapSectionProps> = ({
     }
   };
 
-  // Preparar os pontos para o mapa
-  const mapPoints = displayData.map(study => ({
-    id: study.id,
-    title: study.title,
-    author: study.author,
-    coordinates: study.coordinates,
-    location: study.location,
-    repositoryUrl: study.repositoryUrl,
-    type: study.type,
-    summary: study.summary
-  }));
+  // Preparar os pontos para o mapa com verificação de coordenadas válidas
+  const mapPoints = displayData
+    .filter(study => 
+      study.coordinates && 
+      Array.isArray(study.coordinates) && 
+      study.coordinates.length === 2 &&
+      !isNaN(study.coordinates[0]) && 
+      !isNaN(study.coordinates[1])
+    )
+    .map(study => ({
+      id: study.id,
+      title: study.title,
+      author: study.author,
+      coordinates: study.coordinates,
+      location: study.location,
+      repositoryUrl: study.repositoryUrl,
+      type: study.type,
+      summary: study.summary
+    }));
 
   // Handler para quando um ponto é selecionado no mapa
   const handleSelectPoint = (point: MapPoint) => {
@@ -110,6 +123,9 @@ const MapSection: React.FC<MapSectionProps> = ({
           <CardContent className="p-4">
             {mapPoints.length > 0 ? (
               <>
+                <div className="mb-2 text-sm text-forest-600">
+                  Mostrando {mapPoints.length} estudos no mapa
+                </div>
                 <Map 
                   points={mapPoints}
                   centerOnAmapa={true}
@@ -117,10 +133,12 @@ const MapSection: React.FC<MapSectionProps> = ({
                 />
                 
                 {/* Componente de detalhe do estudo selecionado */}
-                <StudyDetail 
-                  selectedStudies={selectedStudies} 
-                  onRemoveStudy={handleRemoveStudy}
-                />
+                {selectedStudies.length > 0 && (
+                  <StudyDetail 
+                    selectedStudies={selectedStudies} 
+                    onRemoveStudy={handleRemoveStudy}
+                  />
+                )}
               </>
             ) : (
               <div className="h-[500px] flex items-center justify-center text-gray-500 bg-gray-50 rounded-lg">

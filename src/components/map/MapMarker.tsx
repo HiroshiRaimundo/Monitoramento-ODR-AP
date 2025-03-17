@@ -74,11 +74,11 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     if (total > 1) {
       // Implementar um padrão em espiral para distribuir os marcadores
       const angleStep = (2 * Math.PI) / Math.min(total, 8); // Limitar a 8 marcadores por círculo
-      const baseRadius = 25; // Raio base em pixels (aumentado para maior separação)
+      const baseRadius = 40; // Raio base em pixels (aumentado para maior separação)
       
       // Determinar em qual "anel" da espiral este marcador deve estar
       const ring = Math.floor(index / 8);
-      const indexInRing = index % 8; // Corrigido o erro A8 para 8
+      const indexInRing = index % 8;
       
       // Calcular o raio com base no anel (aumenta para anéis externos)
       const radius = baseRadius * (ring + 1);
@@ -95,12 +95,12 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     const el = document.createElement('div');
     el.className = 'marker';
     el.style.backgroundColor = markerColor;
-    el.style.width = '20px';
-    el.style.height = '20px';
+    el.style.width = '24px'; // Tamanho aumentado
+    el.style.height = '24px'; // Tamanho aumentado
     el.style.borderRadius = '50%';
     el.style.cursor = 'pointer';
-    el.style.border = '2px solid white';
-    el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.4)';
+    el.style.border = '3px solid white'; // Borda mais grossa
+    el.style.boxShadow = '0 3px 6px rgba(0,0,0,0.5)'; // Sombra mais pronunciada
     
     // Adicionar um número ao marcador se houver vários no mesmo local
     if (total > 1) {
@@ -108,7 +108,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
       el.style.color = 'white';
-      el.style.fontSize = '10px';
+      el.style.fontSize = '12px';
       el.style.fontWeight = 'bold';
       el.innerText = `${index + 1}`;
     }

@@ -21,9 +21,9 @@ const MapContainer: React.FC<MapContainerProps> = ({
   const [markerGroups, setMarkerGroups] = useState<{[key: string]: MapPoint[]}>({});
   const [markersRendered, setMarkersRendered] = useState<boolean>(false);
 
-  // Agrupar pontos por localização uma vez quando os pontos mudam
+  // Agrupar pontos por localização sempre que os pontos mudarem
   useEffect(() => {
-    console.log("MapContainer: Atualizando grupos de pontos, total:", points.length);
+    console.log("MapContainer: Atualizando grupos de pontos, total:", points.length, points);
     
     // Verificar se há pontos para processar
     if (!points || points.length === 0) {
@@ -32,7 +32,12 @@ const MapContainer: React.FC<MapContainerProps> = ({
       return;
     }
     
-    // Verificação adicional de coordenadas válidas
+    // Log detalhado de cada ponto para diagnóstico
+    points.forEach((point, idx) => {
+      console.log(`Ponto ${idx}: ID=${point.id}, Título=${point.title}, Coords=[${point.coordinates}]`);
+    });
+    
+    // Verificação de coordenadas válidas
     const validPoints = points.filter(point => {
       const hasValidCoords = point.coordinates && 
                             Array.isArray(point.coordinates) && 
@@ -48,11 +53,6 @@ const MapContainer: React.FC<MapContainerProps> = ({
     });
     
     console.log(`MapContainer: ${validPoints.length} pontos válidos de ${points.length} totais`);
-    
-    // Detalhando os primeiros pontos para depuração
-    validPoints.slice(0, 5).forEach((point, idx) => {
-      console.log(`Detalhe do ponto ${idx}: ID=${point.id}, Título=${point.title}, Coords=[${point.coordinates}]`);
-    });
     
     // Agrupar pontos por localização
     const groups = groupPointsByLocation(validPoints);

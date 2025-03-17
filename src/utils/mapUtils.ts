@@ -11,15 +11,15 @@ export const groupPointsByLocation = (points: MapPoint[]) => {
   
   // Log para verificar o formato dos pontos
   points.forEach((point, index) => {
-    if (index < 3) { // Limitar a 3 pontos para não sobrecarregar o console
+    if (index < 5) { // Log para os primeiros 5 pontos
       console.log(`Ponto ${index}:`, point.id, point.title, point.coordinates);
     }
   });
   
   const groups: {[key: string]: MapPoint[]} = {};
   
-  // Precisão para agrupar pontos (aumentado para ter menos agrupamentos e mais alfinetes visíveis)
-  const precision = 0.001; // Aproximadamente 100 metros - aumentado para espalhar mais os pontos
+  // Precisão para agrupar pontos (diminuída para ter menos sobreposição)
+  const precision = 0.005; // Aumentado para diminuir a chance de agrupamento
   
   points.forEach(point => {
     if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length === 2) {
@@ -59,10 +59,10 @@ export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
   // Verificar se as coordenadas existem e são válidas
   if (!point.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
     console.warn("formatMapboxCoordinates: Coordenadas inválidas para o ponto:", point.id, point.title);
-    // Usar coordenadas padrão para Macapá como fallback
+    // Usar coordenadas padrão para o Centro do Amapá como fallback
     return {
       ...point,
-      coordinates: [-51.0669, 0.0356] // Coordenadas de Macapá como fallback
+      coordinates: [-52.0215415, 1.4441146] // Coordenadas do Centro do Amapá como fallback
     };
   }
   
@@ -71,7 +71,7 @@ export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
     console.warn("formatMapboxCoordinates: Coordenadas não numéricas para o ponto:", point.id, point.title);
     return {
       ...point,
-      coordinates: [-51.0669, 0.0356] // Coordenadas de Macapá como fallback
+      coordinates: [-52.0215415, 1.4441146] // Coordenadas do Centro do Amapá como fallback
     };
   }
 

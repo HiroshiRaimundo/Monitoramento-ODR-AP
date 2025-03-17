@@ -1,7 +1,7 @@
 
 import amapaLocations from "./amapaLocations";
 
-// Função simulada de geocodificação - em uma aplicação real, usaria uma API de geocodificação
+// Função de geocodificação - em uma aplicação real, usaria uma API de geocodificação
 export const geocodeLocation = (location: string): [number, number] => {
   const normalizedLocation = location.trim().toLowerCase();
   console.log("Geocodificando localização:", normalizedLocation);
@@ -10,14 +10,21 @@ export const geocodeLocation = (location: string): [number, number] => {
   for (const [city, coords] of Object.entries(amapaLocations)) {
     if (normalizedLocation.includes(city.toLowerCase())) {
       console.log(`Localização encontrada: ${city}. Coordenadas:`, coords);
-      // Garantir que as coordenadas estejam no formato correto [longitude, latitude]
-      return coords as [number, number];
+      return coords;
     }
   }
   
-  // Se não encontrar, retorna coordenadas de Macapá com posição ligeiramente deslocada
-  // para evitar sobreposição com outros pontos
-  const randomOffset = (Math.random() - 0.5) * 0.01; // Pequeno deslocamento aleatório para separar os pontos
-  console.log("Localização não encontrada, usando Macapá com deslocamento como fallback");
-  return [amapaLocations["Macapá"][0] + randomOffset, amapaLocations["Macapá"][1] + randomOffset];
+  // Gerar um deslocamento aleatório para evitar sobreposição de alfinetes
+  // Usando um raio maior para separar melhor os pontos
+  const baseCoords = amapaLocations["Centro do Amapá"];
+  const randomOffsetLng = (Math.random() - 0.5) * 0.1; // Offset maior em longitude
+  const randomOffsetLat = (Math.random() - 0.5) * 0.1; // Offset maior em latitude
+  
+  const resultCoords: [number, number] = [
+    baseCoords[0] + randomOffsetLng,
+    baseCoords[1] + randomOffsetLat
+  ];
+  
+  console.log("Localização não encontrada, usando coordenadas com deslocamento aleatório:", resultCoords);
+  return resultCoords;
 };
