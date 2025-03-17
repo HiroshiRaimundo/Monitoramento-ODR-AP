@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapPoint } from '@/types/map';
 
@@ -12,10 +12,13 @@ interface MapMarkerProps {
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total }) => {
-  React.useEffect(() => {
+  const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
+
+  useEffect(() => {
     // Verificar se as coordenadas são válidas
-    if (!point.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
-      console.error("Coordenadas inválidas para o ponto:", point.id, point.title);
+    if (!point?.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
+      console.error("Coordenadas inválidas para o ponto:", point?.id, point?.title);
       return;
     }
 
@@ -35,11 +38,14 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     }).setHTML(`
       <div class="p-2 text-sm bg-white rounded shadow">
         <h4 class="font-bold mb-1">${point.title}</h4>
-        <p class="text-xs">Autor: ${point.author}</p>
+        <p class="text-xs">Autor: ${point.author || 'Não especificado'}</p>
         <p class="text-xs">Tipo: ${point.type || 'Não especificado'}</p>
         ${point.summary ? `<p class="text-xs mt-1">Resumo: ${point.summary.substring(0, 100)}${point.summary.length > 100 ? '...' : ''}</p>` : ''}
+        <div class="mt-1 text-xs text-blue-600">Clique para ver detalhes</div>
       </div>
     `);
+    
+    popupRef.current = popup;
 
     // Definir a cor do marcador com base no tipo
     let markerColor = '#FF0000'; // Vermelho por padrão
@@ -110,7 +116,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       el.style.color = 'white';
       el.style.fontSize = '12px';
       el.style.fontWeight = 'bold';
-      el.innerText = `${index + 1}`;
+      el.innerHTML = `${index + 1}`;
     }
 
     // Log detalhado para debug
@@ -124,25 +130,30 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       })
         .setLngLat(point.coordinates)
         .addTo(map);
+        
+      markerRef.current = marker;
 
       // Mostrar popup ao passar o mouse
-      marker.getElement().addEventListener('mouseenter', () => {
+      const markerElement = marker.getElement();
+      
+      markerElement.addEventListener('mouseenter', () => {
         popup.addTo(map);
         popup.setLngLat(point.coordinates);
       });
 
-      marker.getElement().addEventListener('mouseleave', () => {
+      markerElement.addEventListener('mouseleave', () => {
         popup.remove();
       });
 
-      marker.getElement().addEventListener('click', () => {
+      markerElement.addEventListener('click', () => {
         onClick(point);
         console.log("Marcador clicado:", point.title);
       });
 
       return () => {
-        marker.remove();
-        popup.remove();
+        console.log(`Removendo marcador para ${point.title}`);
+        if (markerRef.current) markerRef.current.remove();
+        if (popupRef.current) popupRef.current.remove();
       };
     } catch (err) {
       console.error("Erro ao adicionar marcador:", err);

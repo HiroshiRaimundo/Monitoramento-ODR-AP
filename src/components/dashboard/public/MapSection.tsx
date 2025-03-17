@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import Map from "@/components/Map";
@@ -20,6 +20,7 @@ const MapSection: React.FC<MapSectionProps> = ({
 }) => {
   const [searchResults, setSearchResults] = useState<ResearchStudy[]>([]);
   const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
+  const allPointsRef = useRef<MapPoint[]>([]);
   
   // Determina quais dados mostrar no mapa: resultados da busca ou todos os dados
   const displayData = searchResults.length > 0 ? searchResults : filteredMapData;
@@ -33,6 +34,19 @@ const MapSection: React.FC<MapSectionProps> = ({
     displayData.slice(0, 5).forEach((study, idx) => {
       console.log(`Estudo ${idx}: ID=${study.id}, Título=${study.title}, Coords=[${study.coordinates}]`);
     });
+    
+    // Manter uma referência de todos os pontos
+    const newMapPoints = prepareMapPoints(displayData);
+    
+    // Combinar com pontos existentes, evitando duplicatas
+    const existingIds = new Set(allPointsRef.current.map(p => p.id));
+    const pointsToAdd = newMapPoints.filter(p => !existingIds.has(p.id));
+    
+    if (pointsToAdd.length > 0) {
+      console.log(`MapSection: Adicionando ${pointsToAdd.length} novos pontos ao mapa`);
+      allPointsRef.current = [...allPointsRef.current, ...pointsToAdd];
+    }
+    
   }, [filteredMapData, displayData]);
 
   // Avisa quando os dados são atualizados (quando um novo estudo é adicionado)
@@ -64,24 +78,38 @@ const MapSection: React.FC<MapSectionProps> = ({
   };
 
   // Preparar os pontos para o mapa com verificação de coordenadas válidas
-  const mapPoints = displayData
-    .filter(study => 
-      study.coordinates && 
-      Array.isArray(study.coordinates) && 
-      study.coordinates.length === 2 &&
-      !isNaN(study.coordinates[0]) && 
-      !isNaN(study.coordinates[1])
-    )
-    .map(study => ({
-      id: study.id,
-      title: study.title,
-      author: study.author,
-      coordinates: study.coordinates,
-      location: study.location,
-      repositoryUrl: study.repositoryUrl,
-      type: study.type,
-      summary: study.summary
-    }));
+  const prepareMapPoints = (studies: ResearchStudy[]): MapPoint[] => {
+    return studies
+      .filter(study => 
+        study.coordinates && 
+        Array.isArray(study.coordinates) && 
+        study.coordinates.length === 2 &&
+        !isNaN(study.coordinates[0]) && 
+        !isNaN(study.coordinates[1])
+      )
+      .map(study => ({
+        id: study.id,
+        title: study.title,
+        author: study.author,
+        coordinates: study.coordinates,
+        location: study.location,
+        repositoryUrl: study.repositoryUrl,
+        type: study.type,
+        summary: study.summary
+      }));
+  };
+
+  // Obter pontos para o mapa - usar todos os pontos acumulados
+  const getMapPoints = (): MapPoint[] => {
+    if (searchResults.length > 0) {
+      // Se houver resultados de pesquisa, usar apenas esses
+      return prepareMapPoints(searchResults);
+    }
+    // Caso contrário, usar todos os pontos acumulados
+    return allPointsRef.current.length > 0 ? 
+      allPointsRef.current : 
+      prepareMapPoints(filteredMapData);
+  };
 
   // Handler para quando um ponto é selecionado no mapa
   const handleSelectPoint = (point: MapPoint) => {
@@ -106,6 +134,9 @@ const MapSection: React.FC<MapSectionProps> = ({
   const handleRemoveStudy = (studyId: string) => {
     setSelectedStudies(prev => prev.filter(study => study.id !== studyId));
   };
+
+  // Obter os pontos para mostrar no mapa
+  const mapPoints = getMapPoints();
 
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">

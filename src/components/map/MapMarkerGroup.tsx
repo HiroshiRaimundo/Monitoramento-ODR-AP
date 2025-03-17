@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapPoint } from '@/types/map';
 import MapMarker from './MapMarker';
@@ -18,12 +18,21 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
   map, 
   onSelectPoint 
 }) => {
-  console.log(`Renderizando grupo de marcadores em ${locationKey} com ${pointsGroup.length} pontos`);
+  const renderedMarkersRef = useRef<Set<string>>(new Set());
   
-  // Criar um marcador de cluster se houver muitos pontos (mais de 10)
+  useEffect(() => {
+    console.log(`Renderizando grupo de marcadores em ${locationKey} com ${pointsGroup.length} pontos`);
+    
+    // Limpar o conjunto de marcadores renderizados ao atualizar o grupo
+    renderedMarkersRef.current = new Set();
+    
+    return () => {
+      console.log(`Limpando grupo de marcadores em ${locationKey}`);
+    };
+  }, [locationKey, pointsGroup.length]);
+  
+  // Criar um marcador de cluster se houver muitos pontos (mais de 15)
   if (pointsGroup.length > 15) {
-    // Lógica para renderizar um marcador de cluster seria implementada aqui
-    // Mas como não queremos alterar a estrutura atual, renderizamos todos os marcadores individualmente
     console.log(`Grupo grande com ${pointsGroup.length} pontos detectado em ${locationKey}`);
   }
   
@@ -37,19 +46,29 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
   return (
     <>
       {pointsGroup.map((point, index) => {
+        // Verificar se este marcador já foi renderizado
+        const markerId = `${point.id}-${index}`;
+        if (renderedMarkersRef.current.has(markerId)) {
+          return null;
+        }
+        
+        // Marcar como renderizado
+        renderedMarkersRef.current.add(markerId);
+        
         console.log(`Preparando marcador ${index+1}/${pointsGroup.length} para ${point.title}`);
+        
         // Formatando as coordenadas antes de passar para o marcador
         const formattedPoint = formatMapboxCoordinates(point);
         
         // Verificação detalhada das coordenadas
-        if (formattedPoint.coordinates.some(isNaN)) {
+        if (!formattedPoint.coordinates || formattedPoint.coordinates.some(isNaN)) {
           console.error(`Coordenadas inválidas após formatação para ${point.title}:`, formattedPoint.coordinates);
           return null; // Não renderizar este marcador
         }
         
         return (
           <MapMarker 
-            key={`${point.id}-${index}`} 
+            key={markerId} 
             point={formattedPoint} 
             map={map} 
             onClick={onSelectPoint}

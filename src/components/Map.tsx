@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MapContainer from './map/MapContainer';
 import StudyDetail from './map/StudyDetail';
 import AddStudyForm from './AddStudyForm';
@@ -18,28 +18,51 @@ const Map: React.FC<MapProps> = ({
 }) => {
   const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
   const [validPoints, setValidPoints] = useState<MapPoint[]>([]);
-  const [allPoints, setAllPoints] = useState<MapPoint[]>(points);
+  const [allPoints, setAllPoints] = useState<MapPoint[]>([]);
 
   // Filtrar pontos válidos (com coordenadas)
+  useEffect(() => {
+    const filtered = points.filter(point => 
+      point.coordinates && 
+      Array.isArray(point.coordinates) && 
+      point.coordinates.length === 2 &&
+      !isNaN(point.coordinates[0]) && 
+      !isNaN(point.coordinates[1])
+    );
+    
+    console.log("Map: Filtrando pontos válidos", points.length, "->", filtered.length);
+    console.log("Map: Pontos válidos filtrados:", filtered);
+    
+    // Manter pontos existentes e adicionar novos
+    setAllPoints(prevPoints => {
+      // Combinar pontos atuais com novos, evitando duplicatas por ID
+      const existingIds = new Set(prevPoints.map(p => p.id));
+      const newPoints = filtered.filter(p => !existingIds.has(p.id));
+      const mergedPoints = [...prevPoints, ...newPoints];
+      
+      console.log("Map: Combinando pontos anteriores", prevPoints.length, 
+                 "com novos pontos", newPoints.length, 
+                 "total:", mergedPoints.length);
+      
+      return mergedPoints;
+    });
+  }, [points]);
+
+  // Atualizar validPoints quando allPoints mudar
   useEffect(() => {
     const filtered = allPoints.filter(point => 
       point.coordinates && 
       Array.isArray(point.coordinates) && 
-      point.coordinates.length === 2
+      point.coordinates.length === 2 &&
+      !isNaN(point.coordinates[0]) && 
+      !isNaN(point.coordinates[1])
     );
     
-    console.log("Map: Filtrando pontos válidos", allPoints.length, "->", filtered.length);
-    console.log("Map: Pontos válidos filtrados:", filtered);
+    console.log("Map: Validando pontos do allPoints", allPoints.length, "->", filtered.length);
     setValidPoints(filtered);
   }, [allPoints]);
 
-  // Atualizar allPoints quando points mudar
-  useEffect(() => {
-    console.log("Map: Recebendo novos pontos:", points.length);
-    setAllPoints(points);
-  }, [points]);
-
-  const handleSelectPoint = (point: MapPoint) => {
+  const handleSelectPoint = useCallback((point: MapPoint) => {
     // Se onSelectPoint foi fornecido, use-o
     if (onSelectPoint) {
       onSelectPoint(point);
@@ -48,18 +71,33 @@ const Map: React.FC<MapProps> = ({
     
     // Se não, use a lógica interna
     // Se o ponto já estiver selecionado, não adicione novamente
-    if (!selectedStudies.find(study => study.id === point.id)) {
-      setSelectedStudies(prev => [...prev, point]);
-    }
-  };
+    setSelectedStudies(prev => {
+      if (prev.some(study => study.id === point.id)) {
+        return prev;
+      }
+      return [...prev, point];
+    });
+  }, [onSelectPoint]);
 
-  const removeStudyFromList = (studyId: string) => {
+  const removeStudyFromList = useCallback((studyId: string) => {
     setSelectedStudies(prev => prev.filter(study => study.id !== studyId));
-  };
+  }, []);
 
-  const handleAddStudy = (newPoint: MapPoint) => {
-    setAllPoints(prev => [...prev, newPoint]);
-  };
+  const handleAddStudy = useCallback((newPoint: MapPoint) => {
+    console.log("Map: Adicionando novo estudo:", newPoint.title);
+    
+    setAllPoints(prev => {
+      // Verificar se o ponto já existe
+      const exists = prev.some(p => p.id === newPoint.id);
+      if (exists) {
+        console.log("Map: Ponto já existe, atualizando");
+        return prev.map(p => p.id === newPoint.id ? newPoint : p);
+      }
+      // Adicionar novo ponto
+      console.log("Map: Adicionando novo ponto ao estado");
+      return [...prev, newPoint];
+    });
+  }, []);
   
   // Log para depuração
   console.log("Map: Renderizando com", validPoints.length, "pontos válidos");
