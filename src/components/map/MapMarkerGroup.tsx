@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapPoint } from '@/types/map';
 import MapMarker from './MapMarker';
@@ -18,42 +18,62 @@ const MapMarkerGroup: React.FC<MapMarkerGroupProps> = ({
   map, 
   onSelectPoint 
 }) => {
-  // Filtrar pontos com coordenadas válidas e registrar no console para diagnóstico
-  const validPoints = pointsGroup.filter(point => {
-    const isValid = point.coordinates && 
-      Array.isArray(point.coordinates) && 
-      point.coordinates.length === 2 &&
-      !isNaN(point.coordinates[0]) && 
-      !isNaN(point.coordinates[1]);
-    
-    if (!isValid) {
-      console.warn(`Ponto inválido removido de grupo ${locationKey}:`, point);
-    } else {
-      console.log(`Ponto válido em grupo ${locationKey}:`, point.title, point.coordinates);
-    }
-    
-    return isValid;
-  });
+  const renderedMarkersRef = useRef<Set<string>>(new Set());
   
-  // Log para diagnóstico
-  if (validPoints.length > 0) {
-    console.log(`Grupo ${locationKey}: renderizando ${validPoints.length} pontos válidos`);
+  useEffect(() => {
+    console.log(`Renderizando grupo de marcadores em ${locationKey} com ${pointsGroup.length} pontos`);
+    
+    // Limpar o conjunto de marcadores renderizados ao atualizar o grupo
+    renderedMarkersRef.current = new Set();
+    
+    return () => {
+      console.log(`Limpando grupo de marcadores em ${locationKey}`);
+    };
+  }, [locationKey, pointsGroup.length]);
+  
+  // Criar um marcador de cluster se houver muitos pontos (mais de 15)
+  if (pointsGroup.length > 15) {
+    console.log(`Grupo grande com ${pointsGroup.length} pontos detectado em ${locationKey}`);
   }
+  
+  // Detalhes de depuração para identificar problemas
+  pointsGroup.forEach((point, i) => {
+    if (i < 3 || i >= pointsGroup.length - 3) { // Mostrar os primeiros e últimos 3 pontos
+      console.log(`Ponto ${i} em grupo ${locationKey}: ID=${point.id}, Título=${point.title}, Coords=[${point.coordinates}]`);
+    }
+  });
   
   return (
     <>
-      {validPoints.map((point, index) => {
-        // Formatar coordenadas antes de passar para o marcador
+      {pointsGroup.map((point, index) => {
+        // Verificar se este marcador já foi renderizado
+        const markerId = `${point.id}-${index}`;
+        if (renderedMarkersRef.current.has(markerId)) {
+          return null;
+        }
+        
+        // Marcar como renderizado
+        renderedMarkersRef.current.add(markerId);
+        
+        console.log(`Preparando marcador ${index+1}/${pointsGroup.length} para ${point.title}`);
+        
+        // Formatando as coordenadas antes de passar para o marcador
         const formattedPoint = formatMapboxCoordinates(point);
+        
+        // Verificação detalhada das coordenadas
+        if (!formattedPoint.coordinates || formattedPoint.coordinates.some(isNaN)) {
+          console.error(`Coordenadas inválidas após formatação para ${point.title}:`, formattedPoint.coordinates);
+          return null; // Não renderizar este marcador
+        }
         
         return (
           <MapMarker 
-            key={`marker-${formattedPoint.id}-${index}-${locationKey}`}
+            key={markerId} 
             point={formattedPoint} 
             map={map} 
             onClick={onSelectPoint}
             index={index}
-            total={validPoints.length}
+            total={pointsGroup.length}
           />
         );
       })}

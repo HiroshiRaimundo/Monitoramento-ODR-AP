@@ -1,62 +1,58 @@
 
 import amapaLocations from "./amapaLocations";
 
-// Cache para coordenadas já pesquisadas
-const coordinateCache: Record<string, [number, number]> = {};
-
-/**
- * Geocodifica uma localização para coordenadas [longitude, latitude]
- * Simplificada para maior estabilidade e performance
- */
+// Função de geocodificação - em uma aplicação real, usaria uma API de geocodificação
 export const geocodeLocation = (location: string): [number, number] => {
-  // Validação básica
   if (!location || typeof location !== 'string') {
-    console.log("Localização inválida:", location);
-    return amapaLocations["Centro do Amapá"];
+    console.warn("Localização inválida para geocodificação:", location);
+    return amapaLocations["Centro do Amapá"]; // Retorna o centro do Amapá como fallback
   }
   
   const normalizedLocation = location.trim().toLowerCase();
-  console.log(`Geocodificando localização: "${normalizedLocation}"`);
+  console.log("Geocodificando localização:", normalizedLocation);
   
-  // Verificar cache primeiro
-  if (coordinateCache[normalizedLocation]) {
-    console.log("Usando coordenadas em cache para:", normalizedLocation, coordinateCache[normalizedLocation]);
-    return coordinateCache[normalizedLocation];
+  // Verificação de cache para evitar múltiplas geocodificações da mesma localização
+  const cachedLocations: Record<string, [number, number]> = {};
+  
+  if (cachedLocations[normalizedLocation]) {
+    console.log("Usando localização em cache:", normalizedLocation);
+    return cachedLocations[normalizedLocation];
   }
   
-  // Buscar nas localizações conhecidas do Amapá
+  // Verifica se a localização está nas cidades do Amapá
   for (const [city, coords] of Object.entries(amapaLocations)) {
     if (normalizedLocation.includes(city.toLowerCase())) {
-      // Adicionar pequeno offset para evitar sobreposições exatas
-      const jitter = 0.005; // Reduzido para minimizar dispersão
-      const offsetLng = (Math.random() - 0.5) * jitter;
-      const offsetLat = (Math.random() - 0.5) * jitter;
+      console.log(`Localização encontrada: ${city}. Coordenadas:`, coords);
       
-      const result: [number, number] = [
-        coords[0] + offsetLng,
-        coords[1] + offsetLat
+      // Adiciona um pequeno desvio aleatório para evitar sobreposição exata
+      const smallOffsetLng = (Math.random() - 0.5) * 0.01;
+      const smallOffsetLat = (Math.random() - 0.5) * 0.01;
+      
+      const offsetCoords: [number, number] = [
+        coords[0] + smallOffsetLng,
+        coords[1] + smallOffsetLat
       ];
       
-      // Armazenar no cache
-      coordinateCache[normalizedLocation] = result;
-      console.log(`Coordenadas encontradas para ${location}:`, result);
-      return result;
+      // Guardar no cache
+      cachedLocations[normalizedLocation] = offsetCoords;
+      return offsetCoords;
     }
   }
   
-  // Usar coordenadas do centro do Amapá com offset aleatório 
-  // como fallback para localizações desconhecidas
+  // Gerar um deslocamento aleatório para evitar sobreposição de alfinetes
+  // Usando um raio maior para separar melhor os pontos
   const baseCoords = amapaLocations["Centro do Amapá"];
-  const offsetLng = (Math.random() - 0.5) * 0.05;
-  const offsetLat = (Math.random() - 0.5) * 0.05;
+  const randomOffsetLng = (Math.random() - 0.5) * 0.2; // Offset maior em longitude
+  const randomOffsetLat = (Math.random() - 0.5) * 0.2; // Offset maior em latitude
   
-  const result: [number, number] = [
-    baseCoords[0] + offsetLng,
-    baseCoords[1] + offsetLat
+  const resultCoords: [number, number] = [
+    baseCoords[0] + randomOffsetLng,
+    baseCoords[1] + randomOffsetLat
   ];
   
-  // Armazenar no cache
-  coordinateCache[normalizedLocation] = result;
-  console.log(`Coordenadas geradas para ${location}:`, result);
-  return result;
+  console.log("Localização não encontrada, usando coordenadas com deslocamento aleatório:", resultCoords);
+  
+  // Guardar no cache
+  cachedLocations[normalizedLocation] = resultCoords;
+  return resultCoords;
 };

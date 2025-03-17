@@ -1,89 +1,108 @@
 
 import { MapPoint } from '@/types/map';
 
-/**
- * Agrupa pontos por proximidade geográfica para evitar sobreposição
- */
-export const groupPointsByLocation = (points: MapPoint[]): {[key: string]: MapPoint[]} => {
-  if (!points || !Array.isArray(points) || points.length === 0) {
-    console.log("Nenhum ponto para agrupar");
+export const groupPointsByLocation = (points: MapPoint[]) => {
+  if (!points || !Array.isArray(points) || !points.length) {
+    console.log("mapUtils: Nenhum ponto para agrupar");
     return {};
   }
   
-  const groups: {[key: string]: MapPoint[]} = {};
-  const precision = 0.01; // Precisão de agrupamento
+  console.log("mapUtils: Agrupando", points.length, "pontos");
   
-  // Filtrar pontos com coordenadas válidas
-  const validPoints = points.filter(point => {
-    const isValid = point && 
-      point.coordinates && 
-      Array.isArray(point.coordinates) && 
-      point.coordinates.length === 2 &&
-      !isNaN(point.coordinates[0]) && 
-      !isNaN(point.coordinates[1]);
-    
-    if (!isValid) {
-      console.warn("Ponto com coordenadas inválidas descartado:", point);
-    } else {
-      console.log("Ponto válido para agrupamento:", point.title, point.coordinates);
+  // Log detalhado para verificar o formato dos pontos
+  points.forEach((point, index) => {
+    if (index < 5 || index >= points.length - 2) { // Log para os primeiros 5 e últimos 2 pontos
+      console.log(`Ponto ${index}:`, point.id, point.title, point.coordinates);
     }
-    
-    return isValid;
   });
   
-  console.log(`groupPointsByLocation: Processando ${validPoints.length} pontos válidos de ${points.length} total`);
+  const groups: {[key: string]: MapPoint[]} = {};
   
-  validPoints.forEach(point => {
-    // Arredondar coordenadas para agrupar pontos próximos
-    const lng = Math.round(point.coordinates[0] / precision) * precision;
-    const lat = Math.round(point.coordinates[1] / precision) * precision;
+  // Precisão para agrupar pontos (diminuída para ter menos sobreposição)
+  const precision = 0.008; // Ajustado para melhor visualização
+  
+  points.forEach(point => {
+    if (!point || !point.coordinates) {
+      console.warn("Ponto inválido ou sem coordenadas:", point?.id, point?.title);
+      return;
+    }
     
-    const locationKey = `${lng.toFixed(4)},${lat.toFixed(4)}`;
+    if (!Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
+      console.warn("Formato de coordenadas inválido para o ponto:", point.id, point.title);
+      return;
+    }
+    
+    // Verificar se as coordenadas são números válidos
+    if (isNaN(point.coordinates[0]) || isNaN(point.coordinates[1])) {
+      console.warn("Coordenadas inválidas para o ponto:", point.id, point.title, point.coordinates);
+      return;
+    }
+    
+    // Arredondar coordenadas para agrupar pontos próximos
+    // Garantir que estamos usando a convenção [longitude, latitude] do Mapbox
+    const roundedLng = Math.round(point.coordinates[0] / precision) * precision;
+    const roundedLat = Math.round(point.coordinates[1] / precision) * precision;
+    
+    const locationKey = `${roundedLng},${roundedLat}`;
     
     if (!groups[locationKey]) {
       groups[locationKey] = [];
     }
     
-    // Evitar duplicatas
-    const isDuplicate = groups[locationKey].some(p => p.id === point.id);
+    // Verificar se o ponto já está no grupo para evitar duplicatas
+    const isDuplicate = groups[locationKey].some(existingPoint => existingPoint.id === point.id);
     if (!isDuplicate) {
       groups[locationKey].push(point);
-      console.log(`Ponto "${point.title}" adicionado ao grupo ${locationKey}`);
     }
   });
   
-  // Log dos grupos criados para diagnóstico
-  console.log(`Criados ${Object.keys(groups).length} grupos de localização`);
+  console.log("Grupos de localização:", Object.keys(groups).length);
+  
+  // Log detalhado dos grupos formados
   Object.entries(groups).forEach(([key, group]) => {
     console.log(`Grupo ${key}: ${group.length} pontos`);
+    if (group.length > 1) {
+      console.log(`  Detalhes do grupo ${key}:`, group.map(p => p.id));
+    }
   });
   
   return groups;
 };
 
-/**
- * Garante que as coordenadas do ponto estão no formato correto para o mapa
- */
 export const formatMapboxCoordinates = (point: MapPoint): MapPoint => {
-  if (!point || !point.coordinates) {
-    console.warn("Ponto inválido formatado com coordenadas padrão:", point);
+  // Verificação completa das coordenadas
+  if (!point) {
+    console.error("formatMapboxCoordinates: Ponto é undefined ou null");
     return {
-      ...point,
-      coordinates: [-52.0215415, 1.4441146] // Centro do Amapá
+      id: "fallback-id",
+      title: "Ponto inválido",
+      author: "Desconhecido",
+      location: "Localização desconhecida",
+      coordinates: [-52.0215415, 1.4441146] // Coordenadas do Centro do Amapá como fallback
     };
   }
   
-  if (!Array.isArray(point.coordinates) || 
-      point.coordinates.length !== 2 || 
-      isNaN(point.coordinates[0]) || 
-      isNaN(point.coordinates[1])) {
-    console.warn("Coordenadas inválidas formatadas:", point.coordinates);
+  if (!point.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
+    console.warn("formatMapboxCoordinates: Coordenadas inválidas para o ponto:", point.id, point.title);
+    // Usar coordenadas padrão para o Centro do Amapá como fallback
     return {
       ...point,
-      coordinates: [-52.0215415, 1.4441146] // Centro do Amapá
+      coordinates: [-52.0215415, 1.4441146] // Coordenadas do Centro do Amapá como fallback
     };
   }
   
-  console.log(`Coordenadas formatadas para "${point.title}":`, point.coordinates);
-  return point;
+  // Verificar se as coordenadas são números
+  if (isNaN(point.coordinates[0]) || isNaN(point.coordinates[1])) {
+    console.warn("formatMapboxCoordinates: Coordenadas não numéricas para o ponto:", point.id, point.title);
+    return {
+      ...point,
+      coordinates: [-52.0215415, 1.4441146] // Coordenadas do Centro do Amapá como fallback
+    };
+  }
+
+  // Garantir o formato [longitude, latitude] para o Mapbox
+  return {
+    ...point,
+    coordinates: point.coordinates
+  };
 };

@@ -28,12 +28,6 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
   const [localStudies, setLocalStudies] = useState<ResearchStudy[]>(studies);
   const studyForm = useForm<ResearchStudyFormData>({
     defaultValues: {
-      title: '',
-      author: '',
-      coAuthors: '',
-      summary: '',
-      repositoryUrl: '',
-      location: '',
       type: "artigo" // Valor padrão para o campo type
     }
   });
@@ -47,7 +41,6 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
   // Manipulador de envio do formulário com notificação de sucesso
   const handleFormSubmit = async (data: ResearchStudyFormData) => {
     try {
-      console.log("MapaTabContent: Enviando formulário de novo estudo:", data.title);
       await handleStudySubmit(data);
       
       // Exibir feedback positivo para o usuário
@@ -56,18 +49,10 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
         description: "O estudo foi adicionado e está disponível no mapa da aba pública.",
       });
       
-      // Resetar o formulário explicitamente
+      // Resetar o formulário
       studyForm.reset({
-        title: '',
-        author: '',
-        coAuthors: '',
-        summary: '',
-        repositoryUrl: '',
-        location: '',
         type: "artigo" // Manter o valor padrão
       });
-      
-      console.log("MapaTabContent: Formulário resetado após envio");
     } catch (error) {
       console.error("Erro ao registrar estudo:", error);
       
@@ -84,10 +69,7 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
   const handleDelete = async (id: string) => {
     if (handleDeleteStudy) {
       try {
-        console.log("MapaTabContent: Excluindo estudo:", id);
         await handleDeleteStudy(id);
-        // Atualizar estudos locais
-        setLocalStudies(prev => prev.filter(study => study.id !== id));
         // Exibir feedback positivo para o usuário
         toast({
           title: "Estudo removido com sucesso",
@@ -132,7 +114,6 @@ const MapaTabContent: React.FC<MapaTabContentProps> = ({
           <ResearchList 
             studies={localStudies} 
             onDelete={handleDelete}
-            isLoading={studies.length === 0 && localStudies.length === 0}
           />
         </div>
       </div>

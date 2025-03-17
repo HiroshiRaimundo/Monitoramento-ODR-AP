@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MapContainer from './map/MapContainer';
 import StudyDetail from './map/StudyDetail';
+import AddStudyForm from './AddStudyForm';
 import { MapPoint } from '@/types/map';
 
 interface MapProps {
@@ -16,89 +17,106 @@ const Map: React.FC<MapProps> = ({
   onSelectPoint
 }) => {
   const [selectedStudies, setSelectedStudies] = useState<MapPoint[]>([]);
-  const [displayPoints, setDisplayPoints] = useState<MapPoint[]>([]);
-  
-  // Processar pontos recebidos
+  const [validPoints, setValidPoints] = useState<MapPoint[]>([]);
+  const [allPoints, setAllPoints] = useState<MapPoint[]>([]);
+
+  // Filtrar pontos válidos (com coordenadas)
   useEffect(() => {
-    console.log(`Map: Recebidos ${points?.length || 0} pontos`);
-    
-    if (!points || points.length === 0) {
-      console.log("Map: Nenhum ponto recebido, limpando exibição");
-      setDisplayPoints([]);
-      return;
-    }
-    
-    // Filtrar pontos válidos
-    const validPoints = points.filter(point => 
-      point && point.coordinates && 
+    const filtered = points.filter(point => 
+      point.coordinates && 
       Array.isArray(point.coordinates) && 
       point.coordinates.length === 2 &&
       !isNaN(point.coordinates[0]) && 
       !isNaN(point.coordinates[1])
     );
     
-    console.log(`Map: ${validPoints.length} pontos válidos para exibir`);
+    console.log("Map: Filtrando pontos válidos", points.length, "->", filtered.length);
+    console.log("Map: Pontos válidos filtrados:", filtered);
     
-    // Verificar pontos inválidos para diagnóstico
-    const invalidPoints = points.filter(point => 
-      !point || !point.coordinates || 
-      !Array.isArray(point.coordinates) || 
-      point.coordinates.length !== 2 ||
-      isNaN(point.coordinates[0]) || 
-      isNaN(point.coordinates[1])
+    // Manter pontos existentes e adicionar novos
+    setAllPoints(prevPoints => {
+      // Combinar pontos atuais com novos, evitando duplicatas por ID
+      const existingIds = new Set(prevPoints.map(p => p.id));
+      const newPoints = filtered.filter(p => !existingIds.has(p.id));
+      const mergedPoints = [...prevPoints, ...newPoints];
+      
+      console.log("Map: Combinando pontos anteriores", prevPoints.length, 
+                 "com novos pontos", newPoints.length, 
+                 "total:", mergedPoints.length);
+      
+      return mergedPoints;
+    });
+  }, [points]);
+
+  // Atualizar validPoints quando allPoints mudar
+  useEffect(() => {
+    const filtered = allPoints.filter(point => 
+      point.coordinates && 
+      Array.isArray(point.coordinates) && 
+      point.coordinates.length === 2 &&
+      !isNaN(point.coordinates[0]) && 
+      !isNaN(point.coordinates[1])
     );
     
-    if (invalidPoints.length > 0) {
-      console.warn(`Map: ${invalidPoints.length} pontos inválidos descartados:`, invalidPoints);
-    }
-    
-    // Atualizar pontos para exibição
-    setDisplayPoints(validPoints);
-  }, [points]);
-  
-  // Handler para seleção de ponto no mapa
-  const handleSelectPoint = (point: MapPoint) => {
-    console.log(`Map: Ponto selecionado: ${point.title}`);
-    
-    // Se onSelectPoint foi fornecido, usar
+    console.log("Map: Validando pontos do allPoints", allPoints.length, "->", filtered.length);
+    setValidPoints(filtered);
+  }, [allPoints]);
+
+  const handleSelectPoint = useCallback((point: MapPoint) => {
+    // Se onSelectPoint foi fornecido, use-o
     if (onSelectPoint) {
       onSelectPoint(point);
       return;
     }
     
-    // Verificar se o ponto já está selecionado
-    const alreadySelected = selectedStudies.some(study => study.id === point.id);
-    
-    if (!alreadySelected) {
-      console.log(`Selecionado: ${point.title}`);
-      setSelectedStudies(prev => [...prev, point]);
-    }
-  };
-  
-  // Handler para remover estudo da lista
-  const handleRemoveStudy = (studyId: string) => {
-    console.log(`Map: Removendo estudo dos detalhes: ${studyId}`);
+    // Se não, use a lógica interna
+    // Se o ponto já estiver selecionado, não adicione novamente
+    setSelectedStudies(prev => {
+      if (prev.some(study => study.id === point.id)) {
+        return prev;
+      }
+      return [...prev, point];
+    });
+  }, [onSelectPoint]);
+
+  const removeStudyFromList = useCallback((studyId: string) => {
     setSelectedStudies(prev => prev.filter(study => study.id !== studyId));
-  };
+  }, []);
+
+  const handleAddStudy = useCallback((newPoint: MapPoint) => {
+    console.log("Map: Adicionando novo estudo:", newPoint.title);
+    
+    setAllPoints(prev => {
+      // Verificar se o ponto já existe
+      const exists = prev.some(p => p.id === newPoint.id);
+      if (exists) {
+        console.log("Map: Ponto já existe, atualizando");
+        return prev.map(p => p.id === newPoint.id ? newPoint : p);
+      }
+      // Adicionar novo ponto
+      console.log("Map: Adicionando novo ponto ao estado");
+      return [...prev, newPoint];
+    });
+  }, []);
   
-  // Log de diagnóstico para verificar o que está sendo renderizado
-  console.log(`Map: Renderizando com ${displayPoints.length} pontos válidos`);
+  // Log para depuração
+  console.log("Map: Renderizando com", validPoints.length, "pontos válidos");
   
   return (
     <div className="flex flex-col gap-4">
+      {!onSelectPoint && <AddStudyForm onAddStudy={handleAddStudy} />}
       <div className="border border-forest-100 rounded-lg overflow-hidden shadow-md">
         <MapContainer 
-          points={displayPoints} 
+          points={validPoints} 
           onSelectPoint={handleSelectPoint}
           centerOnAmapa={centerOnAmapa}
         />
       </div>
       
-      {/* Mostrar detalhes apenas se não foi fornecido um handler externo */}
       {!onSelectPoint && selectedStudies.length > 0 && (
         <StudyDetail 
           selectedStudies={selectedStudies}
-          onRemoveStudy={handleRemoveStudy}
+          onRemoveStudy={removeStudyFromList}
         />
       )}
     </div>

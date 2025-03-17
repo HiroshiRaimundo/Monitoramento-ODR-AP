@@ -7,8 +7,8 @@ interface MapMarkerProps {
   point: MapPoint;
   map: mapboxgl.Map;
   onClick: (point: MapPoint) => void;
-  index: number;
-  total: number;
+  index: number; // Índice para ajudar no posicionamento
+  total: number; // Número total de marcadores nesta localização
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total }) => {
@@ -16,55 +16,99 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
   const popupRef = useRef<mapboxgl.Popup | null>(null);
 
   useEffect(() => {
-    // Validar coordenadas
-    if (!point?.coordinates || 
-        !Array.isArray(point.coordinates) || 
-        point.coordinates.length !== 2 ||
-        isNaN(point.coordinates[0]) || 
-        isNaN(point.coordinates[1])) {
-      console.error("Coordenadas inválidas:", point?.id, point?.coordinates);
+    // Verificar se as coordenadas são válidas
+    if (!point?.coordinates || !Array.isArray(point.coordinates) || point.coordinates.length !== 2) {
+      console.error("Coordenadas inválidas para o ponto:", point?.id, point?.title);
       return;
     }
 
-    // Definir a cor do marcador baseado no tipo de estudo
-    let markerColor = '#FF0000'; // Vermelho padrão
+    // Verificar se as coordenadas são números válidos
+    if (isNaN(point.coordinates[0]) || isNaN(point.coordinates[1])) {
+      console.error(`Coordenadas não são números válidos para o ponto ${point.id} (${point.title}):`, point.coordinates);
+      return;
+    }
+
+    // Criar um popup detalhado com mais informações
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: [0, -10],
+      className: 'custom-popup',
+      maxWidth: '300px'
+    }).setHTML(`
+      <div class="p-2 text-sm bg-white rounded shadow">
+        <h4 class="font-bold mb-1">${point.title}</h4>
+        <p class="text-xs">Autor: ${point.author || 'Não especificado'}</p>
+        <p class="text-xs">Tipo: ${point.type || 'Não especificado'}</p>
+        ${point.summary ? `<p class="text-xs mt-1">Resumo: ${point.summary.substring(0, 100)}${point.summary.length > 100 ? '...' : ''}</p>` : ''}
+        <div class="mt-1 text-xs text-blue-600">Clique para ver detalhes</div>
+      </div>
+    `);
     
+    popupRef.current = popup;
+
+    // Definir a cor do marcador com base no tipo
+    let markerColor = '#FF0000'; // Vermelho por padrão
+    
+    // Aplicar cores específicas apenas se houver um tipo
     if (point.type) {
       switch (point.type.toLowerCase()) {
-        case 'artigo': markerColor = '#FF0000'; break;
-        case 'dissertacao': markerColor = '#0066FF'; break;
-        case 'tese': markerColor = '#008000'; break;
-        case 'livros': markerColor = '#800080'; break;
-        case 'ebooks': markerColor = '#FF6600'; break;
-        default: markerColor = '#FF0000';
+        case 'artigo':
+          markerColor = '#FF0000'; // Vermelho
+          break;
+        case 'dissertacao':
+          markerColor = '#0066FF'; // Azul
+          break;
+        case 'tese':
+          markerColor = '#008000'; // Verde
+          break;
+        case 'livros':
+          markerColor = '#800080'; // Roxo
+          break;
+        case 'ebooks':
+          markerColor = '#FF6600'; // Laranja
+          break;
+        default:
+          markerColor = '#FF0000'; // Vermelho para 'outro' ou indefinido
       }
     }
 
-    // Calcular offset para evitar sobreposição
+    // Calcular deslocamento de posição para marcadores no mesmo local
     let offsetX = 0;
     let offsetY = 0;
     
     if (total > 1) {
-      // Padrão em círculo para distribuir marcadores
-      const angle = (index / total) * 2 * Math.PI;
-      const radius = 30; // Distância em pixels
+      // Implementar um padrão em espiral para distribuir os marcadores
+      const angleStep = (2 * Math.PI) / Math.min(total, 8); // Limitar a 8 marcadores por círculo
+      const baseRadius = 40; // Raio base em pixels (aumentado para maior separação)
       
+      // Determinar em qual "anel" da espiral este marcador deve estar
+      const ring = Math.floor(index / 8);
+      const indexInRing = index % 8;
+      
+      // Calcular o raio com base no anel (aumenta para anéis externos)
+      const radius = baseRadius * (ring + 1);
+      
+      // Calcular o ângulo para este marcador
+      const angle = indexInRing * angleStep;
+      
+      // Calcular as coordenadas x e y
       offsetX = Math.cos(angle) * radius;
       offsetY = Math.sin(angle) * radius;
     }
 
-    // Criar elemento para o marcador
+    // Criar um elemento DOM personalizado para o marcador com maior visibilidade
     const el = document.createElement('div');
     el.className = 'marker';
-    el.style.width = '24px';
-    el.style.height = '24px';
-    el.style.borderRadius = '50%';
     el.style.backgroundColor = markerColor;
+    el.style.width = '24px'; // Tamanho aumentado
+    el.style.height = '24px'; // Tamanho aumentado
+    el.style.borderRadius = '50%';
     el.style.cursor = 'pointer';
-    el.style.border = '3px solid white';
-    el.style.boxShadow = '0 3px 6px rgba(0,0,0,0.5)';
-
-    // Adicionar número ao marcador se houver múltiplos
+    el.style.border = '3px solid white'; // Borda mais grossa
+    el.style.boxShadow = '0 3px 6px rgba(0,0,0,0.5)'; // Sombra mais pronunciada
+    
+    // Adicionar um número ao marcador se houver vários no mesmo local
     if (total > 1) {
       el.style.display = 'flex';
       el.style.alignItems = 'center';
@@ -75,55 +119,45 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
       el.innerHTML = `${index + 1}`;
     }
 
-    // Criar popup informativo
-    const popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-      offset: [0, -15],
-      maxWidth: '300px'
-    }).setHTML(`
-      <div class="p-2 text-sm">
-        <h4 class="font-bold">${point.title}</h4>
-        <p class="text-xs">Autor: ${point.author || 'Não especificado'}</p>
-        <p class="text-xs">Tipo: ${point.type || 'Não especificado'}</p>
-        <p class="text-xs text-blue-600 mt-1">Clique para detalhes</p>
-      </div>
-    `);
-    
-    popupRef.current = popup;
+    // Log detalhado para debug
+    console.log(`Adicionando marcador ${index+1}/${total} para '${point.title}' em [${point.coordinates[0]}, ${point.coordinates[1]}]`);
 
-    // Adicionar marcador ao mapa
-    const marker = new mapboxgl.Marker({
-      element: el,
-      offset: [offsetX, offsetY]
-    })
-      .setLngLat(point.coordinates)
-      .addTo(map);
+    try {
+      // Adicionar o marcador ao mapa
+      const marker = new mapboxgl.Marker({ 
+        element: el,
+        offset: [offsetX, offsetY]
+      })
+        .setLngLat(point.coordinates)
+        .addTo(map);
+        
+      markerRef.current = marker;
+
+      // Mostrar popup ao passar o mouse
+      const markerElement = marker.getElement();
       
-    markerRef.current = marker;
+      markerElement.addEventListener('mouseenter', () => {
+        popup.addTo(map);
+        popup.setLngLat(point.coordinates);
+      });
 
-    // Eventos do marcador
-    const markerElement = marker.getElement();
-    
-    markerElement.addEventListener('mouseenter', () => {
-      popup.addTo(map);
-      popup.setLngLat(point.coordinates);
-    });
+      markerElement.addEventListener('mouseleave', () => {
+        popup.remove();
+      });
 
-    markerElement.addEventListener('mouseleave', () => {
-      popup.remove();
-    });
+      markerElement.addEventListener('click', () => {
+        onClick(point);
+        console.log("Marcador clicado:", point.title);
+      });
 
-    markerElement.addEventListener('click', () => {
-      onClick(point);
-      console.log("Marcador clicado:", point.title);
-    });
-
-    // Limpeza
-    return () => {
-      if (markerRef.current) markerRef.current.remove();
-      if (popupRef.current) popupRef.current.remove();
-    };
+      return () => {
+        console.log(`Removendo marcador para ${point.title}`);
+        if (markerRef.current) markerRef.current.remove();
+        if (popupRef.current) popupRef.current.remove();
+      };
+    } catch (err) {
+      console.error("Erro ao adicionar marcador:", err);
+    }
   }, [map, point, onClick, index, total]);
 
   return null;

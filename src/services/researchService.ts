@@ -1,86 +1,50 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
-import { toast } from "@/hooks/use-toast";
-import { geocodeLocation } from "@/utils/geocoder";
+import { getCoordinatesForLocation, handleApiError } from "@/utils/researchUtils";
 
-// Buscar todos os estudos
+// Fetch all research studies
 export const fetchResearchStudies = async (): Promise<ResearchStudy[]> => {
   try {
-    console.log("Buscando estudos do banco de dados...");
     const { data, error } = await supabase
       .from('research_studies')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) {
-      console.error("Erro na consulta ao banco:", error);
-      throw error;
-    }
+    if (error) throw error;
     
-    if (!data || data.length === 0) {
-      console.log("Nenhum estudo encontrado no banco de dados");
-      return [];
-    }
-    
-    console.log(`Recuperados ${data.length} estudos do banco de dados:`, data);
-    
-    // Converter formato do banco para o formato da aplicação
-    const formattedStudies = data.map(study => ({
+    // Converter o formato do banco para o formato da aplicação
+    return data.map(study => ({
       id: study.id,
       title: study.title,
       author: study.author,
-      coAuthors: study.co_authors || "",
-      summary: study.summary || "",
-      repositoryUrl: study.repository_url || "",
+      coAuthors: study.co_authors,
+      summary: study.summary,
+      repositoryUrl: study.repository_url,
       location: study.location,
       coordinates: study.coordinates as [number, number],
       type: study.type as "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro"
     }));
-    
-    // Verificar coordenadas dos estudos
-    formattedStudies.forEach(study => {
-      if (!study.coordinates || 
-          !Array.isArray(study.coordinates) || 
-          study.coordinates.length !== 2 ||
-          isNaN(study.coordinates[0]) || 
-          isNaN(study.coordinates[1])) {
-        console.warn(`Estudo com coordenadas inválidas: ${study.id} (${study.title})`);
-      } else {
-        console.log(`Estudo "${study.title}" tem coordenadas válidas:`, study.coordinates);
-      }
-    });
-    
-    return formattedStudies;
   } catch (error) {
-    console.error("Erro ao buscar estudos:", error);
-    toast({
-      title: "Erro ao carregar estudos",
-      description: "Não foi possível carregar os estudos. Tente novamente mais tarde.",
-      variant: "destructive"
-    });
+    handleApiError(error, 'Erro ao buscar estudos');
     return [];
   }
 };
 
-// Adicionar um novo estudo
+// Add a new research study
 export const addResearchStudy = async (data: ResearchStudyFormData): Promise<ResearchStudy | null> => {
   try {
-    console.log("Adicionando novo estudo:", data.title);
-    
-    // Garantir que o tipo não seja nulo
-    const type = data.type || "artigo";
-    
-    // Obter coordenadas para a localização
-    const coordinates = await geocodeLocation(data.location);
-    console.log(`Coordenadas obtidas para ${data.location}:`, coordinates);
-    
-    if (!coordinates || coordinates.length !== 2 || isNaN(coordinates[0]) || isNaN(coordinates[1])) {
-      console.error("Coordenadas inválidas geradas:", coordinates);
-      throw new Error("Não foi possível gerar coordenadas válidas para a localização");
+    // Verificação para garantir que type não seja nulo
+    if (!data.type) {
+      data.type = "artigo"; // Valor padrão se estiver faltando
     }
     
-    // Inserir no banco de dados
+    console.log("Dados do formulário antes de enviar:", data);
+    
+    // Get coordinates for the location
+    const coordinates = await getCoordinatesForLocation(data.location);
+    
+    // Inserir no Supabase
     const { data: newStudy, error } = await supabase
       .from('research_studies')
       .insert({
@@ -91,82 +55,46 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
         repository_url: data.repositoryUrl,
         location: data.location,
         coordinates: coordinates,
-        type: type
+        type: data.type
       })
       .select()
       .single();
     
     if (error) {
-      console.error("Erro ao inserir estudo:", error);
+      console.error('Erro detalhado ao inserir estudo:', error);
       throw error;
     }
     
-    if (!newStudy) {
-      console.error("Estudo inserido mas não retornado");
-      throw new Error("Erro ao recuperar o estudo após inserção");
-    }
-    
-    console.log("Estudo adicionado com sucesso:", newStudy);
-    
-    // Converter para o formato da aplicação
-    const formattedStudy: ResearchStudy = {
+    // Converter formato do banco para formato da aplicação
+    return {
       id: newStudy.id,
       title: newStudy.title,
       author: newStudy.author,
-      coAuthors: newStudy.co_authors || "",
-      summary: newStudy.summary || "",
-      repositoryUrl: newStudy.repository_url || "",
+      coAuthors: newStudy.co_authors,
+      summary: newStudy.summary,
+      repositoryUrl: newStudy.repository_url,
       location: newStudy.location,
       coordinates: newStudy.coordinates as [number, number],
       type: newStudy.type as "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro"
     };
-    
-    // Verificar se as coordenadas do estudo são válidas
-    if (!formattedStudy.coordinates || 
-        !Array.isArray(formattedStudy.coordinates) || 
-        formattedStudy.coordinates.length !== 2 ||
-        isNaN(formattedStudy.coordinates[0]) || 
-        isNaN(formattedStudy.coordinates[1])) {
-      console.warn(`Estudo adicionado com coordenadas potencialmente inválidas: ${formattedStudy.id}`);
-    } else {
-      console.log(`Estudo "${formattedStudy.title}" adicionado com coordenadas válidas:`, formattedStudy.coordinates);
-    }
-    
-    return formattedStudy;
   } catch (error) {
-    console.error("Erro ao adicionar estudo:", error);
-    toast({
-      title: "Erro ao adicionar estudo",
-      description: "Não foi possível adicionar o estudo. Tente novamente.",
-      variant: "destructive"
-    });
+    handleApiError(error, 'Erro ao adicionar estudo');
     return null;
   }
 };
 
-// Excluir um estudo
+// Delete a research study
 export const deleteResearchStudy = async (id: string): Promise<boolean> => {
   try {
-    console.log("Tentando remover estudo:", id);
     const { error } = await supabase
       .from('research_studies')
       .delete()
       .eq('id', id);
     
-    if (error) {
-      console.error("Erro ao remover estudo:", error);
-      throw error;
-    }
-    
-    console.log("Estudo removido com sucesso:", id);
+    if (error) throw error;
     return true;
   } catch (error) {
-    console.error("Erro ao remover estudo:", error);
-    toast({
-      title: "Erro ao remover estudo",
-      description: "Não foi possível remover o estudo. Tente novamente.",
-      variant: "destructive"
-    });
+    handleApiError(error, 'Erro ao remover estudo');
     return false;
   }
 };
