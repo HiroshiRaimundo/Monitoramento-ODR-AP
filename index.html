@@ -1,13 +1,27 @@
 
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monitoramento - PPGDAPP</title>
+    <title>Monitoramento</title>
     <meta name="description" content="Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável" />
     <meta name="author" content="PPGDAPP" />
     <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Import Map para resolver módulos -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-router-dom": "https://esm.sh/react-router-dom@6.18.0",
+        "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@4.36.1",
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.38.4"
+      }
+    }
+    </script>
     
     <!-- Precarregar fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +34,8 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
