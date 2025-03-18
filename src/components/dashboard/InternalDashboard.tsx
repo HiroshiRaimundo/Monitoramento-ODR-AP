@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Download, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { mapToRecentUpdates } from "@/lib/updateUtils";
 
 // Interface para RecentUpdate
 export interface RecentUpdate {
@@ -82,6 +83,10 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
 
   // Calcular estatísticas sobre os tipos de análise ativos para cada monitoramento
   const analysisStats = useMemo(() => getAnalysisTypeStats(), []);
+
+  // Converter os dados de alertas e relatórios para o formato compatível com RecentUpdates
+  const mappedAlerts = useMemo(() => mapToRecentUpdates(recentAlerts), [recentAlerts]);
+  const mappedReports = useMemo(() => mapToRecentUpdates(recentReports), [recentReports]);
 
   // Função para exportar dados do monitoramento selecionado
   const exportSelectedMonitoring = () => {
@@ -163,7 +168,7 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
         lastUpdateDate="10/05/2024"
       />
 
-      {/* Conteúdo em abas - Passamos todos os dados processados para o componente de abas */}
+      {/* Conteúdo em abas - Passamos os dados convertidos para o componente de abas */}
       <ChartsTabs 
         monitoringItems={filteredMonitoringItems}
         categoryData={categoryData}
@@ -172,8 +177,8 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
         radarData={radarData}
         systemUpdatesData={systemUpdatesData}
         analysisStats={analysisStats}
-        recentAlerts={recentAlerts}
-        recentReports={recentReports}
+        recentAlerts={mappedAlerts}
+        recentReports={mappedReports}
       />
     </div>
   );

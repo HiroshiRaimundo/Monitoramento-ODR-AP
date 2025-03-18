@@ -20,9 +20,9 @@ const AnalysisTab: React.FC<AnalysisTabProps> = ({
     return mapToSystemUpdates(simulatedMonthlyData);
   }, []);
 
-  // Buscar alertas e relatórios simulados e convertê-los para o formato compatível
-  const recentAlerts = useMemo(() => mapToRecentUpdates(getRecentAlerts()), []);
-  const recentReports = useMemo(() => mapToRecentUpdates(getRecentReports()), []);
+  // Buscar alertas e relatórios simulados para o InternalDashboard
+  const recentAlertsData = useMemo(() => getRecentAlerts(), []);
+  const recentReportsData = useMemo(() => getRecentReports(), []);
 
   return (
     <InternalDashboard 
@@ -33,8 +33,8 @@ const AnalysisTab: React.FC<AnalysisTabProps> = ({
       isAuthenticated={isAuthenticated}
       monitoringItems={monitoringItems}
       systemUpdatesData={systemUpdatesData}
-      recentAlerts={recentAlerts}
-      recentReports={recentReports}
+      recentAlerts={recentAlertsData}
+      recentReports={recentReportsData}
     />
   );
 };

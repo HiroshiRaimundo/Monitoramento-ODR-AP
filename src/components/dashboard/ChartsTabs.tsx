@@ -11,10 +11,10 @@ import ResearchersChart from "./ResearchersChart";
 import SourceTypeChart from "./SourceTypeChart";
 import SystemUpdatesChart from "./SystemUpdatesChart";
 import RecentMonitorings from "./RecentMonitorings";
-import RecentUpdates from "./RecentUpdates";
+import RecentUpdates, { RecentUpdate as RecentUpdatesType } from "./RecentUpdates";
 import AnalysisTools from "./AnalysisTools";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { RecentUpdate } from "./InternalDashboard";
+import { mapToRecentUpdates } from "@/lib/updateUtils";
 
 // Definir a interface para as estatísticas de análise
 interface AnalysisStats {
@@ -24,12 +24,15 @@ interface AnalysisStats {
   nlpAnalysis: number;
 }
 
-// Mock updates agora com as propriedades necessárias para RecentUpdate
-const mockUpdates: RecentUpdate[] = [
+// Mock updates agora com as propriedades necessárias
+const mockUpdateData = [
   { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content", site: "Portal da Transparência", status: "success" },
   { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data", site: "IBGE", status: "pending" },
   { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert", site: "Diário Oficial", status: "warning" }
 ];
+
+// Converter para o formato compatível
+const mockUpdates: RecentUpdatesType[] = mapToRecentUpdates(mockUpdateData);
 
 interface ChartsTabsProps {
   monitoringItems: MonitoringItem[];
@@ -39,8 +42,8 @@ interface ChartsTabsProps {
   radarData?: { subject: string; A: number; fullMark: number }[];
   systemUpdatesData: { name: string; updates: number }[];
   analysisStats?: AnalysisStats;
-  recentAlerts?: RecentUpdate[];
-  recentReports?: RecentUpdate[];
+  recentAlerts?: RecentUpdatesType[];
+  recentReports?: RecentUpdatesType[];
 }
 
 const ChartsTabs = ({ 

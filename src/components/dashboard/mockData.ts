@@ -1,4 +1,3 @@
-
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import { RecentUpdate } from "./InternalDashboard";
 
@@ -52,13 +51,13 @@ export const simulateMonitoringItems = (): MonitoringItem[] => {
   });
 };
 
-// Generate simulated alerts and reports
-export const getRecentAlerts = (): RecentUpdate[] => {
+// Generate simulated alerts and reports with status values from the allowed set
+export const getRecentAlerts = () => {
   const sites = [
     "Portal da Transparência", "Diário Oficial do Estado", "IBGE", "DataSUS",
     "Governo do Amapá", "INPE", "IBAMA"
   ];
-  const statuses = ["error", "warning", "success", "pending"] as const;
+  const statuses = ["error", "warning", "success", "pending"];
   
   return Array.from({ length: 5 }, (_, i) => {
     const siteIndex = Math.floor(Math.random() * sites.length);
@@ -76,12 +75,12 @@ export const getRecentAlerts = (): RecentUpdate[] => {
   });
 };
 
-export const getRecentReports = (): RecentUpdate[] => {
+export const getRecentReports = () => {
   const sites = [
     "Portal da Transparência", "Diário Oficial do Estado", "IBGE", "DataSUS",
     "Governo do Amapá", "INPE", "IBAMA"
   ];
-  const statuses = ["success", "pending"] as const;
+  const statuses = ["success", "pending"];
   
   return Array.from({ length: 5 }, (_, i) => {
     const siteIndex = Math.floor(Math.random() * sites.length);
