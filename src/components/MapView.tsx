@@ -8,6 +8,7 @@ import ResearchForm from "@/components/ResearchForm";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
 import { Globe, MapPin, BookOpen } from "lucide-react";
 import { useForm } from "react-hook-form";
+import StudyList from "@/components/map/StudyList";
 
 interface MapViewProps {
   studies: ResearchStudy[];
@@ -75,11 +76,16 @@ const MapView: React.FC<MapViewProps> = ({
             </TabsContent>
             
             <TabsContent value="register" className="mt-0">
-              <div className="bg-white rounded-lg p-4 border border-forest-100">
-                <ResearchForm 
-                  form={studyForm} 
-                  onSubmit={onStudySubmit} 
-                />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-white rounded-lg p-4 border border-forest-100">
+                  <ResearchForm 
+                    form={studyForm} 
+                    onSubmit={onStudySubmit} 
+                  />
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-forest-100">
+                  <StudyList studies={studies} />
+                </div>
               </div>
             </TabsContent>
           </Tabs>
