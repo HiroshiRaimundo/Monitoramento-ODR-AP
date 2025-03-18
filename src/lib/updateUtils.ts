@@ -8,6 +8,7 @@ export interface RecentUpdate {
   status: "error" | "success" | "warning" | "pending";
 }
 
+// Convert from InternalDashboard.RecentUpdate to RecentUpdates.RecentUpdate
 export function mapToRecentUpdates(updates: { id: string; site: string; date: string; status: string; }[]): RecentUpdate[] {
   return updates.map(update => ({
     id: update.id,

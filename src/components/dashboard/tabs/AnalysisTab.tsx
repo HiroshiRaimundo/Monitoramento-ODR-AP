@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { AnalysisTabProps } from "../types";
 import InternalDashboard from "@/components/dashboard/InternalDashboard";
 import { mapToSystemUpdates } from "@/lib/chartUtils";
+import { mapToRecentUpdates } from "@/lib/updateUtils";
 
 const AnalysisTab: React.FC<AnalysisTabProps> = ({ 
   timeRange, 
@@ -19,9 +20,9 @@ const AnalysisTab: React.FC<AnalysisTabProps> = ({
     return mapToSystemUpdates(simulatedMonthlyData);
   }, []);
 
-  // Buscar alertas e relatórios simulados
-  const recentAlerts = useMemo(() => getRecentAlerts(), []);
-  const recentReports = useMemo(() => getRecentReports(), []);
+  // Buscar alertas e relatórios simulados e convertê-los para o formato compatível
+  const recentAlerts = useMemo(() => mapToRecentUpdates(getRecentAlerts()), []);
+  const recentReports = useMemo(() => mapToRecentUpdates(getRecentReports()), []);
 
   return (
     <InternalDashboard 
