@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,21 +13,14 @@ import RecentMonitorings from "./RecentMonitorings";
 import RecentUpdates from "./RecentUpdates";
 import AnalysisTools from "./AnalysisTools";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { RecentUpdate } from "./types/dashboardTypes";
 
-// Definir a interface para as estatísticas de análise
 interface AnalysisStats {
   contentAnalysis: number;
   sentimentAnalysis: number;
   crossAnalysis: number;
   nlpAnalysis: number;
 }
-
-// Simulação de atualizações recentes para RecentUpdates
-const mockUpdates = [
-  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content" },
-  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data" },
-  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert" }
-];
 
 interface ChartsTabsProps {
   monitoringItems: MonitoringItem[];
@@ -38,6 +30,8 @@ interface ChartsTabsProps {
   radarData?: { subject: string; A: number; fullMark: number }[];
   systemUpdatesData: { name: string; updates: number }[];
   analysisStats?: AnalysisStats;
+  recentAlerts?: RecentUpdate[];
+  recentReports?: RecentUpdate[];
 }
 
 const ChartsTabs = ({ 
@@ -52,8 +46,43 @@ const ChartsTabs = ({
     sentimentAnalysis: 0,
     crossAnalysis: 0,
     nlpAnalysis: 0
-  }
+  },
+  recentAlerts = [],
+  recentReports = []
 }: ChartsTabsProps) => {
+  const mockUpdates: RecentUpdate[] = [
+    { 
+      id: "1", 
+      title: "Portal de Transparência", 
+      description: "Atualização de dados fiscais", 
+      date: "10/05/2024", 
+      type: "content", 
+      site: "Portal da Transparência", 
+      status: "success" 
+    },
+    { 
+      id: "2", 
+      title: "IBGE - Indicadores", 
+      description: "Novos dados demográficos", 
+      date: "09/05/2024", 
+      type: "data", 
+      site: "IBGE", 
+      status: "pending" 
+    },
+    { 
+      id: "3", 
+      title: "Diário Oficial", 
+      description: "Publicação de nova legislação", 
+      date: "08/05/2024", 
+      type: "alert", 
+      site: "Diário Oficial", 
+      status: "warning" 
+    }
+  ];
+
+  const displayAlerts = recentAlerts.length > 0 ? recentAlerts : mockUpdates;
+  const displayReports = recentReports.length > 0 ? recentReports : mockUpdates;
+
   return (
     <Tabs defaultValue="visão-geral" className="w-full">
       <TabsList className="w-full grid grid-cols-4 mb-6">
@@ -129,7 +158,7 @@ const ChartsTabs = ({
               <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates updates={mockUpdates} />
+              <RecentUpdates updates={displayAlerts} />
             </CardContent>
           </Card>
         </div>
@@ -239,7 +268,7 @@ const ChartsTabs = ({
               <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates updates={mockUpdates} />
+              <RecentUpdates updates={displayReports} />
             </CardContent>
           </Card>
 
@@ -356,7 +385,7 @@ const ChartsTabs = ({
               <CardDescription>Ferramentas disponíveis para análise de dados</CardDescription>
             </CardHeader>
             <CardContent>
-              <AnalysisTools items={monitoringItems} />
+              <AnalysisTools monitoringItems={monitoringItems} />
             </CardContent>
           </Card>
 

@@ -2,104 +2,66 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LineChart, BarChart2, PieChart, Database } from "lucide-react";
+import { BarChart, LineChart, PieChart, AreaChart, Table, Layers, Download } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { MonitoringItem } from "@/hooks/useMonitoring";
 
-const AnalysisTools: React.FC = () => {
+interface AnalysisToolsProps {
+  monitoringItems: MonitoringItem[];
+}
+
+const AnalysisTools: React.FC<AnalysisToolsProps> = ({ monitoringItems }) => {
   return (
-    <div className="bg-forest-50/50 p-6 rounded-lg border border-forest-100">
-      <h3 className="text-lg font-medium text-forest-700 mb-4">Ferramentas de Análise</h3>
-      <p className="text-forest-600 mb-6">
-        Utilize as ferramentas abaixo para analisar os dados coletados pelos monitoramentos, gerar gráficos e exportar relatórios.
-      </p>
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <Button variant="outline" className="flex flex-col items-center justify-center h-24 p-2">
+          <BarChart className="h-8 w-8 mb-1 text-forest-600" />
+          <span className="text-xs text-center">Análise de Barras</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col items-center justify-center h-24 p-2">
+          <LineChart className="h-8 w-8 mb-1 text-forest-600" />
+          <span className="text-xs text-center">Tendências</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col items-center justify-center h-24 p-2">
+          <PieChart className="h-8 w-8 mb-1 text-forest-600" />
+          <span className="text-xs text-center">Distribuição</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col items-center justify-center h-24 p-2">
+          <AreaChart className="h-8 w-8 mb-1 text-forest-600" />
+          <span className="text-xs text-center">Comparativo</span>
+        </Button>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-forest-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-forest-700 text-base font-medium flex items-center gap-2">
-              <LineChart size={18} className="text-forest-600" />
-              Análise Temporal
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-forest-600 mb-4">
-              Visualize a evolução de indicadores específicos ao longo do tempo para identificar tendências e padrões.
-            </p>
-            <div className="flex gap-2">
-              <Button className="bg-forest-600 hover:bg-forest-700">
-                Criar Gráfico
-              </Button>
-              <Button variant="outline" className="border-forest-200 hover:bg-forest-50">
-                Exportar Dados
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <Separator />
+      
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-forest-700">Dados Disponíveis para Análise</h3>
+        <div className="bg-forest-50 p-3 rounded-md">
+          <div className="flex justify-between items-center mb-2">
+            <span className="font-medium text-forest-800">Monitoramentos Ativos</span>
+            <span className="text-forest-700 text-sm">{monitoringItems.length} itens</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button size="sm" variant="outline" className="h-8 text-xs flex items-center gap-1">
+              <Table className="h-3 w-3" />
+              <span>Tabular</span>
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs flex items-center gap-1">
+              <Layers className="h-3 w-3" />
+              <span>Agrupar</span>
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs flex items-center gap-1">
+              <Download className="h-3 w-3" />
+              <span>Exportar</span>
+            </Button>
+          </div>
+        </div>
         
-        <Card className="border-forest-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-forest-700 text-base font-medium flex items-center gap-2">
-              <BarChart2 size={18} className="text-forest-600" />
-              Comparação por Categoria
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-forest-600 mb-4">
-              Compare indicadores entre diferentes categorias ou regiões para identificar disparidades e prioridades.
-            </p>
-            <div className="flex gap-2">
-              <Button className="bg-forest-600 hover:bg-forest-700">
-                Criar Gráfico
-              </Button>
-              <Button variant="outline" className="border-forest-200 hover:bg-forest-50">
-                Exportar Dados
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="border-forest-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-forest-700 text-base font-medium flex items-center gap-2">
-              <PieChart size={18} className="text-forest-600" />
-              Distribuição de Recursos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-forest-600 mb-4">
-              Analise a distribuição de recursos, investimentos ou dados demográficos em diferentes setores ou regiões.
-            </p>
-            <div className="flex gap-2">
-              <Button className="bg-forest-600 hover:bg-forest-700">
-                Criar Gráfico
-              </Button>
-              <Button variant="outline" className="border-forest-200 hover:bg-forest-50">
-                Exportar Dados
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="border-forest-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-forest-700 text-base font-medium flex items-center gap-2">
-              <Database size={18} className="text-forest-600" />
-              Relatórios Personalizados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-forest-600 mb-4">
-              Crie relatórios personalizados combinando diversos indicadores e formatos de visualização.
-            </p>
-            <div className="flex gap-2">
-              <Button className="bg-forest-600 hover:bg-forest-700">
-                Criar Relatório
-              </Button>
-              <Button variant="outline" className="border-forest-200 hover:bg-forest-50">
-                Modelos
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="text-xs text-muted-foreground pt-2">
+          {monitoringItems.length === 0 ? 
+            "Nenhum monitoramento disponível para análise." : 
+            "Selecione um método de análise para começar a explorar seus dados."}
+        </div>
       </div>
     </div>
   );

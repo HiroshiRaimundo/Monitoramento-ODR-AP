@@ -16,6 +16,9 @@ export function mapToRecentUpdates(updates: { id: string; site: string; date: st
     id: update.id,
     site: update.site,
     date: update.date,
-    status: mapToStatusEnum(update.status)
+    status: mapToStatusEnum(update.status),
+    title: update.title || update.site,
+    description: update.description || `Atualização em ${update.site}`,
+    type: update.type || "content"
   }));
 }

@@ -1,15 +1,15 @@
 
 import React from "react";
 import InternalDashboard from "@/components/dashboard/InternalDashboard";
-import { MonitoringItemType } from "@/components/monitoring/types";
-import { RecentUpdate } from "@/lib/updateUtils";
+import { MonitoringItem } from "@/hooks/useMonitoring";
+import { RecentUpdate } from "@/components/dashboard/types/dashboardTypes";
 
 interface AnalysisTabProps {
   timeRange: string;
   setTimeRange: (value: string) => void;
   handleExport: () => void;
   isAuthenticated: boolean;
-  monitoringItems: MonitoringItemType[];
+  monitoringItems: MonitoringItem[];
   simulatedMonthlyData: Array<{
     name: string;
     estudos: number;
