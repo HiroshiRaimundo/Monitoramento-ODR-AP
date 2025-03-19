@@ -6,6 +6,9 @@ export interface RecentUpdate {
   site: string;
   date: string;
   status: "error" | "success" | "warning" | "pending";
+  title?: string;
+  description?: string;
+  type?: string;
 }
 
 export function mapToRecentUpdates(updates: { id: string; site: string; date: string; status: string; }[]): RecentUpdate[] {

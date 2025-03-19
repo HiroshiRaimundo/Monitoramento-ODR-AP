@@ -1,9 +1,17 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link2, Link, Trash2, User, Clock, AlertTriangle, Building2, Filter } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface MonitoringItem {
   id: string;
@@ -34,6 +42,10 @@ const MonitoringList: React.FC<MonitoringListProps> = ({
   responsibleFilter = "",
   onFilterChange = () => {}
 }) => {
+  // Estado para controlar a paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Exibe 10 itens por página
+  
   // Função para determinar a cor de frequência baseada no valor
   const getFrequencyColor = (frequency: string) => {
     switch (frequency) {
@@ -64,6 +76,52 @@ const MonitoringList: React.FC<MonitoringListProps> = ({
       default:
         return '#a1c7b7'; // Extremely light forest green
     }
+  };
+
+  // Calcular o total de páginas
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+  
+  // Calcular os itens da página atual
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // Funções para navegação
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Gerar números de página para a paginação
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5; // Número máximo de botões de página visíveis
+    
+    if (totalPages <= maxVisiblePages) {
+      // Se tivermos menos páginas que o máximo, exibimos todas
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Caso contrário, calculamos quais páginas exibir
+      if (currentPage <= 3) {
+        // Se estamos nas primeiras páginas
+        for (let i = 1; i <= 5; i++) {
+          pageNumbers.push(i);
+        }
+      } else if (currentPage >= totalPages - 2) {
+        // Se estamos nas últimas páginas
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        // Se estamos no meio
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          pageNumbers.push(i);
+        }
+      }
+    }
+    
+    return pageNumbers;
   };
 
   return (
@@ -127,7 +185,7 @@ const MonitoringList: React.FC<MonitoringListProps> = ({
           </div>
         ) : (
           <div className="grid gap-4">
-            {items.map((item) => (
+            {currentItems.map((item) => (
               <Card key={item.id} className="overflow-hidden border-l-4 border-forest-100 shadow-sm hover:shadow-md transition-all duration-200" style={{ 
                 borderLeftColor: getCategoryBorderColor(item.category)
               }}>
@@ -201,6 +259,38 @@ const MonitoringList: React.FC<MonitoringListProps> = ({
                 </CardContent>
               </Card>
             ))}
+            
+            {/* Paginação */}
+            {totalPages > 1 && (
+              <Pagination className="mt-4">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {getPageNumbers().map(page => (
+                    <PaginationItem key={page}>
+                      <PaginationLink 
+                        onClick={() => goToPage(page)}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
         )}
       </CardContent>
