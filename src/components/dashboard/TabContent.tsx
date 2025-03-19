@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PublicDashboard from "@/components/dashboard/PublicDashboard";
 import InternalDashboard from "@/components/dashboard/InternalDashboard";
 import MonitoringForm from "@/components/monitoring/MonitoringForm";
-import MonitoringList from "@/components/MonitoringList";
+import MonitoringList from "@/components/monitoring/MonitoringList";
 import ResearchForm from "@/components/ResearchForm";
 import ResearchList from "@/components/ResearchList";
 import MapView from "@/components/MapView";
