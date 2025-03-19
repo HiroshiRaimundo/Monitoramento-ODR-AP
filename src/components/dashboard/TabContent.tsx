@@ -1,29 +1,29 @@
 
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PublicDashboard from "@/components/dashboard/PublicDashboard";
-import InternalDashboard from "@/components/dashboard/InternalDashboard";
-import MonitoringForm from "@/components/monitoring/MonitoringForm";
-import MonitoringList from "@/components/monitoring/MonitoringList";
-import ResearchForm from "@/components/ResearchForm";
-import ResearchList from "@/components/ResearchList";
-import MapView from "@/components/MapView";
-import { MonitoringItem } from "@/hooks/useMonitoring";
+import { MonitoringItemType } from "@/components/monitoring/types";
 import { ResearchStudy } from "@/types/research";
-import PressOfficeTab from "@/components/press/PressOfficeTab";
 import { mapToSystemUpdates } from "@/lib/chartUtils";
-import { getMonitoringsByResearcher, getRecentAlerts, getRecentReports } from "./DashboardUtils";
+import { getRecentAlerts, getRecentReports } from "./DashboardUtils";
+import { generateSimulatedMonthlyData, simulateMonitoringItems } from "./simulationUtils";
+
+// Tab components
+import PublicTab from "./tabs/PublicTab";
+import ManagementTab from "./tabs/ManagementTab";
+import AnalysisTab from "./tabs/AnalysisTab";
+import MapTab from "./tabs/MapTab";
+import PressTab from "./tabs/PressTab";
 
 interface TabContentProps {
   isAuthenticated: boolean;
   timeRange: string;
   setTimeRange: (value: string) => void;
   handleExport: () => void;
-  monitoringItems: MonitoringItem[];
+  monitoringItems: MonitoringItemType[];
   studies: ResearchStudy[];
   monitoringForm: any;
   studyForm: any;
-  handleAddMonitoring: (data: Omit<MonitoringItem, "id">) => void;
+  handleAddMonitoring: (data: Omit<MonitoringItemType, "id">) => void;
   handleDeleteMonitoring: (id: string) => void;
   handleStudySubmit: (data: Omit<ResearchStudy, "id" | "coordinates">) => void;
   handleDeleteStudy: (id: string) => void;
@@ -32,56 +32,6 @@ interface TabContentProps {
   responsibleFilter?: string;
   setResponsibleFilter?: (responsible: string) => void;
 }
-
-// Dados simulados para o dashboard
-const simulatedMonthlyData = Array.from({ length: 12 }, (_, i) => ({
-  name: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][i],
-  estudos: Math.floor(Math.random() * 10) + 15,
-  monitoramentos: Math.floor(Math.random() * 8) + 12,
-  atualizacoes: Math.floor(Math.random() * 20) + 25
-}));
-
-// Simulação de monitoramentos com os pesquisadores solicitados
-const simulateMonitoringItems = (): MonitoringItem[] => {
-  const researchers = [
-    "Marilia Gabriela Silva Lobato", "Patrícia Helena Turola Takamatsu", "Lylian Caroline Maciel",
-    "André Rodrigues Guimarães", "Sidney da Silva Lobato", "Antônia Costa Andrade",
-    "Hiroshi da Silva Koga", "Keliane Bastos de Sousa", "Elane de Lima Ferreira",
-    "Suzane Biapino dos Santos", "Wemerson Costa dos Santos", "Wender Carlos Nunes Maciel",
-    "Raylan Miranda Cortez", "Emilly Patricia dos Santos Barbosa", "Thayze Guedes Barreto",
-    "Jeancarlo Pontes Carvalho", "Joao Paulo Silva Santos", "Alice Agnes Weiser",
-    "Renan Mendonça Dantas", "Ana Karolina Lima Pedrada", "Irenildo Costa da Silva"
-  ];
-  
-  const institutions = ["UNIFAP", "PPGDAPP", "Pós-Doc", "UEAP", "UFRJ", "USP"];
-  const categories = ["governo", "indicadores", "legislacao", "api", "social"];
-  const frequencies = ["diária", "semanal", "quinzenal", "mensal"];
-  const sites = [
-    "Portal da Transparência", "Diário Oficial do Estado", "IBGE", "DataSUS",
-    "Governo do Amapá", "INPE", "IBAMA", "MMA", "Gov.br", "TCU", "CGU"
-  ];
-
-  return Array.from({ length: 52 }, (_, i) => {
-    const researcherIndex = Math.floor(Math.random() * researchers.length);
-    const institutionIndex = Math.floor(Math.random() * institutions.length);
-    const categoryIndex = Math.floor(Math.random() * categories.length);
-    const frequencyIndex = Math.floor(Math.random() * frequencies.length);
-    const siteIndex = Math.floor(Math.random() * sites.length);
-    
-    return {
-      id: `mon-${i+1}`,
-      name: `Monitoramento ${sites[siteIndex]}`,
-      url: `https://example.com/${sites[siteIndex].toLowerCase().replace(/\s+/g, '-')}`,
-      api_url: Math.random() > 0.5 ? `https://api.example.com/${sites[siteIndex].toLowerCase().replace(/\s+/g, '-')}` : undefined,
-      frequency: frequencies[frequencyIndex],
-      category: categories[categoryIndex],
-      keywords: `amazônia, sustentabilidade, ${categories[categoryIndex]}`,
-      responsible: researchers[researcherIndex],
-      institution: institutions[institutionIndex],
-      created_at: new Date(Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)).toISOString()
-    };
-  });
-};
 
 const TabContent: React.FC<TabContentProps> = ({
   isAuthenticated,
@@ -101,6 +51,9 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
+  // Generate simulated data
+  const simulatedMonthlyData = useMemo(() => generateSimulatedMonthlyData(), []);
+
   // Usar dados simulados se não houver dados reais suficientes
   const monitoringItems = useMemo(() => {
     if (originalMonitoringItems.length < 20) {
@@ -112,7 +65,7 @@ const TabContent: React.FC<TabContentProps> = ({
   // Preparar dados no formato correto para o gráfico de atualizações
   const systemUpdatesData = useMemo(() => {
     return mapToSystemUpdates(simulatedMonthlyData);
-  }, []);
+  }, [simulatedMonthlyData]);
 
   // Buscar alertas e relatórios simulados
   const recentAlerts = useMemo(() => getRecentAlerts(), []);
@@ -145,43 +98,39 @@ const TabContent: React.FC<TabContentProps> = ({
       </TabsList>
 
       <TabsContent value="publico">
-        <PublicDashboard 
-          data={simulatedMonthlyData}
+        <PublicTab
           timeRange={timeRange}
           setTimeRange={setTimeRange}
           isAuthenticated={isAuthenticated}
           studies={studies}
+          simulatedMonthlyData={simulatedMonthlyData}
         />
       </TabsContent>
 
       {isAuthenticated && (
         <TabsContent value="gerenciamento">
-          <div className="grid gap-6">
-            <MonitoringForm 
-              form={monitoringForm} 
-              onSubmit={handleAddMonitoring} 
-            />
-            <MonitoringList 
-              items={monitoringItems} 
-              onDelete={handleDeleteMonitoring} 
-              isLoading={isLoading}
-              uniqueResponsibles={[...new Set(monitoringItems.map(item => item.responsible))].filter(Boolean) as string[]}
-              responsibleFilter={responsibleFilter}
-              onFilterChange={setResponsibleFilter}
-            />
-          </div>
+          <ManagementTab
+            monitoringForm={monitoringForm}
+            monitoringItems={monitoringItems}
+            handleAddMonitoring={handleAddMonitoring}
+            handleDeleteMonitoring={handleDeleteMonitoring}
+            isLoading={isLoading}
+            uniqueResponsibles={uniqueResponsibles.length ? uniqueResponsibles : [...new Set(monitoringItems.map(item => item.responsible))].filter(Boolean) as string[]}
+            responsibleFilter={responsibleFilter}
+            setResponsibleFilter={setResponsibleFilter}
+          />
         </TabsContent>
       )}
 
       {isAuthenticated && (
         <TabsContent value="analise">
-          <InternalDashboard 
-            data={simulatedMonthlyData}
+          <AnalysisTab
             timeRange={timeRange}
             setTimeRange={setTimeRange}
             handleExport={handleExport}
             isAuthenticated={isAuthenticated}
             monitoringItems={monitoringItems}
+            simulatedMonthlyData={simulatedMonthlyData}
             systemUpdatesData={systemUpdatesData}
             recentAlerts={recentAlerts}
             recentReports={recentReports}
@@ -190,16 +139,16 @@ const TabContent: React.FC<TabContentProps> = ({
       )}
 
       <TabsContent value="map">
-        <MapView 
-          studies={studies} 
+        <MapTab
+          studies={studies}
           isAuthenticated={isAuthenticated}
-          onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
+          handleStudySubmit={handleStudySubmit}
         />
       </TabsContent>
 
       {isAuthenticated && (
         <TabsContent value="pressOffice">
-          <PressOfficeTab />
+          <PressTab />
         </TabsContent>
       )}
     </Tabs>
