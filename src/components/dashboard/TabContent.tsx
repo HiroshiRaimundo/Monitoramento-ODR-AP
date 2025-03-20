@@ -4,8 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonitoringItemType } from "@/components/monitoring/types";
 import { ResearchStudy } from "@/types/research";
 import { mapToSystemUpdates } from "@/lib/chartUtils";
-import { getRecentAlerts, getRecentReports } from "./DashboardUtils";
+import { getRecentAlerts, getRecentReports } from "@/lib/alertsUtils";
 import { generateSimulatedMonthlyData, simulateMonitoringItems } from "./simulationUtils";
+import { MonitoringItem } from "@/hooks/useMonitoring";
+import { RecentUpdate } from "./types/dashboardTypes";
 
 // Tab components
 import PublicTab from "./tabs/PublicTab";
@@ -57,9 +59,9 @@ const TabContent: React.FC<TabContentProps> = ({
   // Usar dados simulados se não houver dados reais suficientes
   const monitoringItems = useMemo(() => {
     if (originalMonitoringItems.length < 20) {
-      return simulateMonitoringItems();
+      return simulateMonitoringItems() as MonitoringItem[];
     }
-    return originalMonitoringItems;
+    return originalMonitoringItems as unknown as MonitoringItem[];
   }, [originalMonitoringItems]);
 
   // Preparar dados no formato correto para o gráfico de atualizações
@@ -68,8 +70,8 @@ const TabContent: React.FC<TabContentProps> = ({
   }, [simulatedMonthlyData]);
 
   // Buscar alertas e relatórios simulados
-  const recentAlerts = useMemo(() => getRecentAlerts(), []);
-  const recentReports = useMemo(() => getRecentReports(), []);
+  const recentAlerts = useMemo((): RecentUpdate[] => getRecentAlerts(), []);
+  const recentReports = useMemo((): RecentUpdate[] => getRecentReports(), []);
 
   return (
     <Tabs defaultValue="publico" className="w-full">
