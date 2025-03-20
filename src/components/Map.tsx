@@ -104,6 +104,7 @@ const Map: React.FC<MapProps> = ({
   
   return (
     <div className="flex flex-col gap-4">
+<<<<<<< HEAD
       {!onSelectPoint && <AddStudyForm onAddStudy={handleAddStudy} />}
       <div className="border border-forest-100 rounded-lg overflow-hidden shadow-md">
         <MapContainer 
@@ -114,6 +115,16 @@ const Map: React.FC<MapProps> = ({
       </div>
       
       {!onSelectPoint && selectedStudies.length > 0 && (
+=======
+      {/* Mapa com altura fixa para melhor visualização */}
+      <MapContainer 
+        points={points} 
+        onSelectPoint={handleSelectPoint} 
+      />
+      
+      {/* Lista de estudos selecionados */}
+      {selectedStudies.length > 0 && (
+>>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
         <StudyDetail 
           selectedStudies={selectedStudies}
           onRemoveStudy={removeStudyFromList}
