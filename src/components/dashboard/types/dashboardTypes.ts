@@ -9,7 +9,7 @@ export interface RecentUpdate {
   date: string;
   type: string;
   site: string;
-  status: string;
+  status: "error" | "success" | "warning" | "pending";
 }
 
 // Definition of the props interface for InternalDashboard
