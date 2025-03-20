@@ -23,15 +23,19 @@ const Map: React.FC<MapProps> = ({ points = [] }) => {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Mapa com altura fixa para melhor visualização */}
       <MapContainer 
         points={points} 
         onSelectPoint={handleSelectPoint} 
       />
       
-      <StudyDetail 
-        selectedStudies={selectedStudies}
-        onRemoveStudy={removeStudyFromList}
-      />
+      {/* Lista de estudos selecionados */}
+      {selectedStudies.length > 0 && (
+        <StudyDetail 
+          selectedStudies={selectedStudies}
+          onRemoveStudy={removeStudyFromList}
+        />
+      )}
     </div>
   );
 };

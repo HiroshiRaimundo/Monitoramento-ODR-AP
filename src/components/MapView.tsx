@@ -29,11 +29,14 @@ const MapView: React.FC<MapViewProps> = ({
 
   // Renderização do conteúdo do mapa
   const renderMapContent = () => (
-    <div className="flex flex-col lg:flex-row gap-4">
-      <div className="w-full lg:w-4/5 rounded-lg overflow-hidden shadow-md border border-forest-100">
+    <div className="flex flex-col gap-4">
+      {/* Mapa em tela cheia */}
+      <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100">
         <Map points={studies} />
       </div>
-      <div className="w-full lg:w-1/5 bg-forest-50/50 rounded-lg p-4 border border-forest-100">
+      
+      {/* Componente de busca abaixo do mapa */}
+      <div className="w-full bg-forest-50/50 rounded-lg p-4 border border-forest-100">
         <SearchPanel 
           studies={studies} 
           onSearchResults={setSearchResults} 

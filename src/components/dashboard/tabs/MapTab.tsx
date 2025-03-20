@@ -15,11 +15,13 @@ const MapTab: React.FC<MapTabProps> = ({
   handleStudySubmit
 }) => {
   return (
-    <MapView 
-      studies={studies} 
-      isAuthenticated={isAuthenticated}
-      onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
-    />
+    <div className="space-y-6">
+      <MapView 
+        studies={studies} 
+        isAuthenticated={isAuthenticated}
+        onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
+      />
+    </div>
   );
 };
 
