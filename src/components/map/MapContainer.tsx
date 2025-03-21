@@ -1,12 +1,6 @@
 
-<<<<<<< HEAD
 import React, { useEffect, useState, useRef } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
-=======
-import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-// Removed CSS import that was causing MIME type error
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
 import { MapPoint } from '@/types/map';
 import MapMarkerGroup from './MapMarkerGroup';
 import { useMapbox } from '@/hooks/useMapbox';

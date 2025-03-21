@@ -24,6 +24,8 @@ const MapTab: React.FC<MapTabProps> = ({
         studies={studies} 
         isAuthenticated={isAuthenticated}
         onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
+        onEditStudy={isAuthenticated ? handleEditStudy : undefined}
+        onDeleteStudy={isAuthenticated ? handleDeleteStudy : undefined}
       />
     </div>
   );
