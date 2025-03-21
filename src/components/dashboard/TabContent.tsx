@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { MonitoringItem } from "@/hooks/useMonitoring";
-import { ResearchStudy } from "@/types/research";
+import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
 import { getRecentAlerts, getRecentReports } from "@/lib/alertsUtils";
 import { generateSimulatedMonthlyData, simulateMonitoringItems } from "./simulationUtils";
 import { mapToSystemUpdates } from "@/lib/chartUtils";
@@ -22,11 +22,11 @@ interface TabContentProps {
   timeRange: string;
   setTimeRange: (value: string) => void;
   handleExport: () => void;
-  monitoringItems: MonitoringItemType[];
+  monitoringItems: MonitoringItem[];
   studies: ResearchStudy[];
   monitoringForm: any;
   studyForm: any;
-  handleAddMonitoring: (data: Omit<MonitoringItemType, "id">) => void;
+  handleAddMonitoring: (data: Omit<MonitoringItem, "id">) => void;
   handleDeleteMonitoring: (id: string) => void;
   handleStudySubmit: (data: Omit<ResearchStudy, "id" | "coordinates">) => void;
   handleDeleteStudy: (id: string) => void;
@@ -73,7 +73,7 @@ const TabContent: React.FC<TabContentProps> = ({
     if (originalMonitoringItems.length < 20) {
       return simulateMonitoringItems() as MonitoringItem[];
     }
-    return originalMonitoringItems as unknown as MonitoringItem[];
+    return originalMonitoringItems as MonitoringItem[];
   }, [originalMonitoringItems]);
 
   const filteredStudies = useMemo(() => {
@@ -136,9 +136,6 @@ const TabContent: React.FC<TabContentProps> = ({
         setTimeRange={setTimeRange}
         handleExport={handleExport}
         monitoringItems={monitoringItems}
-        systemUpdatesData={systemUpdatesData}
-        recentAlerts={recentAlerts}
-        recentReports={recentReports}
       />
 
       <MapTab 
