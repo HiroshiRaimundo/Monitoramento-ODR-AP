@@ -1,7 +1,7 @@
 
 import React, { useMemo } from "react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
-import AnalysisTools from "./AnalysisTools";
+import AnalysisTools from "./dashboard/AnalysisTools";
 import DashboardControls from "./dashboard/DashboardControls";
 import StudiesChart from "./dashboard/StudiesChart";
 import CategoryChart from "./dashboard/CategoryChart";
@@ -84,7 +84,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       <SystemUpdatesChart data={systemUpdatesData} />
 
       {/* Ferramentas de Análise - apenas para administradores */}
-      {isAuthenticated && <AnalysisTools items={monitoringItems} />}
+      {isAuthenticated && <AnalysisTools monitoringItems={monitoringItems} />}
     </div>
   );
 };

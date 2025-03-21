@@ -3,11 +3,11 @@ import React from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
 import MonitoringStatsGrid from "./MonitoringStatsGrid";
-import ChartsTabs, { RecentUpdate } from "./ChartsTabs";
+import ChartsTabs from "./ChartsTabs";
 import { MonitoringItem } from "@/hooks/useMonitoring";
 import DashboardDataProvider from "./DashboardDataProvider";
 import MonitoringFilterPanel from "./MonitoringFilterPanel";
-import { InternalDashboardProps } from "./types/dashboardTypes";
+import { InternalDashboardProps, RecentUpdate } from "./types/dashboardTypes";
 
 const InternalDashboard: React.FC<InternalDashboardProps> = ({ 
   data, 

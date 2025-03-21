@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,14 +25,25 @@ interface InteractiveMapProps {
 
 const InteractiveMap: React.FC<InteractiveMapProps> = ({ studies }) => {
     console.log(studies); // Verificar se os dados estão sendo passados corretamente
+    
+    // Default center coordinates for Amapá
+    const defaultCenter: [number, number] = [2.05108, -50.7945];
+    
     return (
-        <MapContainer center={[2.05108, -50.7945]} zoom={6} style={{ height: '400px', width: '100%' }}>
+        <MapContainer 
+            center={defaultCenter} 
+            zoom={6} 
+            style={{ height: '400px', width: '100%' }}
+        >
             <TileLayer
                 url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag`}
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {studies.filter(study => study.latitude && study.longitude).map((study, index) => (
-                <Marker key={index} position={[study.latitude, study.longitude]}>
+                <Marker 
+                    key={index} 
+                    position={[study.latitude, study.longitude]}
+                >
                     <Popup>
                         <strong>{study.title}</strong><br />
                         Autor: {study.author}
