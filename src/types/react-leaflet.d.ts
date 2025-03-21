@@ -1,5 +1,6 @@
 
 import { MapContainer, TileLayer } from 'react-leaflet';
+import { Map as LeafletMap, TileLayer as LeafletTileLayer } from 'leaflet';
 
 declare module 'react-leaflet' {
   interface MapContainerProps {
