@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,6 @@ import RecentMonitorings from "./RecentMonitorings";
 import RecentUpdates from "./RecentUpdates";
 import AnalysisTools from "./AnalysisTools";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { RecentUpdate } from "./types/dashboardTypes";
 
 // Definir a interface para as estatísticas de análise
 interface AnalysisStats {
@@ -23,11 +23,11 @@ interface AnalysisStats {
   nlpAnalysis: number;
 }
 
-// Simulação de atualizações recentes
-const mockUpdates: RecentUpdate[] = [
-  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content", site: "transparencia.gov.br", status: "success" },
-  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data", site: "ibge.gov.br", status: "success" },
-  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert", site: "diariooficial.ap.gov.br", status: "warning" }
+// Simulação de atualizações recentes para RecentUpdates
+const mockUpdates = [
+  { id: "1", title: "Portal de Transparência", description: "Atualização de dados fiscais", date: "10/05/2024", type: "content" },
+  { id: "2", title: "IBGE - Indicadores", description: "Novos dados demográficos", date: "09/05/2024", type: "data" },
+  { id: "3", title: "Diário Oficial", description: "Publicação de nova legislação", date: "08/05/2024", type: "alert" }
 ];
 
 interface ChartsTabsProps {
@@ -38,8 +38,6 @@ interface ChartsTabsProps {
   radarData?: { subject: string; A: number; fullMark: number }[];
   systemUpdatesData: { name: string; updates: number }[];
   analysisStats?: AnalysisStats;
-  recentAlerts?: RecentUpdate[];
-  recentReports?: RecentUpdate[];
 }
 
 const ChartsTabs = ({ 
@@ -54,9 +52,7 @@ const ChartsTabs = ({
     sentimentAnalysis: 0,
     crossAnalysis: 0,
     nlpAnalysis: 0
-  },
-  recentAlerts = [],
-  recentReports = []
+  }
 }: ChartsTabsProps) => {
   return (
     <Tabs defaultValue="visão-geral" className="w-full">
@@ -133,7 +129,7 @@ const ChartsTabs = ({
               <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates updates={recentAlerts.length > 0 ? recentAlerts : mockUpdates} />
+              <RecentUpdates updates={mockUpdates} />
             </CardContent>
           </Card>
         </div>
@@ -243,7 +239,7 @@ const ChartsTabs = ({
               <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentUpdates updates={recentAlerts.length > 0 ? recentAlerts : mockUpdates} />
+              <RecentUpdates updates={mockUpdates} />
             </CardContent>
           </Card>
 
@@ -360,7 +356,7 @@ const ChartsTabs = ({
               <CardDescription>Ferramentas disponíveis para análise de dados</CardDescription>
             </CardHeader>
             <CardContent>
-              <AnalysisTools monitoringItems={monitoringItems} />
+              <AnalysisTools items={monitoringItems} />
             </CardContent>
           </Card>
 

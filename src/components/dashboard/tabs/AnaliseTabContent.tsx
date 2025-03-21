@@ -3,7 +3,7 @@ import React from "react";
 import { TabsContent } from "@/components/ui/tabs";
 import InternalDashboard from "../InternalDashboard";
 import { MonitoringItem } from "@/hooks/useMonitoring";
-import { RecentUpdate } from "../types/dashboardTypes";
+import { RecentUpdate } from "../ChartsTabs";
 
 interface AnaliseTabContentProps {
   isAuthenticated: boolean;

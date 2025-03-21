@@ -1,8 +1,13 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClipboardCheck, AlertTriangle, Clock, AlertCircle } from "lucide-react";
-import { RecentUpdate } from "./types/dashboardTypes";
+
+export interface RecentUpdate {
+  id: string;
+  site: string;
+  date: string;
+  status: "success" | "error" | "warning" | "pending";
+}
 
 interface RecentUpdatesProps {
   updates: RecentUpdate[];
@@ -51,10 +56,9 @@ const RecentUpdates: React.FC<RecentUpdatesProps> = ({ updates }) => {
               <div className="text-left">
                 <h4 className="text-sm font-medium text-forest-700 flex items-center gap-2">
                   {getStatusIcon(update.status)}
-                  {update.title || update.site}
+                  {update.site}
                 </h4>
                 <span className="text-xs text-forest-600 mt-1 block">
-                  {update.description && <span className="block mb-1">{update.description}</span>}
                   {new Date(update.date).toLocaleString("pt-BR", {
                     day: "2-digit",
                     month: "2-digit",
