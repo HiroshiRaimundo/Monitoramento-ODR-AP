@@ -83,59 +83,6 @@ export const addResearchStudy = async (data: ResearchStudyFormData): Promise<Res
   }
 };
 
-// Update a research study
-export const updateResearchStudy = async (id: string, data: ResearchStudyFormData): Promise<ResearchStudy | null> => {
-  try {
-    // Verificação para garantir que type não seja nulo
-    if (!data.type) {
-      data.type = "artigo"; // Valor padrão se estiver faltando
-    }
-    
-    console.log("Dados de atualização antes de enviar:", data);
-    
-    // Get coordinates for the location (só atualiza se a localização mudar)
-    const coordinates = await getCoordinatesForLocation(data.location);
-    
-    // Atualizar no Supabase
-    const { data: updatedStudy, error } = await supabase
-      .from('research_studies')
-      .update({
-        title: data.title,
-        author: data.author,
-        co_authors: data.coAuthors,
-        summary: data.summary,
-        repository_url: data.repositoryUrl,
-        location: data.location,
-        coordinates: coordinates,
-        type: data.type
-      })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Erro detalhado ao atualizar estudo:', error);
-      throw error;
-    }
-    
-    // Converter formato do banco para formato da aplicação
-    return {
-      id: updatedStudy.id,
-      title: updatedStudy.title,
-      author: updatedStudy.author,
-      coAuthors: updatedStudy.co_authors,
-      summary: updatedStudy.summary,
-      repositoryUrl: updatedStudy.repository_url,
-      location: updatedStudy.location,
-      coordinates: updatedStudy.coordinates as [number, number],
-      type: updatedStudy.type as "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro"
-    };
-  } catch (error) {
-    handleApiError(error, 'Erro ao atualizar estudo');
-    return null;
-  }
-};
-
 // Delete a research study
 export const deleteResearchStudy = async (id: string): Promise<boolean> => {
   try {

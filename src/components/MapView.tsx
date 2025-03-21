@@ -45,6 +45,7 @@ const MapView: React.FC<MapViewProps> = ({
     }
   }, [studies, onStudiesUpdate]);
 
+<<<<<<< HEAD
   // Manipulador de envio do formulário com feedback para o usuário
   const handleFormSubmit = async (data: ResearchStudyFormData) => {
     try {
@@ -129,6 +130,25 @@ const MapView: React.FC<MapViewProps> = ({
       </div>
     );
   };
+=======
+  // Renderização do conteúdo do mapa
+  const renderMapContent = () => (
+    <div className="flex flex-col gap-4">
+      {/* Mapa em tela cheia */}
+      <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100">
+        <Map points={studies} />
+      </div>
+      
+      {/* Componente de busca abaixo do mapa */}
+      <div className="w-full bg-forest-50/50 rounded-lg p-4 border border-forest-100">
+        <SearchPanel 
+          studies={studies} 
+          onSearchResults={setSearchResults} 
+        />
+      </div>
+    </div>
+  );
+>>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
 
   return (
     <Card className="border-forest-100 shadow-md overflow-hidden">
