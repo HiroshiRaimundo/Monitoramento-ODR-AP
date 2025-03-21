@@ -34,9 +34,10 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ studies }) => {
             center={defaultCenter} 
             zoom={6} 
             style={{ height: '400px', width: '100%' }}
+            scrollWheelZoom={false}
         >
             <TileLayer
-                url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag`}
+                url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {studies.filter(study => study.latitude && study.longitude).map((study, index) => (
