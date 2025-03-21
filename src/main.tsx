@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-// Removed CSS import that was causing MIME type error
+import './styles/leaflet-fixes.css'
 
 createRoot(document.getElementById("root")!).render(<App />);
