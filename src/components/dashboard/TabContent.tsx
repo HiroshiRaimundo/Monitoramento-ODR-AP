@@ -1,19 +1,4 @@
 
-<<<<<<< HEAD
-import React, { useMemo, useState, useEffect } from "react";
-import { Tabs } from "@/components/ui/tabs";
-import { MonitoringItem } from "@/hooks/useMonitoring";
-import { ResearchStudy } from "@/types/research";
-import { simulatedMonthlyData, simulateMonitoringItems, filterStudiesByTimeRange } from "./utils/tabContentUtils";
-
-// Tab components
-import TabsList from "./tabs/TabsList";
-import PublicoTabContent from "./tabs/PublicoTabContent";
-import GerenciamentoTabContent from "./tabs/GerenciamentoTabContent";
-import AnaliseTabContent from "./tabs/AnaliseTabContent";
-import MapaTabContent from "./tabs/MapaTabContent";
-import PressTabContent from "./tabs/PressTabContent";
-=======
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonitoringItemType } from "@/components/monitoring/types";
@@ -30,7 +15,6 @@ import ManagementTab from "./tabs/ManagementTab";
 import AnalysisTab from "./tabs/AnalysisTab";
 import MapTab from "./tabs/MapTab";
 import PressTab from "./tabs/PressTab";
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
 
 interface TabContentProps {
   isAuthenticated: boolean;
@@ -57,7 +41,7 @@ const TabContent: React.FC<TabContentProps> = ({
   setTimeRange,
   handleExport,
   monitoringItems: originalMonitoringItems,
-  studies: originalStudies,
+  studies,
   monitoringForm,
   studyForm,
   handleAddMonitoring,
@@ -69,22 +53,10 @@ const TabContent: React.FC<TabContentProps> = ({
   responsibleFilter = "",
   setResponsibleFilter = () => {}
 }) => {
-<<<<<<< HEAD
-  // Estado para armazenar a lista atualizada de estudos
-  const [studies, setStudies] = useState<ResearchStudy[]>(originalStudies);
-  
-  // Atualiza o estado local quando os estudos originais mudam
-  useEffect(() => {
-    console.log("TabContent: Atualizando estudos com", originalStudies.length, "itens");
-    setStudies(originalStudies);
-  }, [originalStudies]);
-
-=======
   // Generate simulated data
   const simulatedMonthlyData = useMemo(() => generateSimulatedMonthlyData(), []);
 
   // Usar dados simulados se não houver dados reais suficientes
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
   const monitoringItems = useMemo(() => {
     if (originalMonitoringItems.length < 20) {
       return simulateMonitoringItems() as MonitoringItem[];
@@ -92,26 +64,6 @@ const TabContent: React.FC<TabContentProps> = ({
     return originalMonitoringItems as unknown as MonitoringItem[];
   }, [originalMonitoringItems]);
 
-<<<<<<< HEAD
-  const filteredStudies = useMemo(() => {
-    console.log("TabContent: Aplicando filtro de tempo a", studies.length, "estudos");
-    return filterStudiesByTimeRange(studies, timeRange);
-  }, [studies, timeRange]);
-
-  // Manipulador para manter os estudos sincronizados após o envio de um novo estudo
-  const handleStudySubmitSync = async (data: Omit<ResearchStudy, "id" | "coordinates">) => {
-    try {
-      console.log("TabContent: Enviando novo estudo:", data.title);
-      // Chamar o manipulador original para adicionar o estudo
-      await handleStudySubmit(data);
-      
-      // Após adicionar com sucesso, podemos confiar que originalStudies será atualizado
-      // no próximo ciclo de renderização por meio do useEffect
-    } catch (error) {
-      console.error("Erro ao sincronizar estudos:", error);
-    }
-  };
-=======
   // Preparar dados no formato correto para o gráfico de atualizações
   const systemUpdatesData = useMemo(() => {
     return mapToSystemUpdates(simulatedMonthlyData);
@@ -120,54 +72,33 @@ const TabContent: React.FC<TabContentProps> = ({
   // Buscar alertas e relatórios simulados
   const recentAlerts = useMemo((): RecentUpdate[] => getRecentAlerts(), []);
   const recentReports = useMemo((): RecentUpdate[] => getRecentReports(), []);
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
 
   return (
     <Tabs defaultValue="publico" className="w-full">
-      <TabsList isAuthenticated={isAuthenticated} />
+      <TabsList className="grid grid-cols-5 w-full bg-forest-50 p-1">
+        <TabsTrigger value="publico" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          Público
+        </TabsTrigger>
+        {isAuthenticated && (
+          <TabsTrigger value="gerenciamento" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Gerenciamento
+          </TabsTrigger>
+        )}
+        {isAuthenticated && (
+          <TabsTrigger value="analise" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Análise
+          </TabsTrigger>
+        )}
+        <TabsTrigger value="map" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+          Mapa Interativo
+        </TabsTrigger>
+        {isAuthenticated && (
+          <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+            Assessoria de Imprensa
+          </TabsTrigger>
+        )}
+      </TabsList>
 
-<<<<<<< HEAD
-      <PublicoTabContent 
-        data={simulatedMonthlyData}
-        timeRange={timeRange}
-        setTimeRange={setTimeRange}
-        isAuthenticated={isAuthenticated}
-        studies={studies}
-        mapData={filteredStudies}
-      />
-
-      <GerenciamentoTabContent 
-        isAuthenticated={isAuthenticated}
-        form={monitoringForm}
-        handleAddMonitoring={handleAddMonitoring}
-        monitoringItems={monitoringItems}
-        handleDeleteMonitoring={handleDeleteMonitoring}
-        isLoading={isLoading}
-        uniqueResponsibles={[...new Set(monitoringItems.map(item => item.responsible))].filter(Boolean) as string[]}
-        responsibleFilter={responsibleFilter}
-        setResponsibleFilter={setResponsibleFilter}
-      />
-
-      <AnaliseTabContent 
-        isAuthenticated={isAuthenticated}
-        data={simulatedMonthlyData}
-        timeRange={timeRange}
-        setTimeRange={setTimeRange}
-        handleExport={handleExport}
-        monitoringItems={monitoringItems}
-      />
-
-      <MapaTabContent 
-        isAuthenticated={isAuthenticated}
-        studies={studies}  // Usar todos os estudos sem filtrar por tempo
-        handleStudySubmit={handleStudySubmitSync}
-        handleDeleteStudy={handleDeleteStudy}
-      />
-
-      <PressTabContent 
-        isAuthenticated={isAuthenticated} 
-      />
-=======
       <TabsContent value="publico">
         <PublicTab
           timeRange={timeRange}
@@ -222,7 +153,6 @@ const TabContent: React.FC<TabContentProps> = ({
           <PressTab />
         </TabsContent>
       )}
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
     </Tabs>
   );
 };

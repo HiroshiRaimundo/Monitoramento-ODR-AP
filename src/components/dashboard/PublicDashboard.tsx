@@ -1,14 +1,4 @@
 
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import { ResearchStudy } from "@/types/research";
-import DashboardControls from "./DashboardControls";
-import DashboardHeader from "./public/DashboardHeader";
-import ChartsSection from "./public/ChartsSection";
-import MapSection from "./public/MapSection";
-import InterpretationGuide from "./public/InterpretationGuide";
-import { filterStudiesByTimeRange } from "./public/utils/dataUtils";
-=======
 import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import StudiesChart from "./StudiesChart";
@@ -18,7 +8,6 @@ import DashboardControls from "./DashboardControls";
 import { Info, FileBarChart } from "lucide-react";
 import ResearchersByInstitutionChart from "./ResearchersByInstitutionChart";
 import TimelineChart from "./TimelineChart";
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
 
 interface PublicDashboardProps {
   data: Array<{
@@ -31,7 +20,6 @@ interface PublicDashboardProps {
   setTimeRange: (value: string) => void;
   isAuthenticated: boolean;
   studies: ResearchStudy[];
-  mapData?: ResearchStudy[]; // Dados para o mapa
 }
 
 const PublicDashboard: React.FC<PublicDashboardProps> = ({ 
@@ -39,16 +27,15 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
   timeRange, 
   setTimeRange, 
   isAuthenticated,
-  studies,
-  mapData = studies // Por padrão, usa os mesmos estudos
+  studies
 }) => {
-  const [filteredMapData, setFilteredMapData] = useState<ResearchStudy[]>(mapData);
-
-  useEffect(() => {
-    const filtered = filterStudiesByTimeRange(mapData, timeRange);
-    console.log("PublicDashboard: Filtrando dados do mapa", mapData.length, "->", filtered.length);
-    setFilteredMapData(filtered);
-  }, [timeRange, mapData]);
+  // Definir categorias manualmente (já que ResearchStudy não tem propriedade category)
+  const studyCategories = [
+    { name: "Biodiversidade", value: 3 },
+    { name: "Clima", value: 5 },
+    { name: "Socioambiental", value: 7 },
+    { name: "Econômico", value: 4 }
+  ];
 
   // Dados para o gráfico de pesquisadores por instituição
   const institutionData = [
@@ -92,8 +79,50 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
 
   return (
     <div className="grid gap-6 font-poppins">
-      <DashboardHeader studies={studies} />
+      {/* Cabeçalho */}
+      <Card className="border-forest-100 shadow-md overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
+          <div className="flex items-center gap-2">
+            <FileBarChart size={24} className="text-forest-600" />
+            <CardTitle className="text-forest-700 font-poppins text-xl">Monitoramento</CardTitle>
+          </div>
+          <CardDescription className="text-forest-600">
+            Sistema de Monitoramento do Programa de Pós-graduação e Desenvolvimento da Amazônia sustentável
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex-1">
+              <p className="text-forest-700 mb-2">
+                Visualização de dados públicos e pesquisas da nossa região amazônica
+              </p>
+              <div className="stats flex flex-wrap gap-4 font-poppins">
+                <div className="stat bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-3xl font-bold text-forest-700">{studies.length || 27}</div>
+                  <div className="text-sm text-forest-600">Estudos Cadastrados</div>
+                </div>
+                <div className="stat bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-3xl font-bold text-forest-700">4</div>
+                  <div className="text-sm text-forest-600">Categorias</div>
+                </div>
+                <div className="stat bg-forest-50 p-4 rounded-lg shadow-sm">
+                  <div className="text-3xl font-bold text-forest-700">16</div>
+                  <div className="text-sm text-forest-600">Municípios</div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-forest-50/50 p-4 rounded-lg">
+              <Info size={24} className="text-forest-600" />
+              <div className="text-sm text-forest-700">
+                <p className="font-medium">Dados atualizados diariamente</p>
+                <p>Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
+      {/* Filtros simples */}
       <DashboardControls 
         timeRange={timeRange}
         setTimeRange={setTimeRange}
@@ -103,13 +132,11 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         isPublic={true}
       />
 
-      <ChartsSection data={data} studies={studies} />
-      
-      <MapSection filteredMapData={filteredMapData} />
+      {/* Gráficos Públicos - Layout em Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Evolução de Estudos - Gráfico de Linha */}
+        <StudiesChart data={data} />
 
-<<<<<<< HEAD
-      <InterpretationGuide />
-=======
         {/* Distribuição por Categoria - Gráfico de Pizza */}
         <CategoryChart data={studyCategories} title="Estudos por Categoria" />
       </div>
@@ -122,7 +149,6 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         {/* Linha do Tempo de Monitoramentos - Gráfico de Linha */}
         <TimelineChart data={timelineData} />
       </div>
->>>>>>> ae6a1a77e437a83ff41b625f5f08ccc6f18d3937
     </div>
   );
 };
