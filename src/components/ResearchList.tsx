@@ -2,16 +2,22 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, ChevronLeft, ChevronRight, FileText, MapPin, User } from "lucide-react";
+import { Trash2, ChevronLeft, ChevronRight, FileText, MapPin, User, Edit } from "lucide-react";
 import { ResearchStudy } from "@/types/research";
 
 interface ResearchListProps {
   studies: ResearchStudy[];
   onDelete: (id: string) => void;
+  onEdit?: (study: ResearchStudy) => void;
   isLoading?: boolean;
 }
 
-const ResearchList: React.FC<ResearchListProps> = ({ studies, onDelete, isLoading = false }) => {
+const ResearchList: React.FC<ResearchListProps> = ({ 
+  studies, 
+  onDelete, 
+  onEdit, 
+  isLoading = false 
+}) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -86,14 +92,28 @@ const ResearchList: React.FC<ResearchListProps> = ({ studies, onDelete, isLoadin
                   <FileText size={16} className="mr-2 text-forest-600" />
                   {truncateText(study.title, 40)}
                 </h3>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 text-destructive hover:bg-red-50" 
-                  onClick={() => onDelete(study.id)}
-                >
-                  <Trash2 size={16} />
-                </Button>
+                <div className="flex gap-2">
+                  {onEdit && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-forest-600 hover:bg-forest-50" 
+                      onClick={() => onEdit(study)}
+                      title="Editar estudo"
+                    >
+                      <Edit size={16} />
+                    </Button>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-destructive hover:bg-red-50" 
+                    onClick={() => onDelete(study.id)}
+                    title="Excluir estudo"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
               </div>
               <p className="text-sm text-forest-700 mt-2">
                 <User size={14} className="inline mr-1 text-forest-500" />

@@ -3,7 +3,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
-import { fetchResearchStudies as fetchStudies, addResearchStudy, deleteResearchStudy } from "@/services/researchService";
+import { 
+  fetchResearchStudies as fetchStudies, 
+  addResearchStudy, 
+  deleteResearchStudy,
+  updateResearchStudy 
+} from "@/services/researchService";
 
 export const useResearch = () => {
   const [studies, setStudies] = useState<ResearchStudy[]>([]);
@@ -59,6 +64,35 @@ export const useResearch = () => {
       setIsLoading(false);
     }
   };
+  
+  const handleEditStudy = async (id: string, data: ResearchStudyFormData) => {
+    setIsLoading(true);
+    try {
+      const updatedStudy = await updateResearchStudy(id, data);
+      
+      if (updatedStudy) {
+        // Atualizar estado, substituindo o estudo existente
+        setStudies(prev => prev.map(study => 
+          study.id === id ? updatedStudy : study
+        ));
+        
+        toast({
+          title: "Estudo atualizado",
+          description: `"${data.title}" foi atualizado com sucesso.`
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar estudo:', error);
+      toast({
+        title: "Erro ao atualizar estudo",
+        description: "Verifique os dados e tente novamente.",
+        variant: "destructive"
+      });
+      throw error; // Propagar o erro para o componente chamador
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleDeleteStudy = async (id: string) => {
     setIsLoading(true);
@@ -91,6 +125,7 @@ export const useResearch = () => {
     isLoading,
     fetchResearchStudies,
     handleStudySubmit,
+    handleEditStudy,
     handleDeleteStudy
   };
 };

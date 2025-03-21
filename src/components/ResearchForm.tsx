@@ -1,158 +1,126 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { MapPin } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { ResearchStudyFormData } from "@/types/research";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ResearchFormProps {
-  form: UseFormReturn<ResearchStudyFormData>;
   onSubmit: (data: ResearchStudyFormData) => void;
+  form: UseFormReturn<ResearchStudyFormData>;
+  submitLabel?: string;
+  isEdit?: boolean;
 }
 
-const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
+const ResearchForm: React.FC<ResearchFormProps> = ({ 
+  onSubmit, 
+  form,
+  submitLabel = "Adicionar Estudo",
+  isEdit = false
+}) => {
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = form;
+  
+  // Handler para atualizar o campo de tipo no select
+  const handleTypeChange = (value: string) => {
+    setValue('type', value as ResearchStudyFormData['type']);
+  };
+  
+  // Valor atual do select
+  const currentType = watch('type');
+  
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Registrar Estudo Acadêmico</CardTitle>
-        <CardDescription>
-          Adicione informações sobre artigos, dissertações e teses para visualização no mapa.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Título do Estudo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Análise dos impactos ambientais no Amapá" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="author"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Autor Principal</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nome do autor principal" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="title">Título *</Label>
+        <Input
+          id="title"
+          placeholder="Título do estudo"
+          {...register('title', { required: "Título é obrigatório" })}
+          className={errors.title ? "border-red-500" : ""}
+        />
+        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="author">Autor *</Label>
+        <Input
+          id="author"
+          placeholder="Nome do autor principal"
+          {...register('author', { required: "Autor é obrigatório" })}
+          className={errors.author ? "border-red-500" : ""}
+        />
+        {errors.author && <p className="text-red-500 text-sm">{errors.author.message}</p>}
+      </div>
 
-            <FormField
-              control={form.control}
-              name="coAuthors"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Coautores</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nome dos coautores (separados por vírgula)" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Separe os nomes dos coautores por vírgula
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+      <div className="space-y-2">
+        <Label htmlFor="coAuthors">Co-autores</Label>
+        <Input
+          id="coAuthors"
+          placeholder="Nomes dos co-autores (separados por vírgula)"
+          {...register('coAuthors')}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="type">Tipo de Estudo *</Label>
+        <Select 
+          onValueChange={handleTypeChange} 
+          value={currentType}
+          required
+        >
+          <SelectTrigger className={errors.type ? "border-red-500" : ""}>
+            <SelectValue placeholder="Selecione o tipo de estudo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="artigo">Artigo Científico</SelectItem>
+            <SelectItem value="dissertacao">Dissertação</SelectItem>
+            <SelectItem value="tese">Tese</SelectItem>
+            <SelectItem value="livros">Livro</SelectItem>
+            <SelectItem value="ebooks">E-book</SelectItem>
+            <SelectItem value="outro">Outro</SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
+      </div>
 
-            <FormField
-              control={form.control}
-              name="summary"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Resumo</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Breve resumo do estudo (até 600 caracteres)" 
-                      className="resize-none"
-                      maxLength={600}
-                      rows={4}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Máximo de 600 caracteres
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+      <div className="space-y-2">
+        <Label htmlFor="location">Localização *</Label>
+        <Input
+          id="location"
+          placeholder="Localização do estudo (ex: Macapá, AP)"
+          {...register('location', { required: "Localização é obrigatória" })}
+          className={errors.location ? "border-red-500" : ""}
+        />
+        {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
+      </div>
 
-            <FormField
-              control={form.control}
-              name="repositoryUrl"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Link do Repositório</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://repositorio.exemplo.com/estudo" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    URL onde o estudo completo pode ser acessado
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+      <div className="space-y-2">
+        <Label htmlFor="repositoryUrl">URL do Repositório</Label>
+        <Input
+          id="repositoryUrl"
+          placeholder="URL para o repositório ou documento completo"
+          {...register('repositoryUrl')}
+        />
+      </div>
 
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Tipo de Estudo</FormLabel>
-                  <FormControl>
-                    <select 
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                      {...field}
-                    >
-                      <option value="artigo">Artigo</option>
-                      <option value="dissertacao">Dissertação</option>
-                      <option value="tese">Tese</option>
-                      <option value="livros">Livros</option>
-                      <option value="ebooks">E-books</option>
-                      <option value="outro">Outro</option>
-                    </select>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+      <div className="space-y-2">
+        <Label htmlFor="summary">Resumo</Label>
+        <Textarea
+          id="summary"
+          placeholder="Breve resumo do estudo"
+          {...register('summary')}
+          className="min-h-[100px]"
+        />
+      </div>
 
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel className="text-left">Localização do Estudo</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input placeholder="Ex: Macapá, Santana, Laranjal do Jari..." {...field} />
-                      <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                    </div>
-                  </FormControl>
-                  <FormDescription>
-                    Digite o nome do município no Amapá onde o estudo foi realizado
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full">Adicionar ao Mapa</Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+      <Button type="submit" className="w-full bg-forest-600 hover:bg-forest-700">
+        {submitLabel}
+      </Button>
+    </form>
   );
 };
 
