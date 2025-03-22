@@ -1,13 +1,22 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin } from "lucide-react";
+import { MapPin, Plus } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { ResearchStudyFormData } from "@/types/research";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface ResearchFormProps {
   form: UseFormReturn<ResearchStudyFormData>;
@@ -15,6 +24,17 @@ interface ResearchFormProps {
 }
 
 const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
+  const [showCustomCategory, setShowCustomCategory] = useState(false);
+  const [customCategory, setCustomCategory] = useState("");
+
+  const handleAddCustomCategory = () => {
+    if (customCategory.trim()) {
+      form.setValue("type", customCategory.trim().toLowerCase());
+      setShowCustomCategory(false);
+      setCustomCategory("");
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -112,19 +132,68 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               render={({ field }) => (
                 <FormItem className="text-left">
                   <FormLabel className="text-left">Tipo de Estudo</FormLabel>
-                  <FormControl>
-                    <select 
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                      {...field}
-                    >
-                      <option value="artigo">Artigo</option>
-                      <option value="dissertacao">Dissertação</option>
-                      <option value="tese">Tese</option>
-                      <option value="livros">Livros</option>
-                      <option value="ebooks">E-books</option>
-                      <option value="outro">Outro</option>
-                    </select>
-                  </FormControl>
+                  <div className="flex space-x-2">
+                    <FormControl className="flex-1">
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo de estudo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="artigo">Artigo</SelectItem>
+                            <SelectItem value="dissertacao">Dissertação</SelectItem>
+                            <SelectItem value="tese">Tese</SelectItem>
+                            <SelectItem value="livros">Livros</SelectItem>
+                            <SelectItem value="ebooks">E-books</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                            {/* Se houver uma categoria personalizada adicionada, mostrar aqui */}
+                            {customCategory && (
+                              <SelectItem value={customCategory.toLowerCase()}>{customCategory}</SelectItem>
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <Dialog open={showCustomCategory} onOpenChange={setShowCustomCategory}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          type="button" 
+                          title="Adicionar nova categoria"
+                        >
+                          <Plus size={16} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Adicionar Nova Categoria</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex flex-col space-y-4 py-4">
+                          <FormItem className="text-left">
+                            <FormLabel>Nome da Categoria</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Ex: Monografia" 
+                                value={customCategory}
+                                onChange={(e) => setCustomCategory(e.target.value)}
+                              />
+                            </FormControl>
+                          </FormItem>
+                          <Button 
+                            type="button" 
+                            onClick={handleAddCustomCategory}
+                            disabled={!customCategory.trim()}
+                          >
+                            Adicionar Categoria
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </FormItem>
               )}
             />
