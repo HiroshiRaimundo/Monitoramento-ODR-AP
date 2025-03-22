@@ -5,20 +5,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Map from "@/components/Map";
 import SearchPanel from "@/components/map/SearchPanel";
 import ResearchForm from "@/components/ResearchForm";
+import ResearchList from "@/components/ResearchList";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
-import { Globe, MapPin, BookOpen } from "lucide-react";
+import { Globe, MapPin, BookOpen, ListChecks } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 interface MapViewProps {
   studies: ResearchStudy[];
   isAuthenticated?: boolean;
   onStudySubmit?: (data: ResearchStudyFormData) => void;
+  onStudyDelete?: (id: string) => void;
 }
 
 const MapView: React.FC<MapViewProps> = ({ 
   studies, 
   isAuthenticated = false,
-  onStudySubmit 
+  onStudySubmit,
+  onStudyDelete
 }) => {
   const [searchResults, setSearchResults] = useState<ResearchStudy[]>([]);
   const studyForm = useForm<ResearchStudyFormData>({
@@ -71,6 +74,11 @@ const MapView: React.FC<MapViewProps> = ({
                 <BookOpen size={16} />
                 <span>Registrar Estudo</span>
               </TabsTrigger>
+              
+              <TabsTrigger value="manage" className="flex items-center gap-1 data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+                <ListChecks size={16} />
+                <span>Gerenciar Estudos</span>
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="map" className="mt-0">
@@ -82,6 +90,16 @@ const MapView: React.FC<MapViewProps> = ({
                 <ResearchForm 
                   form={studyForm} 
                   onSubmit={onStudySubmit} 
+                />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="manage" className="mt-0">
+              <div className="bg-white rounded-lg p-4 border border-forest-100">
+                <ResearchList 
+                  studies={studies}
+                  onDelete={onStudyDelete || (() => {})}
+                  isLoading={false}
                 />
               </div>
             </TabsContent>

@@ -7,12 +7,14 @@ interface MapTabProps {
   studies: ResearchStudy[];
   isAuthenticated: boolean;
   handleStudySubmit?: (data: Omit<ResearchStudy, "id" | "coordinates">) => void;
+  handleDeleteStudy?: (id: string) => void;
 }
 
 const MapTab: React.FC<MapTabProps> = ({
   studies,
   isAuthenticated,
-  handleStudySubmit
+  handleStudySubmit,
+  handleDeleteStudy
 }) => {
   return (
     <div className="space-y-6">
@@ -20,6 +22,7 @@ const MapTab: React.FC<MapTabProps> = ({
         studies={studies} 
         isAuthenticated={isAuthenticated}
         onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
+        onStudyDelete={isAuthenticated ? handleDeleteStudy : undefined}
       />
     </div>
   );

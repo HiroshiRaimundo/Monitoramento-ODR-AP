@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonitoringItemType } from "@/components/monitoring/types";
@@ -145,6 +144,7 @@ const TabContent: React.FC<TabContentProps> = ({
           studies={studies}
           isAuthenticated={isAuthenticated}
           handleStudySubmit={handleStudySubmit}
+          handleDeleteStudy={handleDeleteStudy}
         />
       </TabsContent>
 
