@@ -1,7 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
-// Removed CSS import that was causing MIME type error
 import { MapPoint } from '@/types/map';
 import MapMarker from './MapMarker';
 
@@ -47,11 +46,13 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
 
     // Adiciona efeitos atmosféricos
     map.current.on('style.load', () => {
-      map.current?.setFog({
-        color: 'rgb(255, 255, 255)',
-        'high-color': 'rgb(200, 200, 225)',
-        'horizon-blend': 0.2,
-      });
+      if (map.current) {
+        map.current.setFog({
+          color: 'rgb(255, 255, 255)',
+          'high-color': 'rgb(200, 200, 225)',
+          'horizon-blend': 0.2,
+        });
+      }
     });
 
     // Desabilita o zoom do scroll para uma experiência mais suave
@@ -59,13 +60,15 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
 
     // Cleanup
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        map.current.remove();
+      }
     };
   }, []);
 
   // Ajustar a visualização do mapa quando os pontos mudam
   useEffect(() => {
-    if (!map.current || !points) return;
+    if (!map.current || !points || points.length === 0) return;
 
     if (points.length > 1) {
       const bounds = new mapboxgl.LngLatBounds();
