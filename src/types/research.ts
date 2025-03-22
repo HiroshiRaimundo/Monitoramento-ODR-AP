@@ -9,7 +9,7 @@ export interface ResearchStudy {
   repositoryUrl: string;
   location: string;
   coordinates: [number, number];
-  type: "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro";
+  type: string; // Changed from union type to string to allow custom categories
 }
 
 export type ResearchStudyFormData = Omit<ResearchStudy, "id" | "coordinates">;

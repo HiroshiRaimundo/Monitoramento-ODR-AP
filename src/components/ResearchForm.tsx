@@ -26,10 +26,19 @@ interface ResearchFormProps {
 const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
   const [showCustomCategory, setShowCustomCategory] = useState(false);
   const [customCategory, setCustomCategory] = useState("");
+  const [addedCategories, setAddedCategories] = useState<string[]>([]);
 
   const handleAddCustomCategory = () => {
     if (customCategory.trim()) {
-      form.setValue("type", customCategory.trim().toLowerCase());
+      // Set the custom category value
+      form.setValue("type", customCategory.trim());
+      
+      // Add to our list of custom categories if it's not already there
+      if (!addedCategories.includes(customCategory.trim())) {
+        setAddedCategories([...addedCategories, customCategory.trim()]);
+      }
+      
+      // Close the dialog and reset the input
       setShowCustomCategory(false);
       setCustomCategory("");
     }
@@ -46,6 +55,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Title field */}
             <FormField
               control={form.control}
               name="title"
@@ -59,6 +69,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               )}
             />
             
+            {/* Author field */}
             <FormField
               control={form.control}
               name="author"
@@ -72,6 +83,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               )}
             />
 
+            {/* Co-authors field */}
             <FormField
               control={form.control}
               name="coAuthors"
@@ -88,6 +100,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               )}
             />
 
+            {/* Summary field */}
             <FormField
               control={form.control}
               name="summary"
@@ -110,6 +123,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               )}
             />
 
+            {/* Repository URL field */}
             <FormField
               control={form.control}
               name="repositoryUrl"
@@ -126,6 +140,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               )}
             />
 
+            {/* Type field with custom category dialog */}
             <FormField
               control={form.control}
               name="type"
@@ -149,10 +164,12 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
                             <SelectItem value="livros">Livros</SelectItem>
                             <SelectItem value="ebooks">E-books</SelectItem>
                             <SelectItem value="outro">Outro</SelectItem>
-                            {/* Se houver uma categoria personalizada adicionada, mostrar aqui */}
-                            {customCategory && (
-                              <SelectItem value={customCategory.toLowerCase()}>{customCategory}</SelectItem>
-                            )}
+                            {/* Custom categories */}
+                            {addedCategories.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -198,6 +215,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ form, onSubmit }) => {
               )}
             />
 
+            {/* Location field */}
             <FormField
               control={form.control}
               name="location"
