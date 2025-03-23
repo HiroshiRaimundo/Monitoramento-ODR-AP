@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Calendar, Database, Filter } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface DashboardControlsProps {
   timeRange: string;
@@ -21,6 +22,23 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
   totalItems,
   isPublic = false
 }) => {
+  const handleExportWithToast = () => {
+    try {
+      handleExport();
+      toast({
+        title: "Exportação concluída",
+        description: "Os dados foram exportados com sucesso.",
+      });
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível exportar os dados.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="overflow-hidden border-forest-100 shadow-md">
       <CardHeader className="bg-gradient-to-r from-forest-50 to-white py-3">
@@ -56,7 +74,7 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
           
           {isAuthenticated && !isPublic && (
             <Button 
-              onClick={handleExport} 
+              onClick={handleExportWithToast} 
               className="bg-forest-600 hover:bg-forest-700 text-white flex items-center gap-2 font-poppins"
             >
               <Download size={18} />

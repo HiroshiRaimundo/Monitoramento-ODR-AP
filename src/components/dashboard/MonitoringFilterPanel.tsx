@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Download, Filter } from "lucide-react";
 import { FilterPanelProps } from "./types/dashboardTypes";
+import { toast } from "@/hooks/use-toast";
 
 const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
   selectedMonitoring,
@@ -12,6 +13,38 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
   monitoringItems,
   exportSelectedMonitoring
 }) => {
+  // Safe guard against errors when no monitoring items are available
+  const handleSelectionChange = (value: string) => {
+    try {
+      setSelectedMonitoring(value);
+    } catch (error) {
+      console.error("Error changing monitoring selection:", error);
+      toast({
+        title: "Erro ao filtrar",
+        description: "Não foi possível aplicar o filtro selecionado.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Safe guard for export function
+  const handleExport = () => {
+    try {
+      exportSelectedMonitoring();
+      toast({
+        title: "Exportação concluída",
+        description: "Os dados foram exportados com sucesso.",
+      });
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível exportar os dados.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="border-forest-100 shadow-sm">
       <CardHeader className="pb-2">
@@ -25,7 +58,7 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
           <div className="w-full md:w-1/2">
             <Select 
               value={selectedMonitoring} 
-              onValueChange={setSelectedMonitoring}
+              onValueChange={handleSelectionChange}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione um monitoramento" />
@@ -41,7 +74,7 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
             </Select>
           </div>
           <Button 
-            onClick={exportSelectedMonitoring}
+            onClick={handleExport} 
             className="bg-forest-600 hover:bg-forest-700 flex items-center gap-2"
           >
             <Download size={16} />

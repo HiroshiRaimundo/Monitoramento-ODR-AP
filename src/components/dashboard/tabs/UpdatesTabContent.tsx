@@ -23,21 +23,21 @@ const UpdatesTabContent: React.FC<UpdatesTabContentProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card className="col-span-2">
-        <CardHeader>
+        <CardHeader className="pb-2">
           <CardTitle>Atualizações Detectadas</CardTitle>
           <CardDescription>Histórico de mudanças detectadas pelos monitoramentos</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={{}} className="h-80">
+          <ChartContainer config={{}} className="h-96">
             <SystemUpdatesChart data={systemUpdatesData} />
           </ChartContainer>
         </CardContent>
       </Card>
 
       {/* Aumentando o espaçamento entre os componentes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 col-span-2 mt-24">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 col-span-2 mt-28">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle>Últimas Atualizações</CardTitle>
             <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
           </CardHeader>
@@ -47,7 +47,7 @@ const UpdatesTabContent: React.FC<UpdatesTabContentProps> = ({
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-amber-500" />
               <span>Alertas de Monitoramento</span>
