@@ -1,15 +1,9 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardCheck, AlertTriangle, Clock, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-export interface RecentUpdate {
-  id: string;
-  site: string;
-  date: string;
-  status: "success" | "error" | "warning" | "pending";
-}
+import { RecentUpdate } from "./types/dashboardTypes";
+import { AlertCircle, Check, Clock, FileBarChart, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface RecentUpdatesProps {
   updates: RecentUpdate[];
@@ -43,127 +37,107 @@ const RecentUpdates: React.FC<RecentUpdatesProps> = ({ updates }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
-        return <ClipboardCheck className="text-green-500" size={16} />;
-      case "error":
-        return <AlertCircle className="text-red-500" size={16} />;
+        return <Check size={16} className="text-green-500" />;
       case "warning":
-        return <AlertTriangle className="text-amber-500" size={16} />;
+        return <AlertCircle size={16} className="text-amber-500" />;
       case "pending":
-        return <Clock className="text-blue-500" size={16} />;
+        return <Clock size={16} className="text-blue-500" />;
       default:
-        return <ClipboardCheck className="text-green-500" size={16} />;
+        return <FileBarChart size={16} className="text-gray-500" />;
     }
   };
 
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "success":
-        return "text-green-500 bg-green-50";
-      case "error":
-        return "text-red-500 bg-red-50";
-      case "warning":
-        return "text-amber-500 bg-amber-50";
-      case "pending":
-        return "text-blue-500 bg-blue-50";
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case "content":
+        return "Conteúdo";
+      case "data":
+        return "Dados";
+      case "alert":
+        return "Alerta";
       default:
-        return "text-green-500 bg-green-50";
+        return "Atualização";
     }
   };
 
   return (
-    <Card className="border-forest-100 shadow-sm mt-6">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-forest-700 text-base font-medium">Atualizações Recentes</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {currentItems.map((update) => (
-            <div key={update.id} className="flex items-start justify-between p-3 bg-forest-50/50 rounded-md">
-              <div className="text-left">
-                <h4 className="text-sm font-medium text-forest-700 flex items-center gap-2">
-                  {getStatusIcon(update.status)}
-                  {update.site}
-                </h4>
-                <span className="text-xs text-forest-600 mt-1 block">
-                  {new Date(update.date).toLocaleString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </div>
-              <span
-                className={`px-2 py-1 text-xs rounded-full ${getStatusClass(
-                  update.status
-                )}`}
-              >
-                {update.status === "success"
-                  ? "Sucesso"
-                  : update.status === "error"
-                  ? "Erro"
-                  : update.status === "warning"
-                  ? "Alerta"
-                  : "Pendente"}
-              </span>
+    <div className="space-y-3">
+      {currentItems.map((update) => (
+        <div
+          key={update.id}
+          className="p-3 border rounded-md border-gray-200 bg-white hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              {getStatusIcon(update.status)}
+              <span className="ml-2 font-medium text-sm">{update.title}</span>
             </div>
-          ))}
-          
-          {/* Paginação numerada */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center space-x-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToPrevPage}
-                disabled={currentPage === 1}
-                className="h-7 w-7 p-0"
-              >
-                <ChevronLeft size={14} />
-              </Button>
-
-              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-                let pageNum;
-                if (totalPages <= 3) {
-                  pageNum = i + 1;
-                } else {
-                  if (currentPage <= 2) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 1) {
-                    pageNum = totalPages - 2 + i;
-                  } else {
-                    pageNum = currentPage - 1 + i;
-                  }
-                }
-
-                return (
-                  <Button
-                    key={pageNum}
-                    variant={currentPage === pageNum ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => goToPage(pageNum)}
-                    className="h-7 w-7 p-0 text-xs"
-                  >
-                    {pageNum}
-                  </Button>
-                );
-              })}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className="h-7 w-7 p-0"
-              >
-                <ChevronRight size={14} />
-              </Button>
-            </div>
-          )}
+            <Badge variant="outline" className="text-xs">
+              {getTypeLabel(update.type)}
+            </Badge>
+          </div>
+          <p className="mt-1 text-sm text-gray-600">{update.description}</p>
+          <div className="mt-2 flex items-center justify-between">
+            <span className="text-xs text-gray-500">
+              {update.site}
+            </span>
+            <span className="text-xs text-gray-500">{update.date}</span>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      ))}
+      
+      {/* Paginação numerada */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center space-x-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToPrevPage}
+            disabled={currentPage === 1}
+            className="h-7 w-7 p-0"
+          >
+            <ChevronLeft size={14} />
+          </Button>
+
+          {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+            let pageNum;
+            if (totalPages <= 3) {
+              pageNum = i + 1;
+            } else {
+              if (currentPage <= 2) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 1) {
+                pageNum = totalPages - 2 + i;
+              } else {
+                pageNum = currentPage - 1 + i;
+              }
+            }
+
+            return (
+              <Button
+                key={pageNum}
+                variant={currentPage === pageNum ? "default" : "outline"}
+                size="sm"
+                onClick={() => goToPage(pageNum)}
+                className="h-7 w-7 p-0 text-xs"
+              >
+                {pageNum}
+              </Button>
+            );
+          })}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToNextPage}
+            disabled={currentPage === totalPages}
+            className="h-7 w-7 p-0"
+          >
+            <ChevronRight size={14} />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 

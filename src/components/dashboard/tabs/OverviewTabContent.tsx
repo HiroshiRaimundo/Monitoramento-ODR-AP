@@ -42,14 +42,14 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = ({
       </Card>
 
       {/* Aumentando o espaçamento na grid para evitar sobreposição */}
-      <div className="grid grid-cols-1 gap-12 col-span-2 md:grid-cols-2 mt-8">
+      <div className="grid grid-cols-1 gap-12 col-span-2 md:grid-cols-2 mt-12">
         <Card>
           <CardHeader>
             <CardTitle>Distribuição por Categorias</CardTitle>
             <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{}} className="h-60">
+            <ChartContainer config={{}} className="h-72">
               <CategoryChart data={categoryData || []} />
             </ChartContainer>
           </CardContent>
@@ -61,7 +61,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = ({
             <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{}} className="h-60">
+            <ChartContainer config={{}} className="h-72">
               <FrequencyChart data={frequencyData || []} />
             </ChartContainer>
           </CardContent>
@@ -69,7 +69,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = ({
       </div>
 
       {/* Aumentando o espaçamento entre os blocos para evitar sobreposição */}
-      <div className="grid grid-cols-1 gap-12 col-span-2 md:grid-cols-2 mt-8">
+      <div className="grid grid-cols-1 gap-12 col-span-2 md:grid-cols-2 mt-16">
         <Card>
           <CardHeader>
             <CardTitle>Monitoramentos Recentes</CardTitle>
