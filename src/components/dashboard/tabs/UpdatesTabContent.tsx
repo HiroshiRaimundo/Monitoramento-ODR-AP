@@ -34,47 +34,50 @@ const UpdatesTabContent: React.FC<UpdatesTabContentProps> = ({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Últimas Atualizações</CardTitle>
-          <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RecentUpdates updates={displayReports} />
-        </CardContent>
-      </Card>
+      {/* Aumentando o espaçamento entre os componentes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 col-span-2 mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Últimas Atualizações</CardTitle>
+            <CardDescription>Detalhes das últimas atualizações detectadas</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RecentUpdates updates={displayReports} />
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-amber-500" />
-            <span>Alertas de Monitoramento</span>
-          </CardTitle>
-          <CardDescription>Notificações sobre alterações importantes</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Alert className="bg-yellow-50 border-yellow-200">
-              <AlertTitle className="text-yellow-800">Mudança de Conteúdo Detectada</AlertTitle>
-              <AlertDescription className="text-yellow-700">
-                Alteração significativa detectada em "Portal de Transparência" (10/05/2024)
-              </AlertDescription>
-            </Alert>
-            
-            <Alert className="bg-blue-50 border-blue-200">
-              <AlertTitle className="text-blue-800">Nova Coleta Programada</AlertTitle>
-              <AlertDescription className="text-blue-700">
-                Próxima coleta do monitoramento "IBGE - Indicadores" programada para 12/05/2024
-              </AlertDescription>
-            </Alert>
-            
-            <div className="text-sm text-muted-foreground mt-4">
-              Mostrando alertas dos últimos 7 dias.
-              {monitoringItems.length === 0 && " Nenhum monitoramento configurado."}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-amber-500" />
+              <span>Alertas de Monitoramento</span>
+            </CardTitle>
+            <CardDescription>Notificações sobre alterações importantes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Alert className="bg-yellow-50 border-yellow-200">
+                <AlertTitle className="text-yellow-800">Mudança de Conteúdo Detectada</AlertTitle>
+                <AlertDescription className="text-yellow-700">
+                  Alteração significativa detectada em "Portal de Transparência" (10/05/2024)
+                </AlertDescription>
+              </Alert>
+              
+              <Alert className="bg-blue-50 border-blue-200">
+                <AlertTitle className="text-blue-800">Nova Coleta Programada</AlertTitle>
+                <AlertDescription className="text-blue-700">
+                  Próxima coleta do monitoramento "IBGE - Indicadores" programada para 12/05/2024
+                </AlertDescription>
+              </Alert>
+              
+              <div className="text-sm text-muted-foreground mt-4">
+                Mostrando alertas dos últimos 7 dias.
+                {monitoringItems.length === 0 && " Nenhum monitoramento configurado."}
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
