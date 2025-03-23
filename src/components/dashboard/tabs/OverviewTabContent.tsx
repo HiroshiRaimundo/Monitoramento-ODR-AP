@@ -41,49 +41,55 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = ({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Distribuição por Categorias</CardTitle>
-          <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={{}} className="h-60">
-            <CategoryChart data={categoryData || []} />
-          </ChartContainer>
-        </CardContent>
-      </Card>
+      {/* Aumentando o espaçamento na grid para evitar sobreposição */}
+      <div className="grid grid-cols-1 gap-8 col-span-2 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Distribuição por Categorias</CardTitle>
+            <CardDescription>Monitoramentos agrupados por categoria</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{}} className="h-60">
+              <CategoryChart data={categoryData || []} />
+            </ChartContainer>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Distribuição por Frequência</CardTitle>
-          <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={{}} className="h-60">
-            <FrequencyChart data={frequencyData || []} />
-          </ChartContainer>
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Distribuição por Frequência</CardTitle>
+            <CardDescription>Monitoramentos agrupados por frequência de atualização</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{}} className="h-60">
+              <FrequencyChart data={frequencyData || []} />
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Monitoramentos Recentes</CardTitle>
-          <CardDescription>Últimos monitoramentos adicionados</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RecentMonitorings monitorings={monitoringItems} />
-        </CardContent>
-      </Card>
+      {/* Aumentando o espaçamento entre os blocos para evitar sobreposição */}
+      <div className="grid grid-cols-1 gap-8 col-span-2 md:grid-cols-2 mt-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Monitoramentos Recentes</CardTitle>
+            <CardDescription>Últimos monitoramentos adicionados</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RecentMonitorings monitorings={monitoringItems} />
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Atualizações Recentes</CardTitle>
-          <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RecentUpdates updates={displayAlerts} />
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Atualizações Recentes</CardTitle>
+            <CardDescription>Últimas alterações detectadas nos monitoramentos</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RecentUpdates updates={displayAlerts} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

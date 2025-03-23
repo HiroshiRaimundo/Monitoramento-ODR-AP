@@ -26,30 +26,57 @@ const MonitoringPagination: React.FC<MonitoringPaginationProps> = ({
     }
   };
 
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div className="flex items-center justify-between mt-4">
+    <div className="flex items-center justify-center space-x-2 mt-4">
       <Button
         variant="outline"
         size="sm"
         onClick={handlePreviousPage}
         disabled={currentPage === 1}
-        className="flex items-center gap-1"
+        className="h-8 w-8 p-0"
       >
-        <ChevronLeft className="h-4 w-4" />
-        Anterior
+        <ChevronLeft size={16} />
       </Button>
-      <div className="text-sm text-muted-foreground">
-        Página {currentPage} de {totalPages}
-      </div>
+
+      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+        let pageNum;
+        if (totalPages <= 5) {
+          pageNum = i + 1;
+        } else {
+          if (currentPage <= 3) {
+            pageNum = i + 1;
+          } else if (currentPage >= totalPages - 2) {
+            pageNum = totalPages - 4 + i;
+          } else {
+            pageNum = currentPage - 2 + i;
+          }
+        }
+
+        return (
+          <Button
+            key={pageNum}
+            variant={currentPage === pageNum ? "default" : "outline"}
+            size="sm"
+            onClick={() => goToPage(pageNum)}
+            className="h-8 w-8 p-0"
+          >
+            {pageNum}
+          </Button>
+        );
+      })}
+
       <Button
         variant="outline"
         size="sm"
         onClick={handleNextPage}
         disabled={currentPage === totalPages}
-        className="flex items-center gap-1"
+        className="h-8 w-8 p-0"
       >
-        Próximo
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight size={16} />
       </Button>
     </div>
   );

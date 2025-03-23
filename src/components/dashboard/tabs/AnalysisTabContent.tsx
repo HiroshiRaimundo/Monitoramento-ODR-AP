@@ -109,7 +109,7 @@ const AnalysisTabContent: React.FC<AnalysisTabContentProps> = ({
                 </div>
               )}
               
-              {/* Pagination */}
+              {/* Paginação numerada */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center space-x-2 mt-4">
                   <Button
