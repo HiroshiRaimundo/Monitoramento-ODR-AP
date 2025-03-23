@@ -7,8 +7,8 @@ interface MapMarkerProps {
   point: MapPoint;
   map: mapboxgl.Map;
   onClick: (point: MapPoint) => void;
-  index: number; // Add index to help with positioning
-  total: number; // Add total number of markers at this location
+  index: number;
+  total: number;
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total }) => {
@@ -28,25 +28,27 @@ const MapMarker: React.FC<MapMarkerProps> = ({ point, map, onClick, index, total
     `);
 
     // Choose marker color based on study type
-    let markerColor = '#FF0000';
-    switch (point.type) {
-      case 'artigo':
-        markerColor = '#FF0000'; // Red
-        break;
-      case 'dissertacao':
-        markerColor = '#0066FF'; // Blue
-        break;
-      case 'tese':
-        markerColor = '#008000'; // Green
-        break;
-      case 'livros':
-        markerColor = '#800080'; // Purple
-        break;
-      case 'ebooks':
-        markerColor = '#FF6600'; // Orange
-        break;
-      default:
-        markerColor = '#808080'; // Grey for 'outro'
+    let markerColor = '#808080'; // Default gray
+    
+    // Check common type values but allow for any string
+    if (typeof point.type === 'string') {
+      switch (point.type.toLowerCase()) {
+        case 'artigo':
+          markerColor = '#FF0000'; // Red
+          break;
+        case 'dissertacao':
+          markerColor = '#0066FF'; // Blue
+          break;
+        case 'tese':
+          markerColor = '#008000'; // Green
+          break;
+        case 'livros':
+          markerColor = '#800080'; // Purple
+          break;
+        case 'ebooks':
+          markerColor = '#FF6600'; // Orange
+          break;
+      }
     }
 
     // Calculate position offset for markers at the same location

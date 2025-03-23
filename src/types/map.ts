@@ -7,5 +7,5 @@ export interface MapPoint {
   coordinates: [number, number];
   repositoryUrl?: string;
   summary?: string;
-  type?: "artigo" | "dissertacao" | "tese" | "livros" | "ebooks" | "outro";
+  type?: string; // Changed from union type to string to match ResearchStudy
 }

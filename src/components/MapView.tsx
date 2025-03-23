@@ -9,6 +9,7 @@ import ResearchList from "@/components/ResearchList";
 import { ResearchStudy, ResearchStudyFormData } from "@/types/research";
 import { Globe, MapPin, BookOpen, ListChecks } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { MapPoint } from "@/types/map";
 
 interface MapViewProps {
   studies: ResearchStudy[];
@@ -30,12 +31,24 @@ const MapView: React.FC<MapViewProps> = ({
     }
   });
 
+  // Convert ResearchStudy[] to MapPoint[] to satisfy the Map component's type requirements
+  const mapPoints: MapPoint[] = studies.map(study => ({
+    id: study.id,
+    title: study.title,
+    author: study.author,
+    location: study.location,
+    coordinates: study.coordinates,
+    repositoryUrl: study.repositoryUrl,
+    summary: study.summary,
+    type: study.type
+  }));
+
   // Renderização do conteúdo do mapa
   const renderMapContent = () => (
     <div className="flex flex-col gap-4">
       {/* Mapa em tela cheia */}
       <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100">
-        <Map points={studies} />
+        <Map points={mapPoints} />
       </div>
       
       {/* Componente de busca abaixo do mapa */}
