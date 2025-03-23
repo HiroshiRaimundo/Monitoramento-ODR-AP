@@ -35,7 +35,7 @@ const UpdatesTabContent: React.FC<UpdatesTabContentProps> = ({
       </Card>
 
       {/* Aumentando o espaçamento entre os componentes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 col-span-2 mt-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 col-span-2 mt-24">
         <Card>
           <CardHeader>
             <CardTitle>Últimas Atualizações</CardTitle>
