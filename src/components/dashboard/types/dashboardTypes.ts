@@ -13,6 +13,14 @@ export interface RecentUpdate {
   isDemo?: boolean;
 }
 
+// Analysis Statistics Interface
+export interface AnalysisStats {
+  contentAnalysis: number;
+  sentimentAnalysis: number;
+  crossAnalysis: number;
+  nlpAnalysis: number;
+}
+
 // Definition of the props interface for InternalDashboard
 export interface InternalDashboardProps {
   data: {
@@ -42,3 +50,21 @@ export interface FilterPanelProps {
   monitoringItems: MonitoringItem[];
   exportSelectedMonitoring: () => Promise<void>;
 }
+
+// Analysis Stats Card Props
+export interface AnalysisStatsCardProps {
+  analysisStats: AnalysisStats;
+}
+
+// Monitoring List Card Props
+export interface MonitoringListCardProps {
+  monitoringItems: MonitoringItem[];
+}
+
+// Analysis Tools Card Props
+export interface AnalysisToolsCardProps {
+  monitoringItems: MonitoringItem[];
+}
+
+// Analysis Reports Card Props
+export interface AnalysisReportsCardProps {}

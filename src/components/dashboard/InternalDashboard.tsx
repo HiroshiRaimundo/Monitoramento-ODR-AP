@@ -32,11 +32,25 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
     { value: showSimulatedData ? 128 : monitoringItems.length * 3, label: "Coletas na Semana" }
   ];
 
+  // Add isDemo property to items that don't have it
+  const enhancedMonitoringItems = monitoringItems.map(item => ({
+    ...item,
+    isDemo: item.hasOwnProperty('isDemo') ? item.isDemo : false
+  }));
+
   // Filter out simulated data if option is disabled
-  const filteredMonitoringItems = showSimulatedData ? monitoringItems : monitoringItems.filter(item => !item.isDemo);
-  const filteredSystemUpdatesData = showSimulatedData ? systemUpdatesData : systemUpdatesData.filter(item => !item.isDemo);
-  const filteredRecentAlerts = showSimulatedData ? recentAlerts : recentAlerts.filter(item => !item.isDemo);
-  const filteredRecentReports = showSimulatedData ? recentReports : recentReports.filter(item => !item.isDemo);
+  const filteredMonitoringItems = showSimulatedData 
+    ? enhancedMonitoringItems 
+    : enhancedMonitoringItems.filter(item => !item.isDemo);
+  const filteredSystemUpdatesData = showSimulatedData 
+    ? systemUpdatesData 
+    : systemUpdatesData.filter(item => !item.isDemo);
+  const filteredRecentAlerts = showSimulatedData 
+    ? recentAlerts 
+    : recentAlerts.filter(item => !item.isDemo);
+  const filteredRecentReports = showSimulatedData 
+    ? recentReports 
+    : recentReports.filter(item => !item.isDemo);
 
   return (
     <DashboardDataProvider monitoringItems={filteredMonitoringItems}>
@@ -78,7 +92,10 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
             selectedMonitoring={selectedMonitoring}
             setSelectedMonitoring={setSelectedMonitoring}
             monitoringItems={filteredMonitoringItems}
-            exportSelectedMonitoring={exportSelectedMonitoring}
+            exportSelectedMonitoring={async () => {
+              // Convert synchronous function to async to match the expected type
+              await Promise.resolve(exportSelectedMonitoring());
+            }}
           />
 
           {/* Filters */}
