@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download, Filter } from "lucide-react";
+import { Download, Filter, RefreshCw } from "lucide-react";
 import { FilterPanelProps } from "./types/dashboardTypes";
 import { toast } from "@/hooks/use-toast";
 
@@ -14,10 +14,12 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
   exportSelectedMonitoring
 }) => {
   const [isExporting, setIsExporting] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   // Safe guard against errors when no monitoring items are available
-  const handleSelectionChange = (value: string) => {
+  const handleSelectionChange = async (value: string) => {
     try {
+      setIsFiltering(true);
       setSelectedMonitoring(value);
       toast({
         title: "Filtro aplicado",
@@ -30,6 +32,8 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
         description: "Não foi possível aplicar o filtro selecionado.",
         variant: "destructive",
       });
+    } finally {
+      setIsFiltering(false);
     }
   };
 
@@ -64,10 +68,11 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-1/2 relative">
             <Select 
               value={selectedMonitoring} 
               onValueChange={handleSelectionChange}
+              disabled={isFiltering}
             >
               <SelectTrigger className="w-full bg-white">
                 <SelectValue placeholder="Selecione um monitoramento" />
@@ -81,6 +86,9 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {isFiltering && (
+              <RefreshCw size={16} className="text-forest-600 animate-spin absolute right-10 top-1/2 -translate-y-1/2" />
+            )}
           </div>
           <Button 
             onClick={handleExport} 

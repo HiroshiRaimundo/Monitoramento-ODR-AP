@@ -10,6 +10,7 @@ export interface RecentUpdate {
   type: string;
   site: string;
   status: "error" | "success" | "warning" | "pending";
+  isDemo?: boolean;
 }
 
 // Definition of the props interface for InternalDashboard
@@ -19,13 +20,18 @@ export interface InternalDashboardProps {
     estudos: number;
     monitoramentos: number;
     atualizacoes: number;
+    isDemo?: boolean;
   }[];
   timeRange: string;
   setTimeRange: (value: string) => void;
   handleExport: () => void;
   isAuthenticated: boolean;
   monitoringItems: MonitoringItem[];
-  systemUpdatesData: { name: string; updates: number; }[];
+  systemUpdatesData: { 
+    name: string; 
+    updates: number;
+    isDemo?: boolean;
+  }[];
   recentAlerts?: RecentUpdate[];
   recentReports?: RecentUpdate[];
 }
@@ -34,5 +40,5 @@ export interface FilterPanelProps {
   selectedMonitoring: string;
   setSelectedMonitoring: (value: string) => void;
   monitoringItems: MonitoringItem[];
-  exportSelectedMonitoring: () => void;
+  exportSelectedMonitoring: () => Promise<void>;
 }

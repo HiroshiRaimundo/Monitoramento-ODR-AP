@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardControls from "./DashboardControls";
 import MonitoringStatsGrid from "./MonitoringStatsGrid";
@@ -9,6 +9,8 @@ import DashboardDataProvider from "./DashboardDataProvider";
 import MonitoringFilterPanel from "./MonitoringFilterPanel";
 import { InternalDashboardProps } from "./types/dashboardTypes";
 import { RecentUpdate } from "./types/dashboardTypes";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const InternalDashboard: React.FC<InternalDashboardProps> = ({ 
   data, 
@@ -21,17 +23,25 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
   recentAlerts = [],
   recentReports = []
 }) => {
+  const [showSimulatedData, setShowSimulatedData] = useState(true);
+  
   // Prepare stats items for dashboard header
   const headerStats = [
     { value: monitoringItems.length, label: "Monitoramentos Ativos" },
     { value: Array.from(new Set(monitoringItems.map(item => item.category))).length, label: "Categorias" },
-    { value: 128, label: "Coletas na Semana" }
+    { value: showSimulatedData ? 128 : monitoringItems.length * 3, label: "Coletas na Semana" }
   ];
 
+  // Filter out simulated data if option is disabled
+  const filteredMonitoringItems = showSimulatedData ? monitoringItems : monitoringItems.filter(item => !item.isDemo);
+  const filteredSystemUpdatesData = showSimulatedData ? systemUpdatesData : systemUpdatesData.filter(item => !item.isDemo);
+  const filteredRecentAlerts = showSimulatedData ? recentAlerts : recentAlerts.filter(item => !item.isDemo);
+  const filteredRecentReports = showSimulatedData ? recentReports : recentReports.filter(item => !item.isDemo);
+
   return (
-    <DashboardDataProvider monitoringItems={monitoringItems}>
+    <DashboardDataProvider monitoringItems={filteredMonitoringItems}>
       {({ 
-        filteredMonitoringItems, 
+        filteredMonitoringItems: contextFilteredMonitoringItems, 
         selectedMonitoring, 
         setSelectedMonitoring,
         categoryData,
@@ -42,49 +52,63 @@ const InternalDashboard: React.FC<InternalDashboardProps> = ({
         exportSelectedMonitoring
       }) => (
         <div className="grid gap-6 font-poppins">
-          {/* Cabeçalho */}
+          {/* Header */}
           <DashboardHeader 
             title="Análise de Dados"
             description="Acompanhamento detalhado dos monitoramentos e análises internas"
             statsItems={headerStats}
           />
 
-          {/* Filtro de monitoramento individual */}
+          {/* Toggle for showing/hiding simulated data */}
+          {isAuthenticated && (
+            <div className="flex items-center space-x-2 justify-end">
+              <Label htmlFor="show-simulated" className="text-sm text-muted-foreground">
+                {showSimulatedData ? "Exibindo dados simulados" : "Apenas dados reais"}
+              </Label>
+              <Switch
+                id="show-simulated"
+                checked={showSimulatedData}
+                onCheckedChange={setShowSimulatedData}
+              />
+            </div>
+          )}
+
+          {/* Individual monitoring filter */}
           <MonitoringFilterPanel
             selectedMonitoring={selectedMonitoring}
             setSelectedMonitoring={setSelectedMonitoring}
-            monitoringItems={monitoringItems}
+            monitoringItems={filteredMonitoringItems}
             exportSelectedMonitoring={exportSelectedMonitoring}
           />
 
-          {/* Filtros */}
+          {/* Filters */}
           <DashboardControls 
             timeRange={timeRange}
             setTimeRange={setTimeRange}
             handleExport={handleExport}
             isAuthenticated={isAuthenticated}
-            totalItems={monitoringItems.length}
+            totalItems={filteredMonitoringItems.length}
           />
 
-          {/* Grade de estatísticas */}
+          {/* Statistics grid */}
           <MonitoringStatsGrid 
-            totalMonitorings={filteredMonitoringItems.length}
-            activeSpiders={filteredMonitoringItems.filter(item => item.category === "api").length}
-            pendingUpdates={selectedMonitoring === "todos" ? 12 : 2}
-            lastUpdateDate="10/05/2024"
+            totalMonitorings={contextFilteredMonitoringItems.length}
+            activeSpiders={contextFilteredMonitoringItems.filter(item => item.category === "api").length}
+            pendingUpdates={selectedMonitoring === "todos" ? (showSimulatedData ? 12 : 3) : (showSimulatedData ? 2 : 1)}
+            lastUpdateDate={showSimulatedData ? "10/05/2024" : new Date().toLocaleDateString('pt-BR')}
           />
 
-          {/* Conteúdo em abas - Passamos todos os dados processados para o componente de abas */}
+          {/* Tab content - Pass all processed data to the tabs component */}
           <ChartsTabs 
-            monitoringItems={filteredMonitoringItems}
+            monitoringItems={contextFilteredMonitoringItems}
             categoryData={categoryData}
             frequencyData={frequencyData}
             responsibleData={responsibleData}
             radarData={radarData}
-            systemUpdatesData={systemUpdatesData}
+            systemUpdatesData={filteredSystemUpdatesData}
             analysisStats={analysisStats}
-            recentAlerts={recentAlerts}
-            recentReports={recentReports}
+            recentAlerts={filteredRecentAlerts}
+            recentReports={filteredRecentReports}
           />
         </div>
       )}
