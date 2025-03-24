@@ -3,18 +3,11 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, BarChart3, PieChart, TrendingUp } from "lucide-react";
 import { MonitoringItem } from "@/hooks/useMonitoring";
-import { RecentUpdate } from "./types/dashboardTypes";
+import { RecentUpdate, AnalysisStats } from "./types/dashboardTypes";
 import OverviewTabContent from "./tabs/OverviewTabContent";
 import CategoriesTabContent from "./tabs/CategoriesTabContent";
 import UpdatesTabContent from "./tabs/UpdatesTabContent";
 import AnalysisTabContent from "./tabs/AnalysisTabContent";
-
-interface AnalysisStats {
-  contentAnalysis: number;
-  sentimentAnalysis: number;
-  crossAnalysis: number;
-  nlpAnalysis: number;
-}
 
 interface ChartsTabsProps {
   monitoringItems: MonitoringItem[];
@@ -28,7 +21,7 @@ interface ChartsTabsProps {
   recentReports?: RecentUpdate[];
 }
 
-const ChartsTabs = ({ 
+const ChartsTabs: React.FC<ChartsTabsProps> = ({ 
   monitoringItems, 
   categoryData, 
   frequencyData, 
@@ -52,7 +45,8 @@ const ChartsTabs = ({
       date: "10/05/2024", 
       type: "content", 
       site: "Portal da Transparência", 
-      status: "success" 
+      status: "success",
+      isDemo: true
     },
     { 
       id: "2", 
@@ -61,7 +55,8 @@ const ChartsTabs = ({
       date: "09/05/2024", 
       type: "data", 
       site: "IBGE", 
-      status: "pending" 
+      status: "pending",
+      isDemo: true
     },
     { 
       id: "3", 
@@ -70,7 +65,8 @@ const ChartsTabs = ({
       date: "08/05/2024", 
       type: "alert", 
       site: "Diário Oficial", 
-      status: "warning" 
+      status: "warning",
+      isDemo: true
     }
   ];
 
