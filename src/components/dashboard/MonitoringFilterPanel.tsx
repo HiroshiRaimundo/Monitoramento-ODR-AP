@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,16 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
   monitoringItems,
   exportSelectedMonitoring
 }) => {
+  const [isExporting, setIsExporting] = useState(false);
+
   // Safe guard against errors when no monitoring items are available
   const handleSelectionChange = (value: string) => {
     try {
       setSelectedMonitoring(value);
+      toast({
+        title: "Filtro aplicado",
+        description: `Monitoramento "${value === 'todos' ? 'Todos' : monitoringItems.find(item => item.id === value)?.name || value}" selecionado.`,
+      });
     } catch (error) {
       console.error("Error changing monitoring selection:", error);
       toast({
@@ -28,9 +34,10 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   // Safe guard for export function
-  const handleExport = () => {
+  const handleExport = async () => {
     try {
-      exportSelectedMonitoring();
+      setIsExporting(true);
+      await exportSelectedMonitoring();
       toast({
         title: "Exportação concluída",
         description: "Os dados foram exportados com sucesso.",
@@ -42,6 +49,8 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
         description: "Não foi possível exportar os dados.",
         variant: "destructive",
       });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -60,10 +69,10 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
               value={selectedMonitoring} 
               onValueChange={handleSelectionChange}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full bg-white">
                 <SelectValue placeholder="Selecione um monitoramento" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="todos">Todos os monitoramentos</SelectItem>
                 {monitoringItems.map(item => (
                   <SelectItem key={item.id} value={item.id}>
@@ -76,9 +85,10 @@ const MonitoringFilterPanel: React.FC<FilterPanelProps> = ({
           <Button 
             onClick={handleExport} 
             className="bg-forest-600 hover:bg-forest-700 flex items-center gap-2"
+            disabled={isExporting}
           >
             <Download size={16} />
-            Exportar Dados
+            {isExporting ? "Exportando..." : "Exportar Dados"}
           </Button>
         </div>
       </CardContent>

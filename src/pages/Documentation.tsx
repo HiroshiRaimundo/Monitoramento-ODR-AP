@@ -4,12 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
 const Documentation: React.FC = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   return (
     <div className="min-h-screen bg-background p-6 flex flex-col">
@@ -20,7 +28,19 @@ const Documentation: React.FC = () => {
           onLogoutClick={auth.handleLogout} 
         />
 
-        <Card className="mt-6">
+        <div className="flex items-center mt-4 mb-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-1 text-forest-600 border-forest-200 hover:bg-forest-50"
+            onClick={handleGoBack}
+          >
+            <ArrowLeft size={16} />
+            Voltar
+          </Button>
+        </div>
+
+        <Card className="mt-2">
           <CardHeader>
             <CardTitle className="text-2xl">Documentação Técnica: Sistema de Monitoramento</CardTitle>
             <CardDescription>
