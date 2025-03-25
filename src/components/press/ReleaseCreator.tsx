@@ -135,7 +135,7 @@ const ReleaseCreator: React.FC = () => {
       item.id === currentItem.id 
         ? { 
             ...item, 
-            status: 'sent',
+            status: 'sent' as const,
             categories: selectedCategories
           } 
         : item

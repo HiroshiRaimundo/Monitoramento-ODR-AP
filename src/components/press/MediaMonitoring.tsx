@@ -106,7 +106,7 @@ const MediaMonitoring: React.FC = () => {
         if (item.status === 'pending' && Math.random() > 0.5) {
           return {
             ...item,
-            status: 'found',
+            status: 'found' as const,
             publishedDate: new Date().toISOString(),
             lastChecked: new Date().toISOString(),
             source: "Portal de Notícias da Amazônia"
@@ -145,7 +145,7 @@ const MediaMonitoring: React.FC = () => {
         return {
           ...item,
           url: newUrl,
-          status: 'pending',
+          status: 'pending' as const,
           lastChecked: new Date().toISOString()
         };
       }
