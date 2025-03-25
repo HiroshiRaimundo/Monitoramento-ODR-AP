@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonitoringItemType } from "@/components/monitoring/types";
@@ -100,8 +101,6 @@ const TabContent: React.FC<TabContentProps> = ({
 
       <TabsContent value="publico">
         <PublicTab
-          timeRange={timeRange}
-          setTimeRange={setTimeRange}
           isAuthenticated={isAuthenticated}
           studies={studies}
           simulatedMonthlyData={simulatedMonthlyData}
