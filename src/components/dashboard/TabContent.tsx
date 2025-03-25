@@ -94,7 +94,7 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsTrigger>
         {isAuthenticated && (
           <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-            Assessoria de Imprensa
+            Assessoria
           </TabsTrigger>
         )}
       </TabsList>

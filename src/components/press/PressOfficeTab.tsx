@@ -2,8 +2,8 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ReleaseEditor from "./ReleaseEditor";
-import NewsEditor from "./NewsEditor";
+import PressDashboard from "./PressDashboard";
+import ReleaseCreator from "./ReleaseCreator";
 import MediaContacts from "./MediaContacts";
 import MediaMonitoring from "./MediaMonitoring";
 
@@ -15,13 +15,13 @@ const PressOfficeTab: React.FC = () => {
           <CardTitle className="text-forest-700 font-poppins text-xl">Assessoria de Imprensa</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <Tabs defaultValue="releases" className="w-full">
+          <Tabs defaultValue="dashboard" className="w-full">
             <TabsList className="grid grid-cols-4 w-full mb-6">
-              <TabsTrigger value="releases" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-                Releases
+              <TabsTrigger value="dashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+                Dashboard
               </TabsTrigger>
-              <TabsTrigger value="news" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-                Reportagens
+              <TabsTrigger value="creator" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
+                Criação de Conteúdo
               </TabsTrigger>
               <TabsTrigger value="contacts" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
                 Contatos de Mídia
@@ -31,12 +31,12 @@ const PressOfficeTab: React.FC = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="releases">
-              <ReleaseEditor />
+            <TabsContent value="dashboard">
+              <PressDashboard />
             </TabsContent>
 
-            <TabsContent value="news">
-              <NewsEditor />
+            <TabsContent value="creator">
+              <ReleaseCreator />
             </TabsContent>
 
             <TabsContent value="contacts">
