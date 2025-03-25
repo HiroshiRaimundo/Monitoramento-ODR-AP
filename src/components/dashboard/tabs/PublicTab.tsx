@@ -4,8 +4,6 @@ import PublicDashboard from "@/components/dashboard/PublicDashboard";
 import { ResearchStudy } from "@/types/research";
 
 interface PublicTabProps {
-  timeRange: string;
-  setTimeRange: (value: string) => void;
   isAuthenticated: boolean;
   studies: ResearchStudy[];
   simulatedMonthlyData: Array<{
@@ -17,8 +15,6 @@ interface PublicTabProps {
 }
 
 const PublicTab: React.FC<PublicTabProps> = ({
-  timeRange,
-  setTimeRange,
   isAuthenticated,
   studies,
   simulatedMonthlyData
@@ -26,8 +22,8 @@ const PublicTab: React.FC<PublicTabProps> = ({
   return (
     <PublicDashboard
       data={simulatedMonthlyData}
-      timeRange={timeRange}
-      setTimeRange={setTimeRange}
+      timeRange=""
+      setTimeRange={() => {}}
       isAuthenticated={isAuthenticated}
       studies={studies}
     />
