@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ReleaseEditor from "./ReleaseEditor";
 import NewsEditor from "./NewsEditor";
 import MediaContacts from "./MediaContacts";
-import MediaMonitoring from "./MediaMonitoring";
 import PressDashboard from "./PressDashboard";
 
 const PressOfficeTab: React.FC = () => {
@@ -24,7 +23,7 @@ const PressOfficeTab: React.FC = () => {
         </CardHeader>
         <CardContent className="p-6">
           <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-            <TabsList className="grid grid-cols-5 w-full mb-6">
+            <TabsList className="grid grid-cols-4 w-full mb-6">
               <TabsTrigger value="dashboard" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
                 Dashboard
               </TabsTrigger>
@@ -36,9 +35,6 @@ const PressOfficeTab: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger value="contacts" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
                 Contatos
-              </TabsTrigger>
-              <TabsTrigger value="monitoring" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-                Clipping
               </TabsTrigger>
             </TabsList>
 
@@ -56,10 +52,6 @@ const PressOfficeTab: React.FC = () => {
 
             <TabsContent value="contacts">
               <MediaContacts />
-            </TabsContent>
-
-            <TabsContent value="monitoring">
-              <MediaMonitoring />
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -5,8 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, Calendar, FileText, Search, Filter, Plus, Table as TableIcon } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Search, Filter, Plus, FileText, BarChart, PieChart, Eye } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Tipos simulados para os releases/reportagens
 interface PressItem {
@@ -92,6 +93,174 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   );
 };
 
+interface PublicationStatusChartProps {
+  items: PressItem[];
+}
+
+const PublicationStatusChart: React.FC<PublicationStatusChartProps> = ({ items }) => {
+  // Contagem de itens por status
+  const publishedCount = items.filter(item => item.status === "published").length;
+  const sentCount = items.filter(item => item.status === "sent").length;
+  const draftCount = items.filter(item => item.status === "draft").length;
+  const total = items.length;
+
+  // Calcular porcentagens para os tamanhos das barras
+  const publishedPercent = (publishedCount / total) * 100;
+  const sentPercent = (sentCount / total) * 100;
+  const draftPercent = (draftCount / total) * 100;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-base font-medium">Status de Publicação</h3>
+        <div className="flex items-center space-x-2">
+          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+          <span className="text-xs">Publicado</span>
+          <span className="w-3 h-3 bg-blue-500 rounded-full ml-2"></span>
+          <span className="text-xs">Enviado</span>
+          <span className="w-3 h-3 bg-gray-500 rounded-full ml-2"></span>
+          <span className="text-xs">Rascunho</span>
+        </div>
+      </div>
+
+      {/* Gráfico de barras horizontais */}
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center space-x-2">
+          <div className="w-24 text-xs">Publicados</div>
+          <div className="flex-1 bg-gray-200 rounded-full h-4">
+            <div 
+              className="bg-green-500 h-4 rounded-full" 
+              style={{ width: `${publishedPercent}%` }}>
+            </div>
+          </div>
+          <div className="w-10 text-xs font-semibold">{publishedCount}</div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <div className="w-24 text-xs">Enviados</div>
+          <div className="flex-1 bg-gray-200 rounded-full h-4">
+            <div 
+              className="bg-blue-500 h-4 rounded-full" 
+              style={{ width: `${sentPercent}%` }}>
+            </div>
+          </div>
+          <div className="w-10 text-xs font-semibold">{sentCount}</div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <div className="w-24 text-xs">Rascunhos</div>
+          <div className="flex-1 bg-gray-200 rounded-full h-4">
+            <div 
+              className="bg-gray-500 h-4 rounded-full" 
+              style={{ width: `${draftPercent}%` }}>
+            </div>
+          </div>
+          <div className="w-10 text-xs font-semibold">{draftCount}</div>
+        </div>
+      </div>
+
+      {/* Gráfico de donut simplificado */}
+      <div className="flex justify-center mt-4">
+        <div className="relative w-32 h-32">
+          <svg viewBox="0 0 36 36" className="w-full h-full">
+            <circle 
+              cx="18" cy="18" r="15.91549430918954" 
+              fill="transparent" 
+              stroke="#e9e9e9" 
+              strokeWidth="3" 
+            />
+            
+            {/* Arco para publicados (começando do topo, sentido horário) */}
+            <circle 
+              cx="18" cy="18" r="15.91549430918954" 
+              fill="transparent" 
+              stroke="#22c55e" 
+              strokeWidth="3" 
+              strokeDasharray={`${publishedPercent} ${100-publishedPercent}`}
+              strokeDashoffset="25"
+              transform="rotate(-90 18 18)"
+            />
+            
+            {/* Arco para enviados */}
+            <circle 
+              cx="18" cy="18" r="15.91549430918954" 
+              fill="transparent" 
+              stroke="#3b82f6" 
+              strokeWidth="3" 
+              strokeDasharray={`${sentPercent} ${100-sentPercent}`}
+              strokeDashoffset={`${25 - publishedPercent}`}
+              transform="rotate(-90 18 18)"
+            />
+            
+            {/* Arco para rascunhos */}
+            <circle 
+              cx="18" cy="18" r="15.91549430918954" 
+              fill="transparent" 
+              stroke="#6b7280" 
+              strokeWidth="3" 
+              strokeDasharray={`${draftPercent} ${100-draftPercent}`}
+              strokeDashoffset={`${25 - publishedPercent - sentPercent}`}
+              transform="rotate(-90 18 18)"
+            />
+
+            <text x="18" y="18" fontFamily="Verdana" fontSize="5" textAnchor="middle" alignmentBaseline="middle">
+              <tspan x="18" y="17" fontWeight="bold" fontSize="8">{total}</tspan>
+              <tspan x="18" y="23" fontSize="3">TOTAL</tspan>
+            </text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface PublishedItemsListProps {
+  items: PressItem[];
+}
+
+const PublishedItemsList: React.FC<PublishedItemsListProps> = ({ items }) => {
+  const publishedItems = items.filter(item => item.status === "published");
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-base font-medium">Releases e Reportagens Publicados</h3>
+      
+      {publishedItems.length > 0 ? (
+        <div className="space-y-2">
+          {publishedItems.map(item => (
+            <div 
+              key={item.id} 
+              className="flex justify-between items-center p-3 border rounded-md hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex-1">
+                <div className="flex items-center">
+                  <FileText size={16} className="text-forest-600 mr-2" />
+                  <span className="font-medium text-sm">{item.title}</span>
+                </div>
+                <div className="flex items-center text-xs text-gray-500 mt-1">
+                  <span className="mr-2">{item.type === "release" ? "Release" : "Reportagem"}</span>
+                  <span>•</span>
+                  <span className="mx-2">{item.category}</span>
+                  <span>•</span>
+                  <span className="ml-2">{new Date(item.date).toLocaleDateString('pt-BR')}</span>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" className="ml-2">
+                <Eye size={14} className="mr-1" />
+                Ver
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center p-4 border rounded-md bg-gray-50">
+          <p className="text-sm text-gray-500">Nenhum item publicado</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface PressDashboardProps {
   onCreateRelease: () => void;
 }
@@ -106,11 +275,16 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
   const filteredItems = mockPressItems.filter(item => {
     return (
       (searchTerm === "" || item.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (selectedStatus === null || item.status === selectedStatus) &&
-      (selectedCategory === null || item.category === selectedCategory)
+      (selectedStatus === null || selectedStatus === "all" || item.status === selectedStatus) &&
+      (selectedCategory === null || selectedCategory === "all" || item.category === selectedCategory)
     );
   });
 
+  // Cálculo de métricas
+  const totalReleases = mockPressItems.filter(item => item.type === "release").length;
+  const publishedItems = mockPressItems.filter(item => item.status === "published").length;
+  const pendingItems = mockPressItems.filter(item => item.status === "draft" || item.status === "sent").length;
+  
   // Contagem de itens por status para o gráfico
   const statusCounts = {
     draft: mockPressItems.filter(item => item.status === "draft").length,
@@ -131,14 +305,31 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
         </Button>
       </div>
 
-      {/* Cards de estatísticas */}
+      {/* Cards de estatísticas mais detalhados com gráficos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Gráfico de status de publicação */}
+        <Card>
+          <CardContent className="p-6">
+            <PublicationStatusChart items={mockPressItems} />
+          </CardContent>
+        </Card>
+        
+        {/* Lista de items publicados */}
+        <Card>
+          <CardContent className="p-6">
+            <PublishedItemsList items={mockPressItems} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Cards de estatísticas resumidas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-forest-600">Total de Releases</p>
-                <h3 className="text-2xl font-bold">{mockPressItems.filter(i => i.type === "release").length}</h3>
+                <h3 className="text-2xl font-bold">{totalReleases}</h3>
               </div>
               <div className="h-12 w-12 bg-forest-100 rounded-full flex items-center justify-center">
                 <FileText size={24} className="text-forest-700" />
@@ -152,7 +343,7 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-forest-600">Publicados</p>
-                <h3 className="text-2xl font-bold">{mockPressItems.filter(i => i.status === "published").length}</h3>
+                <h3 className="text-2xl font-bold">{publishedItems}</h3>
               </div>
               <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
                 <FileText size={24} className="text-green-700" />
@@ -166,7 +357,7 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-forest-600">Pendentes</p>
-                <h3 className="text-2xl font-bold">{mockPressItems.filter(i => i.status === "draft" || i.status === "sent").length}</h3>
+                <h3 className="text-2xl font-bold">{pendingItems}</h3>
               </div>
               <div className="h-12 w-12 bg-amber-100 rounded-full flex items-center justify-center">
                 <FileText size={24} className="text-amber-700" />
@@ -231,10 +422,10 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
             <Tabs defaultValue="table" className="w-full md:w-auto" value={viewType} onValueChange={setViewType}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="table" className="px-3">
-                  <TableIcon size={16} />
+                  <BarChart size={16} />
                 </TabsTrigger>
                 <TabsTrigger value="chart" className="px-3">
-                  <BarChart size={16} />
+                  <PieChart size={16} />
                 </TabsTrigger>
               </TabsList>
             </Tabs>
