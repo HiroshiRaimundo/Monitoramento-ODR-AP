@@ -1,8 +1,2 @@
 
 /* /index.html 200
-
-# Redirecionar API se houver
-/api/* /api/:splat 200
-/admin/* /admin/:splat 200
-/assets/* /assets/:splat 200
-/images/* /images/:splat 200
