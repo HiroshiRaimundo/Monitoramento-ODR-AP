@@ -6,4 +6,13 @@ import 'leaflet/dist/leaflet.css';
 // Import custom CSS for map styling
 import './styles/map.css';
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Console log for debugging
+console.log('Application initializing...');
+
+const root = document.getElementById('root');
+if (root) {
+  console.log('Root element found, rendering app...');
+  createRoot(root).render(<App />);
+} else {
+  console.error('Root element not found!');
+}
