@@ -1,8 +1,6 @@
 
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/index.php" },
-    { "source": "/admin/(.*)", "destination": "/index.php" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "buildCommand": "npm run build",
