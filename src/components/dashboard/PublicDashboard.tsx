@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import StudiesChart from "./StudiesChart";
 import CategoryChart from "./CategoryChart";
 import { ResearchStudy } from "@/types/research";
+import DashboardControls from "./DashboardControls";
 import { Info, FileBarChart } from "lucide-react";
 import ResearchersByInstitutionChart from "./ResearchersByInstitutionChart";
 import TimelineChart from "./TimelineChart";
@@ -120,6 +121,16 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Filtros simples */}
+      <DashboardControls 
+        timeRange={timeRange}
+        setTimeRange={setTimeRange}
+        handleExport={() => {}}
+        isAuthenticated={false}
+        totalItems={studies.length}
+        isPublic={true}
+      />
 
       {/* Gráficos Públicos - Layout em Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

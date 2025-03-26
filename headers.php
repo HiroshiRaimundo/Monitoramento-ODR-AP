@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Headers Helper para Hostinger

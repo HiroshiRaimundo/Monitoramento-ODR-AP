@@ -34,12 +34,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const ResearchersChart: React.FC<ResearchersChartProps> = ({ data }) => {
   return (
-    <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300 mb-40">
+    <Card className="overflow-hidden border-forest-100 shadow-md hover:shadow-lg transition-all duration-300 mb-24"> {/* Added bottom margin to prevent footer overlap */}
       <CardHeader className="bg-gradient-to-r from-forest-50 to-white">
         <CardTitle className="text-forest-700">Top 15 Pesquisadores</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="h-[600px] mb-8">
+        <div className="h-[600px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={data}

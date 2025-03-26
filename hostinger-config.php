@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Configuração específica para Hostinger

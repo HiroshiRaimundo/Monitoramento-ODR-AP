@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonitoringItemType } from "@/components/monitoring/types";
@@ -94,13 +93,15 @@ const TabContent: React.FC<TabContentProps> = ({
         </TabsTrigger>
         {isAuthenticated && (
           <TabsTrigger value="pressOffice" className="data-[state=active]:bg-forest-600 data-[state=active]:text-white">
-            Assessoria
+            Assessoria de Imprensa
           </TabsTrigger>
         )}
       </TabsList>
 
       <TabsContent value="publico">
         <PublicTab
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
           isAuthenticated={isAuthenticated}
           studies={studies}
           simulatedMonthlyData={simulatedMonthlyData}

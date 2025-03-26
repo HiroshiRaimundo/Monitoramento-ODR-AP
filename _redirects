@@ -1,2 +1,4 @@
 
 /* /index.html 200
+/api/* /index.php 200
+/admin/* /index.php 200

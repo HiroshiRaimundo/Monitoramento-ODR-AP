@@ -1,4 +1,3 @@
-
 # Ativar o motor de reescrita
 <IfModule mod_rewrite.c>
   RewriteEngine On

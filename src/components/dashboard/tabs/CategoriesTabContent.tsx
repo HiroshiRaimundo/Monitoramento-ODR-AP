@@ -23,7 +23,7 @@ const CategoriesTabContent: React.FC<CategoriesTabContentProps> = ({
   radarData
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-24">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Distribuição por Categorias</CardTitle>
@@ -44,6 +44,18 @@ const CategoriesTabContent: React.FC<CategoriesTabContentProps> = ({
         <CardContent>
           <ChartContainer config={{}} className="h-80">
             <SourceTypeChart data={radarData || []} />
+          </ChartContainer>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Por Responsável</CardTitle>
+          <CardDescription>Monitoramentos agrupados por responsável</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={{}} className="h-80">
+            <ResearchersChart data={responsibleData || []} />
           </ChartContainer>
         </CardContent>
       </Card>
@@ -89,18 +101,6 @@ const CategoriesTabContent: React.FC<CategoriesTabContentProps> = ({
               </AlertDescription>
             </Alert>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="col-span-1 md:col-span-2">
-        <CardHeader>
-          <CardTitle>Por Responsável</CardTitle>
-          <CardDescription>Monitoramentos agrupados por responsável</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={{}} className="h-[600px]">
-            <ResearchersChart data={responsibleData || []} />
-          </ChartContainer>
         </CardContent>
       </Card>
     </div>
