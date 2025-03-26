@@ -190,14 +190,17 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
               />
             </div>
             
-            <Select value={selectedStatus || ""} onValueChange={(value) => setSelectedStatus(value || null)}>
+            <Select 
+              value={selectedStatus !== null ? selectedStatus : undefined} 
+              onValueChange={(value) => setSelectedStatus(value || null)}
+            >
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Status</SelectLabel>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="draft">Rascunho</SelectItem>
                   <SelectItem value="sent">Enviado</SelectItem>
                   <SelectItem value="published">Publicado</SelectItem>
@@ -205,14 +208,17 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
               </SelectContent>
             </Select>
             
-            <Select value={selectedCategory || ""} onValueChange={(value) => setSelectedCategory(value || null)}>
+            <Select 
+              value={selectedCategory !== null ? selectedCategory : undefined} 
+              onValueChange={(value) => setSelectedCategory(value || null)}
+            >
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Categoria</SelectLabel>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="Meio Ambiente">Meio Ambiente</SelectItem>
                   <SelectItem value="Política">Política</SelectItem>
                   <SelectItem value="Economia">Economia</SelectItem>

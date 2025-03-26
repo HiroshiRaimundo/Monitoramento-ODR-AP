@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ interface Journalist {
 
 const categories = [
   "Meio Ambiente",
-  "Economia",
+  "Economia", 
   "Política",
   "Social",
   "Internacional",
@@ -43,8 +42,7 @@ const MediaContacts: React.FC = () => {
   const [currentJournalist, setCurrentJournalist] = useState<Journalist | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
-  
-  // Formulário
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState("");
@@ -77,13 +75,11 @@ const MediaContacts: React.FC = () => {
 
   const handleSaveJournalist = () => {
     if (!name || !email || !category || !media) {
-      // Validação básica
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
     if (currentJournalist) {
-      // Editar jornalista existente
       const updatedJournalists = journalists.map(j => 
         j.id === currentJournalist.id
           ? { ...j, name, email, category, media, phone }
@@ -91,7 +87,6 @@ const MediaContacts: React.FC = () => {
       );
       setJournalists(updatedJournalists);
     } else {
-      // Adicionar novo jornalista
       const newJournalist: Journalist = {
         id: Date.now().toString(),
         name,
@@ -113,7 +108,6 @@ const MediaContacts: React.FC = () => {
     }
   };
 
-  // Filtragem
   const filteredJournalists = journalists.filter(j => {
     return (
       (searchTerm === "" || 
@@ -148,12 +142,15 @@ const MediaContacts: React.FC = () => {
               />
             </div>
             
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <Select 
+              value={filterCategory} 
+              onValueChange={setFilterCategory}
+            >
               <SelectTrigger className="w-full md:w-[200px]">
                 <SelectValue placeholder="Filtrar por categoria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas as categorias</SelectItem>
+                <SelectItem value="all">Todas as categorias</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}
@@ -238,7 +235,6 @@ const MediaContacts: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Diálogo para adicionar/editar jornalista */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
