@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Bold, Italic, Link, Image, List, ListOrdered, FileText, 
   AlignLeft, AlignCenter, AlignRight, Save, Youtube 
@@ -13,18 +14,34 @@ import {
 interface RichTextEditorProps {
   initialTitle?: string;
   initialContent?: string;
+  initialCategory?: string;
+  onCategoryChange?: (category: string) => void;
   onSave: (title: string, content: string, media: {type: string, url: string}[]) => void;
   type: 'release' | 'news';
 }
 
+const categories = [
+  "Meio Ambiente",
+  "Economia",
+  "Política",
+  "Social",
+  "Internacional",
+  "Ciência",
+  "Tecnologia",
+  "Educação"
+];
+
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ 
   initialTitle = '', 
-  initialContent = '', 
+  initialContent = '',
+  initialCategory = '',
+  onCategoryChange,
   onSave,
   type
 }) => {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
+  const [category, setCategory] = useState(initialCategory);
   const [media, setMedia] = useState<Array<{type: string, url: string}>>([]);
   const [currentUrl, setCurrentUrl] = useState('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
@@ -40,6 +57,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const handleSave = () => {
     onSave(title, content, media);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    if (onCategoryChange) {
+      onCategoryChange(value);
+    }
   };
 
   const formatText = (format: string) => {
@@ -71,6 +95,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           placeholder={type === 'release' ? "Título do Release" : "Título da Reportagem"}
           className="text-lg font-medium"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="category">Categoria</Label>
+        <Select value={category} onValueChange={handleCategoryChange}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecione uma categoria" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((cat) => (
+              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex flex-wrap gap-2 p-2 bg-forest-50 rounded-md">
@@ -218,7 +256,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       )}
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} className="flex items-center gap-2">
+        <Button 
+          onClick={handleSave} 
+          className="flex items-center gap-2"
+          disabled={!title || !content || !category}
+        >
           <Save size={16} />
           Salvar {type === 'release' ? 'Release' : 'Reportagem'}
         </Button>
