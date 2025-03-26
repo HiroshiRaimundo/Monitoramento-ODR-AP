@@ -4,8 +4,6 @@ import { MonitoringItem } from "@/hooks/useMonitoring";
 import { AnalysisStats } from "../types/dashboardTypes";
 import AnalysisStatsCard from "../analysis/AnalysisStatsCard";
 import MonitoringListCard from "../analysis/MonitoringListCard";
-import AnalysisToolsCard from "../analysis/AnalysisToolsCard";
-import AnalysisReportsCard from "../analysis/AnalysisReportsCard";
 
 interface AnalysisTabContentProps {
   monitoringItems: MonitoringItem[];
@@ -17,20 +15,14 @@ const AnalysisTabContent: React.FC<AnalysisTabContentProps> = ({
   analysisStats
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6">
       {/* Analysis Statistics Card */}
       <AnalysisStatsCard analysisStats={analysisStats} />
       
       {/* Monitoring List Card */}
-      <div className="col-span-2">
+      <div className="col-span-1">
         <MonitoringListCard monitoringItems={monitoringItems} />
       </div>
-
-      {/* Analysis Tools Card */}
-      <AnalysisToolsCard monitoringItems={monitoringItems} />
-
-      {/* Analysis Reports Card */}
-      <AnalysisReportsCard />
     </div>
   );
 };
