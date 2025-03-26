@@ -1,11 +1,10 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, Calendar, FileText, Search, Filter, Plus } from "lucide-react";
+import { BarChart, Calendar, FileText, Search, Filter, Plus, Table as TableIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Tipos simulados para os releases/reportagens
@@ -225,7 +224,7 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
             <Tabs defaultValue="table" className="w-full md:w-auto" value={viewType} onValueChange={setViewType}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="table" className="px-3">
-                  <Table size={16} />
+                  <TableIcon size={16} />
                 </TabsTrigger>
                 <TabsTrigger value="chart" className="px-3">
                   <BarChart size={16} />
