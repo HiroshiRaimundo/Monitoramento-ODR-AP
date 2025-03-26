@@ -1,3 +1,4 @@
+
 <?php
 /**
  * JavaScript Proxy para Hostinger

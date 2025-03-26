@@ -1,3 +1,4 @@
+
 # Configurar MIME types para arquivos na pasta src
 <IfModule mod_mime.c>
   AddType application/javascript .js

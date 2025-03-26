@@ -41,5 +41,16 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Fallback script to handle module loading errors -->
+    <script nomodule>
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Your browser does not support ES modules. Using fallback.');
+        const rootEl = document.getElementById('root');
+        if (rootEl) {
+          rootEl.innerHTML = '<div style="padding: 2rem; font-family: sans-serif;"><h1>Navegador incompatível</h1><p>Por favor, utilize um navegador mais recente para acessar este site.</p></div>';
+        }
+      });
+    </script>
   </body>
 </html>

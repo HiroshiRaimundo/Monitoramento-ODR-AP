@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Diagnóstico do Servidor

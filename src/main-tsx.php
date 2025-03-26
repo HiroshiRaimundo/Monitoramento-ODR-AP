@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Servidor para o arquivo main.tsx

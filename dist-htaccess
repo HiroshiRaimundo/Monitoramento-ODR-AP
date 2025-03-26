@@ -1,8 +1,11 @@
+
 # Configurar MIME types corretamente
 <IfModule mod_mime.c>
   # JavaScript
   AddType application/javascript .js
   AddType application/javascript .mjs
+  AddType application/javascript .jsx
+  AddType application/javascript .tsx
   
   # JSON
   AddType application/json .json
@@ -25,7 +28,7 @@
 </IfModule>
 
 # Definir cabeçalhos para arquivos específicos
-<FilesMatch "\.(js|mjs)$">
+<FilesMatch "\.(js|mjs|jsx|tsx)$">
   <IfModule mod_headers.c>
     Header set Content-Type "application/javascript; charset=UTF-8"
     Header set X-Content-Type-Options "nosniff"
@@ -45,20 +48,6 @@
     Header set X-Content-Type-Options "nosniff"
   </IfModule>
 </FilesMatch>
-
-# Habilitar CORS
-<IfModule mod_headers.c>
-  Header set Access-Control-Allow-Origin "*"
-  Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
-  Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-</IfModule>
-
-# Desativar o cache para desenvolvimento
-<IfModule mod_headers.c>
-  Header set Cache-Control "no-cache, no-store, must-revalidate"
-  Header set Pragma "no-cache"
-  Header set Expires 0
-</IfModule>
 
 # Redirecionar todas as requisições para index.html (SPA React)
 <IfModule mod_rewrite.c>

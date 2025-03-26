@@ -10,6 +10,27 @@
   "framework": "vite",
   "headers": [
     {
+      "source": "/*.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    },
+    {
+      "source": "/*.mjs",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    },
+    {
+      "source": "/*.css",
+      "headers": [
+        { "key": "Content-Type", "value": "text/css" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
