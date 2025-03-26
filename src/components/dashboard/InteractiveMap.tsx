@@ -24,8 +24,8 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
   height = '400px',
   width = '100%'
 }) => {
-  // Default center coordinates for Amapá state
-  const defaultCenter: [number, number] = [1.0354, -51.0669];
+  // Coordenadas centrais do Amapá (ajustadas para melhor enquadramento)
+  const defaultCenter: [number, number] = [1.9, -52.0];
   const [selectedStudy, setSelectedStudy] = useState<ResearchStudy | null>(null);
 
   // Add CSS to fix Leaflet container in responsive designs
@@ -44,20 +44,27 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     };
   }, []);
 
+  // Define os limites do mapa para não permitir navegação para fora da área do Amapá
+  const maxBounds: L.LatLngBoundsExpression = [
+    [3.9, -54.1],  // Noroeste (acima de Oiapoque/divisa oeste)
+    [-0.1, -50.4]  // Sudeste (abaixo de Laranjal do Jari/costa leste)
+  ];
+
   return (
     <div style={{ height, width, position: 'relative' }}>
       <MapContainer 
-        // Properly type MapContainer props - removed center and zoom as direct props
         style={{ height: '100%', width: '100%' }}
-        // Add these properties through actual options
         center={defaultCenter}
-        zoom={7}
+        zoom={6.5}
         scrollWheelZoom={false}
+        maxBounds={maxBounds}
+        maxBoundsViscosity={1.0}
       >
         <TileLayer
-          // Properly type TileLayer props
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          noWrap={true}
+          bounds={maxBounds}
         />
         
         {studies.map(study => {

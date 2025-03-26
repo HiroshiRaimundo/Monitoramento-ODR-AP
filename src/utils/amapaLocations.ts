@@ -1,10 +1,11 @@
 
 // Coordenadas de cidades do Amapá para uso na simulação de geocodificação
+// Coordenadas atualizadas para maior precisão
 const amapaLocations: Record<string, [number, number]> = {
   "Macapá": [-51.0669, 0.0356],
   "Santana": [-51.1729, -0.0583],
   "Laranjal do Jari": [-52.5153, -0.8044],
-  "Oiapoque": [-51.8333, 3.8333],
+  "Oiapoque": [-51.840, 3.840], // Norte extremo
   "Porto Grande": [-51.4086, 0.7128],
   "Mazagão": [-51.2891, -0.1156],
   "Vitória do Jari": [-52.4247, -1.1275],

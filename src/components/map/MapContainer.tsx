@@ -13,9 +13,9 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
-  // Coordenadas do centro do Amapá
-  const amapaCenterLng = -51.0669;
-  const amapaCenterLat = 1.0354;
+  // Coordenadas para o centro geográfico do Amapá (ajustadas)
+  const amapaCenterLng = -52.0;
+  const amapaCenterLat = 1.9;
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -23,17 +23,20 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
     // Initialize map with the provided token
     mapboxgl.accessToken = 'pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag';
     
+    // Definindo os limites do mapa para incluir todo o Amapá
+    const maxBounds = [
+      [-54.1, -0.1], // Sudoeste [longitude, latitude]
+      [-50.4, 3.9]   // Nordeste [longitude, latitude]
+    ];
+    
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
-      zoom: 7, // Zoom mais próximo para ver o Amapá
+      zoom: 6.2, // Zoom ajustado para ver todo o Amapá
       center: [amapaCenterLng, amapaCenterLat], // Centralizado no Amapá
       pitch: 30,
-      maxBounds: [
-        [amapaCenterLng - 3, amapaCenterLat - 3], // Sudoeste
-        [amapaCenterLng + 3, amapaCenterLat + 3]  // Nordeste
-      ]
+      maxBounds: maxBounds
     });
 
     // Adiciona controles de navegação
@@ -90,7 +93,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
       // Se não há pontos, volta para a visão padrão do Amapá
       map.current.flyTo({
         center: [amapaCenterLng, amapaCenterLat],
-        zoom: 7,
+        zoom: 6.2,
         pitch: 30
       });
     }
