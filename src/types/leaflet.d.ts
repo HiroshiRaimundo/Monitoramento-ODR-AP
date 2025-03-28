@@ -12,6 +12,10 @@ declare module 'react-leaflet' {
     style?: React.CSSProperties;
     className?: string;
     scrollWheelZoom?: boolean | 'center';
+    bounds?: L.LatLngBoundsExpression;
+    minZoom?: number;
+    maxBounds?: L.LatLngBoundsExpression;
+    maxBoundsViscosity?: number;
   }
 
   // For TileLayer
@@ -19,6 +23,8 @@ declare module 'react-leaflet' {
     url: string;
     attribution: string;
     children?: React.ReactNode;
+    noWrap?: boolean;
+    bounds?: L.LatLngBoundsExpression;
   }
 
   // For Marker
