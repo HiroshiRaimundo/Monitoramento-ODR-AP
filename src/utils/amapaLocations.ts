@@ -1,6 +1,6 @@
 
 // Coordenadas de cidades do Amapá para uso na simulação de geocodificação
-// Coordenadas atualizadas para maior precisão
+// Coordenadas atualizadas para maior precisão com base no Google Maps
 const amapaLocations: Record<string, [number, number]> = {
   "Macapá": [-51.0669, 0.0356],
   "Santana": [-51.1729, -0.0583],

@@ -13,9 +13,9 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
-  // Coordenadas atualizadas para o centro do Amapá
-  const amapaCenterLng = -52.4137692;
-  const amapaCenterLat = 1.7392997;
+  // Coordenadas atualizadas para o centro do Amapá com base no Google Maps
+  const amapaCenterLng = -52.0;
+  const amapaCenterLat = 1.5;
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -25,18 +25,20 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
     
     // Definindo os limites do mapa para incluir todo o Amapá
     const maxBounds = [
-      [-54.1, -0.1], // Sudoeste [longitude, latitude]
-      [-50.4, 3.9]   // Nordeste [longitude, latitude]
+      [-55.0, -1.0], // Sudoeste [longitude, latitude]
+      [-49.5, 4.5]   // Nordeste [longitude, latitude]
     ] as mapboxgl.LngLatBoundsLike;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
-      zoom: 6.0, // Zoom ajustado para ver todo o Amapá
+      zoom: 6.5, // Zoom ajustado para ver todo o Amapá
       center: [amapaCenterLng, amapaCenterLat], // Usando as novas coordenadas centrais
       pitch: 30,
-      maxBounds: maxBounds
+      maxBounds: maxBounds,
+      minZoom: 5,
+      maxZoom: 12
     });
 
     // Adiciona controles de navegação
@@ -58,8 +60,8 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
       }
     });
 
-    // Desabilita o zoom do scroll para uma experiência mais suave
-    map.current.scrollZoom.disable();
+    // Habilita o zoom do scroll para permitir zoom com o mouse
+    map.current.scrollZoom.enable();
 
     // Cleanup
     return () => {
