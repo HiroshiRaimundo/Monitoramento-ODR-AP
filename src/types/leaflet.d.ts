@@ -14,6 +14,7 @@ declare module 'react-leaflet' {
     scrollWheelZoom?: boolean | 'center';
     bounds?: L.LatLngBoundsExpression;
     minZoom?: number;
+    maxZoom?: number;
     maxBounds?: L.LatLngBoundsExpression;
     maxBoundsViscosity?: number;
   }
