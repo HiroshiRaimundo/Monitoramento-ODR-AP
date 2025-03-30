@@ -1,9 +1,10 @@
+
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import MonitoringMetrics from "./MonitoringMetrics";
 
 interface MonitoringItem {
@@ -15,6 +16,7 @@ interface MonitoringItem {
   keywords?: string;
   responsible?: string;
   institution?: string;
+  file_type?: string;
 }
 
 interface MonitoringFormInputsProps {
@@ -33,7 +35,7 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
             <FormItem className="text-left">
               <FormLabel className="text-left">Nome do Monitoramento</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: Índice de Desmatamento - Amazônia Legal" {...field} />
+                <Input placeholder="Ex: Diário Oficial da União - Seção 1" {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -46,7 +48,7 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
             <FormItem className="text-left">
               <FormLabel className="text-left">URL da Fonte</FormLabel>
               <FormControl>
-                <Input placeholder="https://dados.gov.br/exemplo" {...field} />
+                <Input placeholder="https://www.in.gov.br/leiturajornal" {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -75,16 +77,22 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
             <FormItem className="text-left">
               <FormLabel className="text-left">Categoria</FormLabel>
               <FormControl>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  {...field}
+                <Select 
+                  defaultValue={field.value} 
+                  onValueChange={field.onChange}
                 >
-                  <option value="">Selecione uma categoria</option>
-                  <option value="governo">Governo</option>
-                  <option value="indicadores">Indicadores</option>
-                  <option value="legislacao">Legislação</option>
-                  <option value="api">API</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Selecione uma categoria</SelectItem>
+                    <SelectItem value="governo">Governo</SelectItem>
+                    <SelectItem value="diario_oficial">Diário Oficial</SelectItem>
+                    <SelectItem value="indicadores">Indicadores</SelectItem>
+                    <SelectItem value="legislacao">Legislação</SelectItem>
+                    <SelectItem value="api">API</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
             </FormItem>
           )}
@@ -97,17 +105,51 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
             <FormItem className="text-left">
               <FormLabel className="text-left">Frequência de Atualização</FormLabel>
               <FormControl>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  {...field}
+                <Select 
+                  defaultValue={field.value} 
+                  onValueChange={field.onChange}
                 >
-                  <option value="">Selecione uma frequência</option>
-                  <option value="diario">Diário</option>
-                  <option value="semanal">Semanal</option>
-                  <option value="quinzenal">Quinzenal</option>
-                  <option value="mensal">Mensal</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma frequência" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Selecione uma frequência</SelectItem>
+                    <SelectItem value="diario">Diário</SelectItem>
+                    <SelectItem value="semanal">Semanal</SelectItem>
+                    <SelectItem value="quinzenal">Quinzenal</SelectItem>
+                    <SelectItem value="mensal">Mensal</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="file_type"
+          render={({ field }) => (
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Tipo de Arquivo</FormLabel>
+              <FormControl>
+                <Select 
+                  defaultValue={field.value || "html"} 
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo de arquivo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="html">HTML (Página Web)</SelectItem>
+                    <SelectItem value="pdf">PDF (Documento)</SelectItem>
+                    <SelectItem value="json">JSON (Dados estruturados)</SelectItem>
+                    <SelectItem value="xml">XML (Dados estruturados)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormDescription>
+                Para monitoramentos de Diários Oficiais, geralmente são arquivos PDF
+              </FormDescription>
             </FormItem>
           )}
         />
@@ -119,10 +161,10 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
             <FormItem className="text-left">
               <FormLabel className="text-left">Palavras-chave (opcional)</FormLabel>
               <FormControl>
-                <Input placeholder="Desmatamento, meio ambiente, amazônia" {...field} />
+                <Input placeholder="licitação, contrato, portaria, edital" {...field} />
               </FormControl>
               <FormDescription>
-                Separe as palavras-chave por vírgula
+                Separe as palavras-chave por vírgula. Para Diários Oficiais, estas palavras serão buscadas no texto do PDF.
               </FormDescription>
             </FormItem>
           )}

@@ -14,6 +14,7 @@ interface MonitoringItem {
   keywords?: string;
   responsible?: string;
   institution?: string;
+  file_type?: string; // Para indicar se é PDF, HTML, etc.
   created_at: string;
 }
 
@@ -21,6 +22,7 @@ export const useMonitoring = () => {
   const [monitoringItems, setMonitoringItems] = useState<MonitoringItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [responsibleFilter, setResponsibleFilter] = useState<string>("");
+  const [fileTypeFilter, setFileTypeFilter] = useState<string>("");
   const form = useForm<Omit<MonitoringItem, "id" | "created_at">>();
 
   const fetchMonitoringItems = async () => {
@@ -43,6 +45,7 @@ export const useMonitoring = () => {
         keywords: item.keywords,
         responsible: (item as any).responsible || null,
         institution: (item as any).institution || null,
+        file_type: (item as any).file_type || 'html',
         created_at: item.created_at
       }));
       
@@ -61,6 +64,10 @@ export const useMonitoring = () => {
 
   const handleAddMonitoring = async (data: Omit<MonitoringItem, "id" | "created_at">) => {
     try {
+      // Determinar automaticamente o tipo de arquivo com base na URL
+      const fileType = data.url.toLowerCase().endsWith('.pdf') ? 'pdf' : 
+                      (data.url.toLowerCase().includes('diariooficial') ? 'pdf' : 'html');
+      
       // Inserir no Supabase
       const { data: newItem, error } = await supabase
         .from('monitoring_items')
@@ -72,7 +79,8 @@ export const useMonitoring = () => {
           category: data.category,
           keywords: data.keywords || null,
           responsible: data.responsible || null,
-          institution: data.institution || null
+          institution: data.institution || null,
+          file_type: data.file_type || fileType
         })
         .select()
         .single();
@@ -90,6 +98,7 @@ export const useMonitoring = () => {
         keywords: newItem.keywords,
         responsible: (newItem as any).responsible || null,
         institution: (newItem as any).institution || null,
+        file_type: (newItem as any).file_type || fileType,
         created_at: newItem.created_at
       };
       
@@ -99,7 +108,7 @@ export const useMonitoring = () => {
       
       toast({
         title: "Item adicionado",
-        description: `Monitoramento de ${data.name} foi configurado.`
+        description: `Monitoramento de ${data.name} foi configurado.`,
       });
     } catch (error) {
       console.error('Erro ao adicionar monitoramento:', error);
@@ -154,10 +163,25 @@ export const useMonitoring = () => {
     return [...new Set(responsibles)];
   };
 
-  // Filtrar os itens de monitoramento por responsável
-  const filteredMonitoringItems = responsibleFilter
-    ? monitoringItems.filter(item => item.responsible === responsibleFilter)
-    : monitoringItems;
+  // Obter lista única de tipos de arquivo para o filtro
+  const getUniqueFileTypes = () => {
+    const fileTypes = monitoringItems
+      .map(item => item.file_type)
+      .filter(fileType => fileType !== undefined && fileType !== null) as string[];
+    
+    return [...new Set(fileTypes)];
+  };
+
+  // Aplicar filtros aos itens de monitoramento
+  const filteredMonitoringItems = monitoringItems.filter(item => {
+    // Filtro por responsável
+    const passesResponsibleFilter = !responsibleFilter || item.responsible === responsibleFilter;
+    
+    // Filtro por tipo de arquivo
+    const passesFileTypeFilter = !fileTypeFilter || item.file_type === fileTypeFilter;
+    
+    return passesResponsibleFilter && passesFileTypeFilter;
+  });
 
   return {
     monitoringItems: filteredMonitoringItems,
@@ -166,7 +190,10 @@ export const useMonitoring = () => {
     form,
     responsibleFilter,
     setResponsibleFilter,
+    fileTypeFilter,
+    setFileTypeFilter,
     getUniqueResponsibles,
+    getUniqueFileTypes,
     fetchMonitoringItems,
     handleAddMonitoring,
     handleDeleteMonitoring,
