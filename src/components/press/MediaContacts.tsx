@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -150,7 +151,7 @@ const MediaContacts: React.FC = () => {
                 <SelectValue placeholder="Filtrar por categoria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas as categorias</SelectItem>
+                <SelectItem value="todas">Todas as categorias</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}

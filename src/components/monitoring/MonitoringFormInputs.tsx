@@ -85,7 +85,7 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
                     <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Selecione uma categoria</SelectItem>
+                    <SelectItem value="selecione">Selecione uma categoria</SelectItem>
                     <SelectItem value="governo">Governo</SelectItem>
                     <SelectItem value="diario_oficial">Diário Oficial</SelectItem>
                     <SelectItem value="indicadores">Indicadores</SelectItem>
@@ -113,7 +113,7 @@ const MonitoringFormInputs: React.FC<MonitoringFormInputsProps> = ({ form, onSub
                     <SelectValue placeholder="Selecione uma frequência" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Selecione uma frequência</SelectItem>
+                    <SelectItem value="selecione">Selecione uma frequência</SelectItem>
                     <SelectItem value="diario">Diário</SelectItem>
                     <SelectItem value="semanal">Semanal</SelectItem>
                     <SelectItem value="quinzenal">Quinzenal</SelectItem>

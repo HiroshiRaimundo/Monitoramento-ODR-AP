@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonitoringItemType } from "@/components/monitoring/types";
@@ -32,6 +33,9 @@ interface TabContentProps {
   uniqueResponsibles?: string[];
   responsibleFilter?: string;
   setResponsibleFilter?: (responsible: string) => void;
+  uniqueFileTypes?: string[];
+  fileTypeFilter?: string;
+  setFileTypeFilter?: (fileType: string) => void;
 }
 
 const TabContent: React.FC<TabContentProps> = ({
@@ -50,7 +54,10 @@ const TabContent: React.FC<TabContentProps> = ({
   isLoading,
   uniqueResponsibles = [],
   responsibleFilter = "",
-  setResponsibleFilter = () => {}
+  setResponsibleFilter = () => {},
+  uniqueFileTypes = [],
+  fileTypeFilter = "",
+  setFileTypeFilter = () => {}
 }) => {
   // Generate simulated data
   const simulatedMonthlyData = useMemo(() => generateSimulatedMonthlyData(), []);
@@ -119,6 +126,9 @@ const TabContent: React.FC<TabContentProps> = ({
             uniqueResponsibles={uniqueResponsibles.length ? uniqueResponsibles : [...new Set(monitoringItems.map(item => item.responsible))].filter(Boolean) as string[]}
             responsibleFilter={responsibleFilter}
             setResponsibleFilter={setResponsibleFilter}
+            uniqueFileTypes={uniqueFileTypes.length ? uniqueFileTypes : [...new Set(monitoringItems.map(item => item.file_type))].filter(Boolean) as string[]}
+            fileTypeFilter={fileTypeFilter}
+            setFileTypeFilter={setFileTypeFilter}
           />
         </TabsContent>
       )}

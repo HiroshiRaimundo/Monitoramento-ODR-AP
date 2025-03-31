@@ -59,7 +59,7 @@ const ManagementTab: React.FC<ManagementTabProps> = ({
                 <SelectValue placeholder="Todos os responsáveis" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os responsáveis</SelectItem>
+                <SelectItem value="todos">Todos os responsáveis</SelectItem>
                 {uniqueResponsibles.map((responsible) => (
                   <SelectItem key={responsible} value={responsible}>
                     {responsible}
@@ -82,7 +82,7 @@ const ManagementTab: React.FC<ManagementTabProps> = ({
                   <SelectValue placeholder="Todos os tipos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os tipos</SelectItem>
+                  <SelectItem value="todos">Todos os tipos</SelectItem>
                   {uniqueFileTypes.map((fileType) => (
                     <SelectItem key={fileType} value={fileType}>
                       {fileType === 'html' ? 'HTML (Página Web)' : 

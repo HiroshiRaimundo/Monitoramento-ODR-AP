@@ -64,9 +64,9 @@ const Index: React.FC = () => {
           uniqueResponsibles={monitoring.getUniqueResponsibles()}
           responsibleFilter={monitoring.responsibleFilter}
           setResponsibleFilter={monitoring.setResponsibleFilter}
-          uniqueFileTypes={monitoring.getUniqueFileTypes ? monitoring.getUniqueFileTypes() : []}
-          fileTypeFilter={monitoring.fileTypeFilter}
-          setFileTypeFilter={monitoring.setFileTypeFilter}
+          uniqueFileTypes={monitoring.getUniqueFileTypes?.() || []}
+          fileTypeFilter={monitoring.fileTypeFilter || ""}
+          setFileTypeFilter={monitoring.setFileTypeFilter || (() => {})}
         />
       </div>
 
