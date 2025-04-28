@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Search, Filter, Plus, FileText, BarChart, PieChart, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 // Tipos simulados para os releases/reportagens
 interface PressItem {
@@ -17,6 +18,7 @@ interface PressItem {
   category: string;
   status: "draft" | "sent" | "published";
   date: string;
+  content?: string;
 }
 
 // Dados simulados para demonstração
@@ -27,7 +29,8 @@ const mockPressItems: PressItem[] = [
     type: "release",
     category: "Meio Ambiente",
     status: "published",
-    date: "2024-06-05"
+    date: "2024-06-05",
+    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu dolor nunc. Sed neque eros, interdum ut purus id, tincidunt pulvinar eros. Ut aliquam ante id ligula tempor posuere."
   },
   {
     id: "2",
@@ -35,7 +38,8 @@ const mockPressItems: PressItem[] = [
     type: "release",
     category: "Política",
     status: "sent",
-    date: "2024-06-02"
+    date: "2024-06-02",
+    content: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis est quam, tincidunt vel faucibus ut, porttitor vel erat."
   },
   {
     id: "3",
@@ -43,7 +47,8 @@ const mockPressItems: PressItem[] = [
     type: "news",
     category: "Economia",
     status: "draft",
-    date: "2024-05-28"
+    date: "2024-05-28",
+    content: "Fusce finibus urna vitae porttitor tincidunt. Mauris vitae nulla at nulla finibus condimentum. Phasellus consectetur feugiat ante, at blandit lorem pharetra vitae."
   },
   {
     id: "4",
@@ -51,7 +56,8 @@ const mockPressItems: PressItem[] = [
     type: "news",
     category: "Social",
     status: "published",
-    date: "2024-05-25"
+    date: "2024-05-25",
+    content: "Integer posuere ut tortor ac facilisis. Nulla facilisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed tempor ex ut sem porttitor, id faucibus ipsum tempor."
   },
   {
     id: "5",
@@ -59,7 +65,8 @@ const mockPressItems: PressItem[] = [
     type: "release",
     category: "Internacional",
     status: "sent",
-    date: "2024-05-22"
+    date: "2024-05-22",
+    content: "Donec convallis ipsum non libero pulvinar, sed malesuada nisi sagittis. Donec dignissim congue magna, at scelerisque est accumsan quis."
   }
 ];
 
@@ -216,9 +223,10 @@ const PublicationStatusChart: React.FC<PublicationStatusChartProps> = ({ items }
 
 interface PublishedItemsListProps {
   items: PressItem[];
+  onViewItem: (item: PressItem) => void;
 }
 
-const PublishedItemsList: React.FC<PublishedItemsListProps> = ({ items }) => {
+const PublishedItemsList: React.FC<PublishedItemsListProps> = ({ items, onViewItem }) => {
   const publishedItems = items.filter(item => item.status === "published");
 
   return (
@@ -245,7 +253,7 @@ const PublishedItemsList: React.FC<PublishedItemsListProps> = ({ items }) => {
                   <span className="ml-2">{new Date(item.date).toLocaleDateString('pt-BR')}</span>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" className="ml-2">
+              <Button variant="ghost" size="sm" className="ml-2" onClick={() => onViewItem(item)}>
                 <Eye size={14} className="mr-1" />
                 Ver
               </Button>
@@ -267,16 +275,24 @@ interface PressDashboardProps {
 
 const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("todos");
+  const [selectedCategory, setSelectedCategory] = useState<string>("todas");
   const [viewType, setViewType] = useState("table");
+  const [selectedItem, setSelectedItem] = useState<PressItem | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Função para visualizar um item
+  const handleViewItem = (item: PressItem) => {
+    setSelectedItem(item);
+    setIsDialogOpen(true);
+  };
 
   // Filtragem dos dados
   const filteredItems = mockPressItems.filter(item => {
     return (
       (searchTerm === "" || item.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (selectedStatus === null || selectedStatus === "all" || item.status === selectedStatus) &&
-      (selectedCategory === null || selectedCategory === "all" || item.category === selectedCategory)
+      (selectedStatus === "todos" || item.status === selectedStatus) &&
+      (selectedCategory === "todas" || item.category === selectedCategory)
     );
   });
 
@@ -292,6 +308,9 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
     published: mockPressItems.filter(item => item.status === "published").length,
   };
 
+  // Obter categorias únicas para o filtro
+  const uniqueCategories = Array.from(new Set(mockPressItems.map(item => item.category)));
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -305,6 +324,21 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
         </Button>
       </div>
 
+      {/* Dialog para visualizar item */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{selectedItem?.title}</DialogTitle>
+            <DialogDescription>
+              {selectedItem?.type === "release" ? "Release" : "Reportagem"} • {selectedItem?.category} • {selectedItem?.date ? new Date(selectedItem.date).toLocaleDateString('pt-BR') : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <p className="text-sm text-gray-700">{selectedItem?.content}</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Cards de estatísticas mais detalhados com gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Gráfico de status de publicação */}
@@ -317,7 +351,7 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
         {/* Lista de items publicados */}
         <Card>
           <CardContent className="p-6">
-            <PublishedItemsList items={mockPressItems} />
+            <PublishedItemsList items={mockPressItems} onViewItem={handleViewItem} />
           </CardContent>
         </Card>
       </div>
@@ -382,8 +416,8 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
             </div>
             
             <Select 
-              value={selectedStatus !== null ? selectedStatus : undefined} 
-              onValueChange={(value) => setSelectedStatus(value || null)}
+              value={selectedStatus} 
+              onValueChange={(value) => setSelectedStatus(value)}
             >
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Status" />
@@ -391,7 +425,7 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Status</SelectLabel>
-                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="todos">Todos</SelectItem>
                   <SelectItem value="draft">Rascunho</SelectItem>
                   <SelectItem value="sent">Enviado</SelectItem>
                   <SelectItem value="published">Publicado</SelectItem>
@@ -400,8 +434,8 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
             </Select>
             
             <Select 
-              value={selectedCategory !== null ? selectedCategory : undefined} 
-              onValueChange={(value) => setSelectedCategory(value || null)}
+              value={selectedCategory}
+              onValueChange={(value) => setSelectedCategory(value)}
             >
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Categoria" />
@@ -409,12 +443,10 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Categoria</SelectLabel>
-                  <SelectItem value="all">Todas</SelectItem>
-                  <SelectItem value="Meio Ambiente">Meio Ambiente</SelectItem>
-                  <SelectItem value="Política">Política</SelectItem>
-                  <SelectItem value="Economia">Economia</SelectItem>
-                  <SelectItem value="Social">Social</SelectItem>
-                  <SelectItem value="Internacional">Internacional</SelectItem>
+                  <SelectItem value="todas">Todas</SelectItem>
+                  {uniqueCategories.map((category) => (
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -448,6 +480,7 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
                   <TableHead>Categoria</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Data</TableHead>
+                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -461,11 +494,17 @@ const PressDashboard: React.FC<PressDashboardProps> = ({ onCreateRelease }) => {
                         <StatusBadge status={item.status} />
                       </TableCell>
                       <TableCell>{new Date(item.date).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" onClick={() => handleViewItem(item)}>
+                          <Eye size={14} className="mr-1" />
+                          Ver
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                       Nenhum resultado encontrado.
                     </TableCell>
                   </TableRow>
