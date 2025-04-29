@@ -25,3 +25,16 @@ export interface PublishedItemsListProps {
 export interface PressDashboardProps {
   onCreateRelease: () => void;
 }
+
+// Lista comum de categorias para toda a aplicação
+export const PRESS_CATEGORIES = [
+  "Meio Ambiente",
+  "Economia",
+  "Política",
+  "Social",
+  "Internacional",
+  "Ciência",
+  "Tecnologia",
+  "Educação",
+  "Outros" // Nova categoria adicionada
+];

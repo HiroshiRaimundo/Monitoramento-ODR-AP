@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import RichTextEditor from "./RichTextEditor";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Journalist } from "./PressOfficeTab";
+import { PRESS_CATEGORIES } from "./types/pressTypes";
 
 interface Release {
   id: string;
@@ -19,25 +20,11 @@ interface Release {
   media: Array<{type: string, url: string}>;
 }
 
-// Dados simulados para jornalistas
-interface Journalist {
-  id: string;
-  name: string;
-  email: string;
-  category: string;
-  media: string;
+interface ReleaseEditorProps {
+  journalists: Journalist[];
 }
 
-const mockJournalists: Journalist[] = [
-  { id: "1", name: "Carlos Silva", email: "carlos@jornaleco.com.br", category: "Economia", media: "Jornal Econômico" },
-  { id: "2", name: "Ana Melo", email: "ana@noticiasambiental.com", category: "Meio Ambiente", media: "Notícias Ambientais" },
-  { id: "3", name: "Roberto Santos", email: "roberto@globomedia.com.br", category: "Política", media: "Globo Media" },
-  { id: "4", name: "Luiza Costa", email: "luiza@jornaldaamazonia.com", category: "Meio Ambiente", media: "Jornal da Amazônia" },
-  { id: "5", name: "Fernanda Lima", email: "fernanda@politicahoje.com", category: "Política", media: "Política Hoje" },
-  { id: "6", name: "Paulo Mendes", email: "paulo@economianews.com.br", category: "Economia", media: "Economia News" },
-];
-
-const ReleaseEditor: React.FC = () => {
+const ReleaseEditor: React.FC<ReleaseEditorProps> = ({ journalists }) => {
   const [releases, setReleases] = useState<Release[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentRelease, setCurrentRelease] = useState<Release | null>(null);
@@ -86,7 +73,7 @@ const ReleaseEditor: React.FC = () => {
   const handleOpenSendDialog = (release: Release) => {
     setCurrentRelease(release);
     // Filtra jornalistas com base na categoria do release
-    const filteredJournalists = mockJournalists.filter(
+    const filteredJournalists = journalists.filter(
       journalist => journalist.category === release.category
     );
     setAvailableJournalists(filteredJournalists);

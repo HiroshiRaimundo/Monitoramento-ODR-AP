@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -7,38 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle, UserPlus, Edit, Trash, Mail, Building, Tag } from "lucide-react";
+import { PRESS_CATEGORIES } from "./types/pressTypes";
+import { Journalist } from "./PressOfficeTab";
 
-interface Journalist {
-  id: string;
-  name: string;
-  email: string;
-  category: string;
-  media: string;
-  phone?: string;
+interface MediaContactsProps {
+  journalists: Journalist[];
+  onJournalistsUpdate: (journalists: Journalist[]) => void;
 }
 
-const categories = [
-  "Meio Ambiente",
-  "Economia", 
-  "Política",
-  "Social",
-  "Internacional",
-  "Ciência",
-  "Tecnologia",
-  "Educação"
-];
-
-const MediaContacts: React.FC = () => {
-  const [journalists, setJournalists] = useState<Journalist[]>([
-    { id: "1", name: "Carlos Silva", email: "carlos@jornaleco.com.br", category: "Economia", media: "Jornal Econômico", phone: "(11) 98765-4321" },
-    { id: "2", name: "Ana Melo", email: "ana@noticiasambiental.com", category: "Meio Ambiente", media: "Notícias Ambientais", phone: "(21) 99876-5432" },
-    { id: "3", name: "Roberto Santos", email: "roberto@globomedia.com.br", category: "Política", media: "Globo Media", phone: "(31) 97654-3210" },
-    { id: "4", name: "Luiza Costa", email: "luiza@jornaldaamazonia.com", category: "Meio Ambiente", media: "Jornal da Amazônia", phone: "(92) 98765-0987" },
-    { id: "5", name: "Fernanda Lima", email: "fernanda@politicahoje.com", category: "Política", media: "Política Hoje", phone: "(61) 99876-1234" },
-    { id: "6", name: "Paulo Mendes", email: "paulo@economianews.com.br", category: "Economia", media: "Economia News", phone: "(11) 97654-5678" },
-  ]);
-  
+const MediaContacts: React.FC<MediaContactsProps> = ({ journalists, onJournalistsUpdate }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentJournalist, setCurrentJournalist] = useState<Journalist | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,7 +64,7 @@ const MediaContacts: React.FC = () => {
           ? { ...j, name, email, category, media, phone }
           : j
       );
-      setJournalists(updatedJournalists);
+      onJournalistsUpdate(updatedJournalists);
     } else {
       const newJournalist: Journalist = {
         id: Date.now().toString(),
@@ -96,7 +74,7 @@ const MediaContacts: React.FC = () => {
         media,
         phone: phone || undefined
       };
-      setJournalists([...journalists, newJournalist]);
+      onJournalistsUpdate([...journalists, newJournalist]);
     }
 
     resetForm();
@@ -105,7 +83,7 @@ const MediaContacts: React.FC = () => {
 
   const handleDeleteJournalist = (id: string) => {
     if (confirm("Tem certeza que deseja excluir este contato?")) {
-      setJournalists(journalists.filter(j => j.id !== id));
+      onJournalistsUpdate(journalists.filter(j => j.id !== id));
     }
   };
 
@@ -115,7 +93,7 @@ const MediaContacts: React.FC = () => {
         j.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         j.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         j.media.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (filterCategory === "" || j.category === filterCategory)
+      (filterCategory === "" || filterCategory === "todas" || j.category === filterCategory)
     );
   });
 
@@ -152,7 +130,7 @@ const MediaContacts: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todas">Todas as categorias</SelectItem>
-                {categories.map((cat) => (
+                {PRESS_CATEGORIES.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}
               </SelectContent>
@@ -268,7 +246,7 @@ const MediaContacts: React.FC = () => {
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
+                  {PRESS_CATEGORIES.map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>

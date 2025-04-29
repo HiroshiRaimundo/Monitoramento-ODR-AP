@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import {
   Bold, Italic, Link, Image, List, ListOrdered, FileText, 
   AlignLeft, AlignCenter, AlignRight, Save, Youtube 
 } from "lucide-react";
+import { PRESS_CATEGORIES } from "../types/pressTypes";
 
 interface RichTextEditorProps {
   initialTitle?: string;
@@ -19,17 +19,6 @@ interface RichTextEditorProps {
   onSave: (title: string, content: string, media: {type: string, url: string}[]) => void;
   type: 'release' | 'news';
 }
-
-const categories = [
-  "Meio Ambiente",
-  "Economia",
-  "Política",
-  "Social",
-  "Internacional",
-  "Ciência",
-  "Tecnologia",
-  "Educação"
-];
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ 
   initialTitle = '', 
@@ -67,8 +56,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   };
 
   const formatText = (format: string) => {
-    // Esta é uma implementação simplificada para demonstração
-    // Em um ambiente real, você usaria uma biblioteca de editor de texto rico
     switch (format) {
       case 'bold':
         setContent(content + '<strong>texto em negrito</strong>');
@@ -104,7 +91,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <SelectValue placeholder="Selecione uma categoria" />
           </SelectTrigger>
           <SelectContent>
-            {categories.map((cat) => (
+            {PRESS_CATEGORIES.map((cat) => (
               <SelectItem key={cat} value={cat}>{cat}</SelectItem>
             ))}
           </SelectContent>
