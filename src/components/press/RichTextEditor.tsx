@@ -9,7 +9,7 @@ import {
   Bold, Italic, Link, Image, List, ListOrdered, FileText, 
   AlignLeft, AlignCenter, AlignRight, Save, Youtube 
 } from "lucide-react";
-import { PRESS_CATEGORIES } from "../types/pressTypes";
+import { PRESS_CATEGORIES } from "./types/pressTypes";
 
 interface RichTextEditorProps {
   initialTitle?: string;
