@@ -17,6 +17,8 @@ declare module 'react-leaflet' {
     maxZoom?: number;
     maxBounds?: L.LatLngBoundsExpression;
     maxBoundsViscosity?: number;
+    zoomControl?: boolean;
+    attributionControl?: boolean;
   }
 
   // For TileLayer
@@ -26,6 +28,7 @@ declare module 'react-leaflet' {
     children?: React.ReactNode;
     noWrap?: boolean;
     bounds?: L.LatLngBoundsExpression;
+    opacity?: number;
   }
 
   // For Marker
@@ -35,5 +38,13 @@ declare module 'react-leaflet' {
       [key: string]: (...args: any[]) => void;
     };
     children?: React.ReactNode;
+    icon?: L.Icon | L.DivIcon;
+  }
+
+  // For Popup
+  export interface PopupProps extends L.PopupOptions {
+    children?: React.ReactNode;
+    position?: L.LatLngExpression;
+    className?: string;
   }
 }
