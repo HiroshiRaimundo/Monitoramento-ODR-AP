@@ -8,6 +8,7 @@ import {
   ChartTooltipContent
 } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { Tooltip, TooltipProps } from "recharts";
 
 const PublicationStatusChart: React.FC<PublicationStatusChartProps> = ({ items }) => {
   // Use useMemo to calculate counts and percentages only when items change
@@ -78,13 +79,13 @@ const PublicationStatusChart: React.FC<PublicationStatusChartProps> = ({ items }
         ))}
       </div>
 
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4 relative">
         <div className="w-32 h-32">
           <ChartContainer
             config={{
-              published: { theme: { light: "#22c55e" } },
-              sent: { theme: { light: "#3b82f6" } },
-              draft: { theme: { light: "#6b7280" } },
+              published: { theme: { light: "#22c55e", dark: "#16a34a" } },
+              sent: { theme: { light: "#3b82f6", dark: "#2563eb" } },
+              draft: { theme: { light: "#6b7280", dark: "#4b5563" } },
             }}
           >
             <PieChart>
@@ -107,18 +108,16 @@ const PublicationStatusChart: React.FC<PublicationStatusChartProps> = ({ items }
                   />
                 ))}
               </Pie>
-              <ChartTooltip>
-                <ChartTooltipContent />
-              </ChartTooltip>
+              <Tooltip content={<ChartTooltipContent />} />
             </PieChart>
           </ChartContainer>
         </div>
-      </div>
       
-      {/* Center total count */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-        <div className="font-bold text-lg">{chartData.counts.total}</div>
-        <div className="text-xs uppercase">Total</div>
+        {/* Center total count */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+          <div className="font-bold text-lg">{chartData.counts.total}</div>
+          <div className="text-xs uppercase">Total</div>
+        </div>
       </div>
     </div>
   );
