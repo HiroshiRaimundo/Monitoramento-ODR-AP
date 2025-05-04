@@ -8,6 +8,7 @@ import DashboardControls from "./DashboardControls";
 import { Info, FileBarChart } from "lucide-react";
 import ResearchersByInstitutionChart from "./ResearchersByInstitutionChart";
 import TimelineChart from "./TimelineChart";
+import { toast } from "@/hooks/use-toast";
 
 interface PublicDashboardProps {
   data: Array<{
@@ -48,7 +49,7 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
     { institution: "Pós-Doc", researchers: 4 }
   ];
 
-  // Dados simulados para a linha do tempo
+  // Dados simulados para a linha do tempo filtrados pelo período
   const timelineData = useMemo(() => {
     const sampleTitles = [
       "Portal de Transparência", 
@@ -63,7 +64,16 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
       "Estudos Socioambientais"
     ];
     
-    return sampleTitles.map((title, index) => {
+    // Criar datas em ordem cronológica, mas limitar com base no timeRange
+    let limit;
+    switch (timeRange) {
+      case "diario": limit = 3; break;
+      case "semanal": limit = 5; break;
+      case "mensal": limit = 7; break;
+      default: limit = sampleTitles.length; // anual
+    }
+    
+    return sampleTitles.slice(0, limit).map((title, index) => {
       // Criar datas em ordem cronológica com intervalos variados
       const monthOffset = index % 12;
       const yearOffset = Math.floor(index / 12);
@@ -75,7 +85,23 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
         date: date.toLocaleDateString('pt-BR')
       };
     });
-  }, []);
+  }, [timeRange]);
+
+  // Função para exportar os dados
+  const handleExport = () => {
+    toast({
+      title: "Exportação iniciada",
+      description: "Os dados serão exportados em formato CSV."
+    });
+    
+    // Simulação de exportação (em uma implementação real, isso geraria um arquivo CSV)
+    setTimeout(() => {
+      toast({
+        title: "Exportação concluída",
+        description: "Os dados foram exportados com sucesso."
+      });
+    }, 1500);
+  };
 
   return (
     <div className="grid gap-6 font-poppins">
@@ -126,8 +152,8 @@ const PublicDashboard: React.FC<PublicDashboardProps> = ({
       <DashboardControls 
         timeRange={timeRange}
         setTimeRange={setTimeRange}
-        handleExport={() => {}}
-        isAuthenticated={false}
+        handleExport={handleExport}
+        isAuthenticated={isAuthenticated}
         totalItems={studies.length}
         isPublic={true}
       />

@@ -22,21 +22,15 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
   totalItems,
   isPublic = false
 }) => {
-  const handleExportWithToast = () => {
-    try {
-      handleExport();
-      toast({
-        title: "Exportação concluída",
-        description: "Os dados foram exportados com sucesso.",
-      });
-    } catch (error) {
-      console.error("Error exporting data:", error);
-      toast({
-        title: "Erro na exportação",
-        description: "Não foi possível exportar os dados.",
-        variant: "destructive",
-      });
-    }
+  // Função para lidar com a mudança do período
+  const handleTimeRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTimeRange(e.target.value);
+    
+    // Feedback visual ao mudar o período
+    toast({
+      title: "Período atualizado",
+      description: `Os dados foram filtrados para o período ${e.target.value}.`
+    });
   };
 
   return (
@@ -55,7 +49,7 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
             id="timeRange"
             className="rounded-md border border-forest-200 p-2 bg-white text-forest-800 focus:ring-forest-500 focus:border-forest-500 font-poppins"
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
+            onChange={handleTimeRangeChange}
           >
             <option value="diario">Diário</option>
             <option value="semanal">Semanal</option>
@@ -74,7 +68,7 @@ const DashboardControls: React.FC<DashboardControlsProps> = ({
           
           {isAuthenticated && !isPublic && (
             <Button 
-              onClick={handleExportWithToast} 
+              onClick={handleExport} 
               className="bg-forest-600 hover:bg-forest-700 text-white flex items-center gap-2 font-poppins"
             >
               <Download size={18} />
