@@ -1,9 +1,9 @@
 
 import React from "react";
-import PressOfficeTab from "@/components/press/PressOfficeTab";
+import PressTab from "@/components/press/tabs/PressTab";
 
-const PressTab: React.FC = () => {
-  return <PressOfficeTab />;
+const PressDashboardTab: React.FC = () => {
+  return <PressTab />;
 };
 
-export default PressTab;
+export default PressDashboardTab;

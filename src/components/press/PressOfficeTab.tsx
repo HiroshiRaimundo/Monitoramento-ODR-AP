@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ReleaseEditor from "./ReleaseEditor";
 import NewsEditor from "./NewsEditor";
 import MediaContacts from "./MediaContacts";
-import PressDashboard from "./PressDashboard";
+import PressTab from "./tabs/PressTab";
 import { PRESS_CATEGORIES } from "./types/pressTypes";
 
 // Interface para compartilhamento de dados do jornalista entre componentes
@@ -68,7 +68,9 @@ const PressOfficeTab: React.FC = () => {
             </TabsList>
 
             <TabsContent value="dashboard">
-              <PressDashboard onCreateRelease={navigateToCreateRelease} />
+              <div className="space-y-6">
+                <PressTab />
+              </div>
             </TabsContent>
 
             <TabsContent value="releases">
