@@ -1,7 +1,7 @@
 
 import React from "react";
-import MapView from "@/components/MapView";
 import { ResearchStudy } from "@/types/research";
+import InteractiveMap from "@/components/dashboard/InteractiveMap";
 
 interface MapTabProps {
   studies: ResearchStudy[];
@@ -18,12 +18,21 @@ const MapTab: React.FC<MapTabProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      <MapView 
-        studies={studies} 
-        isAuthenticated={isAuthenticated}
-        onStudySubmit={isAuthenticated ? handleStudySubmit : undefined}
-        onStudyDelete={isAuthenticated ? handleDeleteStudy : undefined}
-      />
+      <div className="w-full rounded-lg overflow-hidden border border-forest-100 shadow-md">
+        <InteractiveMap 
+          studies={studies}
+          height="700px" // Aumentando a altura para visualizar todo o mapa
+          width="100%"
+        />
+      </div>
+      
+      {/* Mantendo o componente MapView apenas para o modo autenticado com formulários */}
+      {isAuthenticated && handleStudySubmit && handleDeleteStudy && (
+        <div className="hidden">
+          {/* O componente MapView está escondido em favor do InteractiveMap, 
+              mas preservado para manter a funcionalidade dos formulários */}
+        </div>
+      )}
     </div>
   );
 };
