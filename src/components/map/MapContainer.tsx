@@ -23,17 +23,17 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
     // Initialize map with the provided token
     mapboxgl.accessToken = 'pk.eyJ1Ijoib2RyMjAyNSIsImEiOiJjbTduZmJ6emUwMGxoMmlxNDQ2MGtkNXl2In0.e-WKQa0gIyZM9w7SaGi_ag';
     
-    // Definindo os limites do mapa para incluir todo o Amapá
+    // Definindo os limites do mapa para incluir todo o Amapá com margem extra
     const maxBounds = [
-      [-55.0, -1.0], // Sudoeste [longitude, latitude]
-      [-49.5, 4.5]   // Nordeste [longitude, latitude]
+      [-55.5, -2.0], // Sudoeste [longitude, latitude] com margem extra
+      [-49.0, 5.5]   // Nordeste [longitude, latitude] com margem extra
     ] as mapboxgl.LngLatBoundsLike;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       projection: 'mercator',
-      zoom: 6.5, // Zoom ajustado para ver todo o Amapá
+      zoom: 6.0, // Zoom ajustado para ver todo o Amapá
       center: [amapaCenterLng, amapaCenterLat], // Usando as novas coordenadas centrais
       pitch: 30,
       maxBounds: maxBounds,
@@ -82,14 +82,14 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
       });
       
       map.current.fitBounds(bounds, {
-        padding: 50,
+        padding: 80, // Aumentado o padding para garantir visibilidade
         maxZoom: 12
       });
     } else if (points.length === 1) {
       // Se há apenas um ponto, centraliza o mapa nele
       map.current.flyTo({
         center: points[0].coordinates,
-        zoom: 12
+        zoom: 10 // Zoom reduzido para melhor contexto
       });
     } else {
       // Se não há pontos, volta para a visão padrão do Amapá
@@ -117,7 +117,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ points, onSelectPoint }) =>
   };
 
   return (
-    <div className="relative w-full h-[500px] rounded-lg overflow-hidden">
+    <div className="relative w-full h-[700px] rounded-lg overflow-hidden"> {/* Altura aumentada para 700px */}
       <div ref={mapContainer} className="absolute inset-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent to-background/10 rounded-lg" />
       

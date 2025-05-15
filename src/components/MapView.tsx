@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,8 +45,8 @@ const MapView: React.FC<MapViewProps> = ({
   // Renderização do conteúdo do mapa
   const renderMapContent = () => (
     <div className="flex flex-col gap-4">
-      {/* Mapa em tela cheia */}
-      <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100">
+      {/* Mapa com altura aumentada para visualizar todo o Amapá */}
+      <div className="w-full rounded-lg overflow-hidden shadow-md border border-forest-100" style={{minHeight: '700px'}}>
         <Map points={mapPoints} />
       </div>
       

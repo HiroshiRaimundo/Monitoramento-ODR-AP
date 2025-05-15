@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { ResearchStudy } from '@/types/research';
@@ -21,7 +21,7 @@ interface InteractiveMapProps {
 
 const InteractiveMap: React.FC<InteractiveMapProps> = ({ 
   studies, 
-  height = '400px',
+  height = '700px',  // Aumentado para 700px para mostrar todo o mapa
   width = '100%'
 }) => {
   // Coordenadas ajustadas com base no link do Google Maps
@@ -44,18 +44,18 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     };
   }, []);
 
-  // Define os limites do mapa para incluir todo o Amapá
+  // Define os limites do mapa para incluir todo o Amapá com margem extra
   const bounds: L.LatLngBoundsExpression = [
-    [4.5, -55.0],  // Noroeste (acima de Oiapoque/divisa oeste)
-    [-1.0, -49.5]  // Sudeste (abaixo de Laranjal do Jari/costa leste)
+    [5.5, -55.5],  // Noroeste (acima de Oiapoque/divisa oeste) com margem extra
+    [-2.0, -49.0]  // Sudeste (abaixo de Laranjal do Jari/costa leste) com margem extra
   ];
 
   return (
-    <div style={{ height, width, position: 'relative' }}>
+    <div style={{ height, width, position: 'relative' }} className="border border-forest-100 rounded-lg shadow-sm">
       <MapContainer 
         style={{ height: '100%', width: '100%' }}
         center={defaultCenter}
-        zoom={6.5}
+        zoom={6.0} // Zoom ajustado para melhor visualização
         scrollWheelZoom={true}
         bounds={bounds}
         minZoom={5}
